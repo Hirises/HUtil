@@ -1,0 +1,21 @@
+{
+  "name": "com.hirises.hutil",
+  "version": "1.0.0",
+  "displayName": "HUtil",
+  "description": "유니티 6 게임 개발에 필요한 범용 유틸리티 모음",
+  "unity": "6000.0",
+  "unityRelease": "58f2",
+  "author": {
+    "name": "Hirises",
+    "email": "hirises1243@gmail.com",
+    "url": "https://github.com/hirises"
+  },
+  "keywords": [
+    "utility",
+    "unity6",
+    "tools"
+  ],
+  "dependencies": {
+    "com.unity.ide.cursor": "https://github.com/boxqkrtm/com.unity.ide.cursor.git"
+  }
+}
