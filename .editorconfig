@@ -1,0 +1,37 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.cs]
+# 'var' 사용 설정 (타입이 명확할 때 사용)
+csharp_style_var_when_type_is_apparent = true:suggestion
+
+# Using 정렬 (시스템 관련 네임스페이스를 먼저 배치)
+dotnet_separate_import_directive_groups = true
+dotnet_sort_system_directives_first = true
+
+#### C# 코드 스타일 ####
+# 중괄호 배치 (모든 곳에서 새 줄에 중괄호 시작)
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+
+# 불필요한 캐스트 제거
+dotnet_style_redundant_content_check = true:suggestion
+
+#### 명명 규칙 (Naming) ####
+# 프라이빗 필드는 _로 시작해야 함
+dotnet_naming_rule.private_members_with_underscore.symbols = private_fields
+dotnet_naming_rule.private_members_with_underscore.style = prefix_underscore
+dotnet_naming_rule.private_members_with_underscore.severity = suggestion
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.prefix_underscore.capitalization = camel_case
+dotnet_naming_style.prefix_underscore.required_prefix = _

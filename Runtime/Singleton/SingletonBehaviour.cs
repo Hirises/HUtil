@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace HUtil.Runtime.Singleton
 {
     public class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour

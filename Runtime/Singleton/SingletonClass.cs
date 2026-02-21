@@ -11,6 +11,7 @@ namespace HUtil.Runtime.Singleton
                 {
                     _instance = new T();
                 }
+                return _instance;
             }
         }
     }

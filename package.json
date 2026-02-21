@@ -16,6 +16,6 @@
     "tools"
   ],
   "dependencies": {
-    "com.unity.ide.cursor": "https://github.com/boxqkrtm/com.unity.ide.cursor.git"
+	  
   }
 }
