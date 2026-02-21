@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace HUtil.Runtime
+namespace HUtil.Runtime.Extension
 {
     /// <summary>
     /// Vector~류 확장 메서드
