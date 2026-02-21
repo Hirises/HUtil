@@ -12,6 +12,40 @@ namespace HUtil.Runtime.ObjectPool
     {
         private IObjectPool<T> _pool;
 
+        #region IPooledBehaviour Implementation
+        /// <summary>
+        /// 비제네릭 풀에서 호출되는 초기화 메서드
+        /// </summary>
+        void IPooledBehaviour.InitializeFromPool()
+        {
+            OnCreateFromPool();
+        }
+
+        /// <summary>
+        /// 이 오브젝트의 삭제 전 처리를 진행합니다
+        /// </summary>
+        void IPooledBehaviour.CleanupFromPool()
+        {
+            CleanupFromPool();
+        }
+
+        /// <summary>
+        /// 오브젝트가 풊에서 꺼내질 때 호출됩니다
+        /// </summary>
+        void IPooledBehaviour.OnGetFromPool()
+        {
+            OnGetFromPool();
+        }
+
+        /// <summary>
+        /// 오브젝트가 풀에 반환될 때 호출됩니다
+        /// </summary>
+        void IPooledBehaviour.OnReturnToPool()
+        {
+            OnReturnToPool();
+        }
+        #endregion
+
         /// <summary>
         /// 주어진 풀 정보를 이용해 해당 오브젝트를 초기화 처리를 진행합니다
         /// </summary>
@@ -19,14 +53,6 @@ namespace HUtil.Runtime.ObjectPool
         internal void InitializeFromPool(IObjectPool<T> pool)
         {
             _pool = pool;
-            OnCreateFromPool();
-        }
-
-        /// <summary>
-        /// 비제네릭 풀에서 호출되는 초기화 메서드
-        /// </summary>
-        void IPooledBehaviour.InitializeFromPool()
-        {
             OnCreateFromPool();
         }
 
@@ -40,25 +66,17 @@ namespace HUtil.Runtime.ObjectPool
         }
 
         /// <summary>
-        /// 이 오브젝트의 삭제 전 처리를 진행합니다
-        /// </summary>
-        void IPooledBehaviour.CleanupFromPool()
-        {
-            OnCleanupFromPool();
-            _pool = null;
-        }
-
-        /// <summary>
         /// 오브젝트가 풀에서 생성될 때 호출됩니다
         /// </summary>
-        protected virtual void OnCreateFromPool(){
+        protected virtual void OnCreateFromPool()
+        {
             gameObject.SetActive(false);
         }
 
         /// <summary>
         /// 오브젝트가 풀에서 꺼내질 때 호출됩니다
         /// </summary>
-        public virtual void OnGetFromPool()
+        internal virtual void OnGetFromPool()
         {
             gameObject.SetActive(true);
         }
@@ -66,7 +84,7 @@ namespace HUtil.Runtime.ObjectPool
         /// <summary>
         /// 오브젝트가 풀에 반환될 때 호출됩니다
         /// </summary>
-        public virtual void OnReturnToPool()
+        internal virtual void OnReturnToPool()
         {
             gameObject.SetActive(false);
         }
@@ -74,7 +92,7 @@ namespace HUtil.Runtime.ObjectPool
         /// <summary>
         /// 오브젝트가 풀에서 삭제될 때 호출됩니다
         /// </summary>
-        protected virtual void OnCleanupFromPool(){}
+        protected virtual void OnCleanupFromPool() { }
 
         /// <summary>
         /// 이 오브젝트를 풀에 반환합니다

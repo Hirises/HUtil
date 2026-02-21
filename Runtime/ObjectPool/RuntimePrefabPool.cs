@@ -9,7 +9,7 @@ namespace HUtil.Runtime.ObjectPool
     /// 런타임에 바인딩되는 프리팹을 이용해 오브젝트를 생성하는 오브젝트 풀링 구현체 (비제네릭)<br/>
     /// 인스펙터에서 직접 컴포넌트로 부착하여 사용할 수 있습니다
     /// </summary>
-    public class RuntimePrefabPool : MonoBehaviour
+    public class RuntimePrefabPool : MonoBehaviour, IObjectPool<IPooledBehaviour>
     {
         [SerializeField] protected GameObject _prefab;
         [SerializeField] protected Transform _parent;
@@ -179,7 +179,6 @@ namespace HUtil.Runtime.ObjectPool
                 throw new InvalidOperationException($"Prefab '{_prefab.name}' does not have component of type {typeof(T)}");
             }
             component.InitializeFromPool(this);
-            obj.SetActive(false);
             return component;
         }
 

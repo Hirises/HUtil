@@ -9,7 +9,7 @@ namespace HUtil.Runtime.ObjectPool
     /// 런타임에 바인딩되는 기존 오브젝트를 복사해 오브젝트를 생성하는 오브젝트 풀링 구현체 (비제네릭)<br/>
     /// 인스펙터에서 직접 컴포넌트로 부착하여 사용할 수 있습니다
     /// </summary>
-    public class RuntimePresetPool : MonoBehaviour
+    public class RuntimePresetPool : MonoBehaviour, IObjectPool<IPooledBehaviour>
     {
         [SerializeField] protected MonoBehaviour _preset;
         [SerializeField] protected Transform _parent;
@@ -82,7 +82,6 @@ namespace HUtil.Runtime.ObjectPool
                 throw new InvalidOperationException($"Preset '{_preset.name}' does not have a component implementing IPooledBehaviour");
             }
             component.InitializeFromPool();
-            obj.SetActive(false);
             return component;
         }
 
