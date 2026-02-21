@@ -3,27 +3,34 @@ using UnityEngine;
 namespace HUtil.Runtime.Singleton
 {
     /// <summary>
-    /// 런타임에 동적으로 생성되는 싱글톤 DontDestroyOnLoad 오브젝트
+    /// 런타임에 바인딩되는 싱글톤 오브젝트
     /// </summary>
     /// <typeparam name="T">싱글톤 클래스</typeparam>
     public class RuntimeSingletonBehaviour<T> : MonoBehaviour where T : RuntimeSingletonBehaviour<T>
     {
         private static T _instance;
         /// <summary>
-        /// 싱글톤 인스턴스<br>
-        /// 최초 get 시점에 씬에 자동으로 추가됩니다
+        /// 싱글톤 인스턴스
         /// </summary>
-        public static T Instance
+        public static T Instance => _instance;
+
+        protected virtual void Awake()
         {
-            get
+            if (_instance == null)
             {
-                if (_instance == null)
-                {
-                    GameObject obj = new GameObject(typeof(T).Name);
-                    _instance = obj.AddComponent<T>();
-                    DontDestroyOnLoad(obj);
-                }
-                return _instance;
+                _instance = this as T;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
             }
         }
     }
