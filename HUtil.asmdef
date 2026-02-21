@@ -1,6 +1,6 @@
 {
     "name": "HUtil",
-    "rootNamespace": "HUtil",
+    "rootNamespace": "",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

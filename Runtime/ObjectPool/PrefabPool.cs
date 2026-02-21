@@ -10,7 +10,7 @@ namespace HUtil.Runtime.ObjectPool
     /// <typeparam name="T">풀에 저장되는 오브젝트의 타입</typeparam>
     public class PrefabPool<T> : IObjectPool<T> where T : PooledBehaviour<T>
     {
-        private readonly GameObject _prefab;
+        private readonly T _prefab;
         private readonly Transform _parent;
         private readonly Queue<T> _pooledObjects;
         private readonly List<T> _spawnedObjects;
@@ -21,7 +21,7 @@ namespace HUtil.Runtime.ObjectPool
         /// <param name="prefab">오브젝트를 생성할 프리팹</param>
         /// <param name="parent">오브젝트를 생성할 부모 트랜스폼</param>
         /// <param name="initialCapacity">초기 생성할 오브젝트 수</param>
-        public PrefabPool(GameObject prefab, Transform parent, int initialCapacity = 0)
+        public PrefabPool(T prefab, Transform parent, int initialCapacity = 0)
         {
             _prefab = prefab;
             _parent = parent;
@@ -42,7 +42,7 @@ namespace HUtil.Runtime.ObjectPool
         /// <param name="initialCapacity">초기 생성할 오브젝트 수</param>
         public PrefabPool(T prefab, bool dontDestroyOnLoad = false, int initialCapacity = 0)
         {
-            _prefab = prefab.gameObject;
+            _prefab = prefab;
             _parent = new GameObject($"[ObjectPool] {prefab.name}").transform;
             if (dontDestroyOnLoad)
             {
@@ -75,7 +75,7 @@ namespace HUtil.Runtime.ObjectPool
 
         private T CreateNewObject()
         {
-            GameObject obj = GameObject.Instantiate(_prefab, _parent);
+            GameObject obj = GameObject.Instantiate(_prefab.gameObject, _parent);
             T component = obj.GetComponent<T>();
             component.InitializeFromPool(this);
             return component;
