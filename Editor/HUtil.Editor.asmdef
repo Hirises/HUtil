@@ -1,6 +1,6 @@
 {
     "name": "HUtil.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "HUtil",
     "references": [],
     "includePlatforms": [
         "Editor"
