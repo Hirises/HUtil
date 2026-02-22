@@ -6,7 +6,7 @@ namespace HUtil.Runtime.Singleton
     /// 코드 상에서 동적으로 생성되는 싱글톤 DontDestroyOnLoad 오브젝트
     /// </summary>
     /// <typeparam name="T">싱글톤 클래스</typeparam>
-    public class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<T>
+    public abstract class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<T>
     {
         private static T _instance;
         /// <summary>

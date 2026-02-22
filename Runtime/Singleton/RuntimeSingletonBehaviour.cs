@@ -6,7 +6,7 @@ namespace HUtil.Runtime.Singleton
     /// 런타임에 바인딩되는 싱글톤 오브젝트
     /// </summary>
     /// <typeparam name="T">싱글톤 클래스</typeparam>
-    public class RuntimeSingletonBehaviour<T> : MonoBehaviour where T : RuntimeSingletonBehaviour<T>
+    public abstract class RuntimeSingletonBehaviour<T> : MonoBehaviour where T : RuntimeSingletonBehaviour<T>
     {
         private static T _instance;
         /// <summary>

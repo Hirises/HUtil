@@ -4,7 +4,7 @@ namespace HUtil.Runtime.Singleton
     /// 런타임에 동적으로 생성되는 싱글톤 클래스
     /// </summary>
     /// <typeparam name="T">싱글톤 클래스</typeparam>
-    public class SingletonStaticClass<T> where T : SingletonStaticClass<T>, new()
+    public abstract class SingletonStaticClass<T> where T : SingletonStaticClass<T>, new()
     {
         private static T _instance;
         /// <summary>
