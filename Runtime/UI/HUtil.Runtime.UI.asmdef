@@ -1,3 +1,14 @@
 {
-	"name": "HUtil.Runtime.UI"
+    "name": "HUtil.Runtime.UI",
+    "rootNamespace": "HUtil",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -1,0 +1,86 @@
+using System;
+using System.Collections.Generic;
+
+namespace HUtil.Observable
+{
+    /// <summary>
+    /// 관측 가능한 프로퍼티 래퍼
+    /// </summary>
+    /// <typeparam name="T">대상 타입</typeparam>
+    [Serializable]
+    public class ObservableProperty<T>
+    {
+        private T _value;
+        private event Action<T> _onValueChanged;
+        public T Value {
+            get => _value;
+            set {
+                if(EqualityComparer<T>.Default.Equals(_value, value)){
+                    return;
+                }
+                _value = value;
+                _onValueChanged?.Invoke(_value); //오버헤드를 조금이라도 줄이기 위해서 Notify() 대신 직접 콜
+            }
+        }
+
+        public ObservableProperty(T initialValue = default){
+            _value = initialValue;
+        }
+
+        /// <summary>
+        /// 해당 프로퍼티의 변화를 관찰합니다
+        /// </summary>
+        /// <param name="onValueChanged">콜백 메소드 (값 변경 이후에 호출됨)</param>
+        /// <param name="notifyImmediately">즉시 1회 호출 여부</param>
+        /// <returns>구독 해제를 위한 IDisposable</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public IDisposable Subscribe(Action<T> onValueChanged, bool notifyImmediately = true){
+            if(onValueChanged == null){
+                throw new ArgumentNullException(nameof(onValueChanged), "구독자는 null일 수 없습니다!");
+            }
+
+            _onValueChanged += onValueChanged;
+            if(notifyImmediately){
+                onValueChanged(_value);
+            }
+            return new Subscription(() => _onValueChanged -= onValueChanged);
+        }
+        
+        /// <summary>
+        /// 해당 프로퍼티의 구독자들에게 강제로 메세지를 보냅니다다
+        /// </summary>
+        public void Notify()
+        {
+            _onValueChanged?.Invoke(_value);
+        }
+
+        /// <summary>
+        /// 변화를 알리지 않고 내부 값을 수정합니다
+        /// </summary>
+        /// <param name="value">수정할 값</param>
+        public void SetValueWithoutNotify(T value){
+            _value = value;
+        }
+
+        public static implicit operator T(ObservableProperty<T> property) => property.Value;
+
+        public override string ToString() => _value?.ToString();
+
+        //구독 취소를 제공하기 위한 IDisposable
+        private class Subscription : IDisposable
+        {
+            private Action _unsubscribeAction;
+
+            public Subscription(Action unsubscribeAction)
+            {
+                _unsubscribeAction = unsubscribeAction;
+            }
+
+            public void Dispose()
+            {
+                _unsubscribeAction?.Invoke();
+                _unsubscribeAction = null;
+            }
+        }
+    }
+}
