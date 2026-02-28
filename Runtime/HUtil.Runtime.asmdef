@@ -1,6 +1,6 @@
 {
     "name": "HUtil.Runtime",
-    "rootNamespace": "HUtil",
+    "rootNamespace": "HUtil.Runtime",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
