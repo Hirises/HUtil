@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace HUtil.Observable
+using UnityEngine;
+
+namespace HUtil.Runtime.Observable
 {
     /// <summary>
     /// 관측 가능한 프로퍼티 래퍼
@@ -10,12 +12,16 @@ namespace HUtil.Observable
     [Serializable]
     public class ObservableProperty<T>
     {
+        [SerializeField]
         private T _value;
         private event Action<T> _onValueChanged;
-        public T Value {
+        public T Value
+        {
             get => _value;
-            set {
-                if(EqualityComparer<T>.Default.Equals(_value, value)){
+            set
+            {
+                if (EqualityComparer<T>.Default.Equals(_value, value))
+                {
                     return;
                 }
                 _value = value;
@@ -23,7 +29,8 @@ namespace HUtil.Observable
             }
         }
 
-        public ObservableProperty(T initialValue = default){
+        public ObservableProperty(T initialValue = default)
+        {
             _value = initialValue;
         }
 
@@ -34,20 +41,23 @@ namespace HUtil.Observable
         /// <param name="notifyImmediately">즉시 1회 호출 여부</param>
         /// <returns>구독 해제를 위한 IDisposable</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public IDisposable Subscribe(Action<T> onValueChanged, bool notifyImmediately = true){
-            if(onValueChanged == null){
+        public IDisposable Subscribe(Action<T> onValueChanged, bool notifyImmediately = true)
+        {
+            if (onValueChanged == null)
+            {
                 throw new ArgumentNullException(nameof(onValueChanged), "구독자는 null일 수 없습니다!");
             }
 
             _onValueChanged += onValueChanged;
-            if(notifyImmediately){
+            if (notifyImmediately)
+            {
                 onValueChanged(_value);
             }
             return new Subscription(() => _onValueChanged -= onValueChanged);
         }
-        
+
         /// <summary>
-        /// 해당 프로퍼티의 구독자들에게 강제로 메세지를 보냅니다다
+        /// 해당 프로퍼티의 구독자들에게 강제로 메세지를 보냅니다
         /// </summary>
         public void Notify()
         {
@@ -58,7 +68,8 @@ namespace HUtil.Observable
         /// 변화를 알리지 않고 내부 값을 수정합니다
         /// </summary>
         /// <param name="value">수정할 값</param>
-        public void SetValueWithoutNotify(T value){
+        public void SetValueWithoutNotify(T value)
+        {
             _value = value;
         }
 

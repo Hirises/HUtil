@@ -1,8 +1,8 @@
 using UnityEngine;
 
-using HUtil.UI.Binder;
+using HUtil.Runtime.UI.Binder;
 
-namespace HUtil.UI
+namespace HUtil.Runtime.UI
 {
     /// <summary>
     /// 재사용 가능한 UI 오브젝트의 단위

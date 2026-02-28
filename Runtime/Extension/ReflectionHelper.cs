@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
-using HUtil.Observable;
+using HUtil.Runtime.Observable;
 using Unity.Properties;
 
-namespace HUtil.Extension
+namespace HUtil.Runtime.Extension
 {
     /// <summary>
     /// 리플렉션 관련 확장 메서드

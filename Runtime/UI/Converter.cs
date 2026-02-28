@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace HUtil.UI
+namespace HUtil.Runtime.UI
 {
     /// <summary>
     /// 프로퍼티를 추가/수정하는 컴포넌트
