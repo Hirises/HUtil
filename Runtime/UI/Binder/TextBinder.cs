@@ -6,20 +6,23 @@ using HUtil.Runtime.Observable;
 
 namespace HUtil.Runtime.UI.Binder
 {
+    /// <summary>
+    /// TMP_Text 바인딩 컴포넌트
+    /// </summary>
     public class TextBinder : MonoBinder
     {
         [SerializeField] private TMP_Text _target;
         [SerializeField] private string _propertyName;
 
-        private void Reset()
+        protected void Reset()
         {
             _target = GetComponent<TMP_Text>();
         }
 
-        public override void Bind(object viewModel)
+        protected override void BindInternal(object viewModel, CompositeDisposable disposable)
         {
             var prop = ReflectionHelper.GetObservableProperty<string>(viewModel, _propertyName);
-            prop.Subscribe(OnValueChanged).AddTo(_disposable);
+            prop.Subscribe(OnValueChanged).AddTo(disposable);
         }
 
         private void OnValueChanged(string value)

@@ -47,7 +47,25 @@ namespace HUtil.Runtime.Observable
         }
 
         /// <summary>
-        /// 이 <see cref="CompositeDisposable"/>를 해제합니다
+        /// 이 <see cref="CompositeDisposable"/>를 재사용 할 수 있게 해제합니다.
+        /// </summary>
+        public void Clear()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            foreach (var disposable in _disposables)
+            {
+                disposable?.Dispose();
+            }
+            _disposables.Clear();
+        }
+
+        /// <summary>
+        /// 이 <see cref="CompositeDisposable"/>를 완전히 해제합니다.
+        /// 이후 재사용 할 수 없습니다.
         /// </summary>
         public void Dispose()
         {
