@@ -1,22 +1,17 @@
-using UnityEngine;
-using System;
-using TMPro;
-using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
+using HUtil.Runtime.UI.Binder;
 
-namespace HUtil.Runtime.UI.Binder
-{
-    /// <summary>
-    /// TMP_Text 바인딩 컴포넌트
-    /// </summary>
-    public class TextBinder : MonoBinder
-    {
-        [SerializeField] private TMP_Text _target;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace HUtil.Runtime.UI {
+    public class InputFieldBinder : MonoBinder {
+        [SerializeField] private InputField _target;
         [SerializeField] private PropertyBindingInfo _text_prop;
 
         protected void Reset()
         {
-            _target = GetComponent<TMP_Text>();
+            _target = GetComponent<InputField>();
         }
 
         protected override void BindInternal(object viewModel, CompositeDisposable disposable)
