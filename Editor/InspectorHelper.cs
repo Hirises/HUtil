@@ -63,11 +63,11 @@ namespace HUtil.Editor
         /// <param name="rect">그릴 위치</param>
         /// <param name="property">선택된 값</param>
         /// <param name="options">옵션 리스트</param>
-        public static void DrawDropdownField(Rect rect, SerializedProperty property, DropdownOption[] options)
+        public static void DrawDropdownField(Rect rect, SerializedProperty property, DropdownOption[] options, string title = "Dropdown")
         {
             if(GUI.Button(rect, property.stringValue, EditorStyles.popup)){
                 var state = new AdvancedDropdownState();
-                var dropdown = new SearchableDropdown(state, options, property);
+                var dropdown = new SearchableDropdown(state, options, property, title);
                 dropdown.Show(rect);
             }
         }
@@ -77,6 +77,12 @@ namespace HUtil.Editor
     {
         public string Name;
         public string Value;
+
+        public DropdownOption(string name)
+        {
+            Name = name;
+            Value = name;
+        }
 
         public DropdownOption(string name, string value)
         {
@@ -89,16 +95,17 @@ namespace HUtil.Editor
     {
         private DropdownOption[] _options;
         private SerializedProperty _property;
-
-        public SearchableDropdown(AdvancedDropdownState state, DropdownOption[] options, SerializedProperty property) : base(state)
+        private string _title;
+        public SearchableDropdown(AdvancedDropdownState state, DropdownOption[] options, SerializedProperty property, string title = "Dropdown") : base(state)
         {
             _options = options;
             _property = property;
+            _title = title;
         }
 
         protected override AdvancedDropdownItem BuildRoot()
         {
-            var root = new AdvancedDropdownItem("Dropdown");
+            var root = new AdvancedDropdownItem(_title);
             foreach(var option in _options){
                 var item = new DropdownOptionItem(option);
                 root.AddChild(item);
