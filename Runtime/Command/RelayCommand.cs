@@ -2,14 +2,18 @@ using System;
 
 using HUtil.Runtime.Observable;
 
+using Unity.Properties;
+
 namespace HUtil.Runtime.Command
 {
     /// <summary>
     /// 명령을 실행하는 클래스
     /// </summary>
+    [GeneratePropertyBag]
     public class RelayCommand : VoidCommandBase
     {
         private Action _execute;
+        [CreateProperty]
         private ObservableProperty<bool> _canExecute;
 
         /// <summary>
@@ -39,9 +43,11 @@ namespace HUtil.Runtime.Command
     /// 명령을 실행하는 클래스
     /// </summary>
     /// <typeparam name="T">명령을 실행할 매개변수의 타입</typeparam>
+    [GeneratePropertyBag]
     public class RelayCommand<T> : GenericCommandBase<T>
     {
         private Action<T> _execute;
+        [CreateProperty]
         private ObservableProperty<bool> _canExecute;
 
         /// <summary>

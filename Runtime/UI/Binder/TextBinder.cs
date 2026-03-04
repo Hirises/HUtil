@@ -14,8 +14,9 @@ namespace HUtil.Runtime.UI.Binder
         [SerializeField] private TMP_Text _target;
         [SerializeField] private PropertyBindingInfo _text_prop = new PropertyBindingInfo(SyncronizeDirectionFlags.ToUI);
 
-        protected void Reset()
+        protected override void Reset()
         {
+            base.Reset();
             _target = GetComponent<TMP_Text>();
         }
 

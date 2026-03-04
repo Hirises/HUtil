@@ -4,15 +4,20 @@ using System.Threading.Tasks;
 
 using HUtil.Runtime.Observable;
 
+using Unity.Properties;
+
 namespace HUtil.Runtime.Command
 {
     /// <summary>
     /// 취소 가능한 비동기 명령을 실행하는 클래스
     /// </summary>
+    [GeneratePropertyBag]
     public class CancelableCommand : VoidCommandBase
     {
         private Func<CancellationToken, Task> _execute;
+        [CreateProperty]
         private ObservableProperty<bool> _canExecute;
+        [CreateProperty]
         private ObservableProperty<bool> _isExecuting;
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -93,11 +98,14 @@ namespace HUtil.Runtime.Command
     /// <summary>
     /// 취소 가능한 비동기 명령을 실행하는 클래스
     /// </summary>
-    /// <typeparam name="T">명령을 실행할 매개변수의 타입</typeparam>
+    /// <typeparam name="T">명령을 실행할 매개변수의 타입</typeparam>   
+    [GeneratePropertyBag]
     public class CancelableCommand<T> : GenericCommandBase<T>
     {
         private Func<T, CancellationToken, Task> _execute;
+        [CreateProperty]
         private ObservableProperty<bool> _canExecute;
+        [CreateProperty]
         private ObservableProperty<bool> _isExecuting;
         private CancellationTokenSource _cancellationTokenSource;
 

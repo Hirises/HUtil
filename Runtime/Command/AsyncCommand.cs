@@ -3,16 +3,21 @@ using System.Threading.Tasks;
 
 using HUtil.Runtime.Observable;
 
+using Unity.Properties;
+
 namespace HUtil.Runtime.Command
 {
     /// <summary>
     /// 비동기 명령을 실행하는 클래스
     /// </summary>
+    [GeneratePropertyBag]
     public class AsyncRelayCommand : VoidCommandBase
     {
         private Func<Task> _execute;
+        [CreateProperty]
         private ObservableProperty<bool> _canExecute;
         private bool _allowMultipleExecution;
+        [CreateProperty]
         private ObservableProperty<bool> _isExecuting;
 
         /// <summary>
@@ -72,11 +77,14 @@ namespace HUtil.Runtime.Command
     /// 비동기 명령을 실행하는 클래스
     /// </summary>
     /// <typeparam name="T">명령을 실행할 매개변수의 타입</typeparam>
+    [GeneratePropertyBag]
     public class AsyncRelayCommand<T> : GenericCommandBase<T>
     {
         private Func<T, Task> _execute;
+        [CreateProperty]
         private ObservableProperty<bool> _canExecute;
         private bool _allowMultipleExecution;
+        [CreateProperty]
         private ObservableProperty<bool> _isExecuting;
 
         /// <summary>

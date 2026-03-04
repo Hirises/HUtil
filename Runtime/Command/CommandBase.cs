@@ -2,6 +2,8 @@ using System;
 
 using HUtil.Runtime.Observable;
 
+using Unity.Properties;
+
 namespace HUtil.Runtime.Command
 {
     /// <summary>

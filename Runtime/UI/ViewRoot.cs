@@ -15,34 +15,30 @@ namespace HUtil.Runtime.UI
     {
         [SerializeField, ReadOnly] private List<MonoBinder> _binders = new List<MonoBinder>();
 
-        private void Reset()
+        protected override void Reset()
         {
-            FindBinders(_binders);
+            UpdateBinderList();
+            base.Reset();   //ViewRoot의 경우 본인의 바인더 리스트 업데이트 후 부모 클래스의 Reset을 호출해야 함.
         }
 
         //하위의 모든 MonoBinder를 찾아서 리스트에 추가합니다
-        private void FindBinders(List<MonoBinder> binders)
+        internal void UpdateBinderList()
         {
-            if (binders == null)
-            {
-                throw new ArgumentNullException(nameof(binders));
-            }
-
-            binders.Clear();
+            _binders.Clear();
             for (int i = 0; i < transform.childCount; i++)
             {
                 var child = transform.GetChild(i);
-                FindBindersRecursive(child, binders);
+                FindBindersRecursive(child);
             }
         }
 
-        private void FindBindersRecursive(Transform parent, List<MonoBinder> binders)
+        private void FindBindersRecursive(Transform parent)
         {
             if (parent == null) return;
 
             if (parent.gameObject.TryGetComponent<MonoBinder>(out var binder))
             {
-                binders.Add(binder);
+                _binders.Add(binder);
                 if (binder is ViewRoot)
                 {
                     return; //ViewRoot 하위 노드는 탐색에서 제외
@@ -52,7 +48,7 @@ namespace HUtil.Runtime.UI
             for (int i = 0; i < parent.childCount; i++)
             {
                 var child = parent.GetChild(i);
-                FindBindersRecursive(child, binders);
+                FindBindersRecursive(child);
             }
         }
 

@@ -16,6 +16,24 @@ namespace HUtil.Runtime.UI.Binder
         /// </summary>
         private readonly CompositeDisposable _disposable = new CompositeDisposable();
 
+        protected virtual void Reset()
+        {
+            var viewRoot = FindViewRoot();
+            if (viewRoot != null){
+                viewRoot.UpdateBinderList();    //바인더 리스트를 업데이트 할 책임은 ViewRoot가 가짐. MonoBinder는 단순히 '업데이트 해줘!'하고 요청만 한다.
+            }
+        }
+
+        /// <summary>
+        /// 이 바인더가 속한 ViewRoot를 찾습니다
+        /// </summary>
+        /// <returns>찾은 ViewRoot, 없으면 null</returns>
+        public ViewRoot FindViewRoot()
+        {
+            if(transform.parent == null) return null;
+            return transform.parent.GetComponentInParent<ViewRoot>();
+        }
+
         /// <summary>
         /// 뷰모델을 바인딩합니다
         /// </summary>

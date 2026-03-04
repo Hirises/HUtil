@@ -15,8 +15,9 @@ namespace HUtil.Runtime.UI.Binder
         [SerializeField] private Button _target;
         [SerializeField] private CommandBindingInfo _onClick_cmd = new CommandBindingInfo(SyncronizeDirectionFlags.ToData);
 
-        protected void Reset()
+        protected override void Reset()
         {
+            base.Reset();
             _target = GetComponent<Button>();
         }
 
