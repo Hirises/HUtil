@@ -10,7 +10,7 @@ namespace HUtil.Runtime.Observable
     /// </summary>
     /// <typeparam name="T">대상 타입</typeparam>
     [Serializable]
-    public class ObservableProperty<T>
+    public class ObservableProperty<T> : IReadOnlyObservableProperty<T>
     {
         [SerializeField]
         private T _value;
@@ -28,6 +28,7 @@ namespace HUtil.Runtime.Observable
                 _onValueChanged?.Invoke(_value); //오버헤드를 조금이라도 줄이기 위해서 Notify() 대신 직접 콜
             }
         }
+        public IReadOnlyObservableProperty<T> AsReadOnly() => this;
 
         public ObservableProperty(T initialValue = default)
         {
@@ -93,5 +94,5 @@ namespace HUtil.Runtime.Observable
                 _unsubscribeAction = null;
             }
         }
-    }
+    }   
 }

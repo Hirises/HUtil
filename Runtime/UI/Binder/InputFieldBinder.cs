@@ -1,8 +1,6 @@
 using HUtil.Runtime.Observable;
 using HUtil.Runtime.UI.Binder;
 
-using NaughtyAttributes;
-
 using TMPro;
 
 using UnityEngine;
