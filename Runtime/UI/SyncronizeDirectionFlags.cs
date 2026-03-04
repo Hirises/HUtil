@@ -11,11 +11,11 @@ namespace HUtil.Runtime.UI
         /// <summary>
         /// View로 동기화하는 방향
         /// </summary>
-        ToTarget = 0x1,
+        ToUI = 0x1,
         /// <summary>
         /// ViewModel로 역동기화하는 방향
         /// </summary>
-        ToSource = 0x2,
+        ToData = 0x2,
         /// <summary>
         /// 양방향 전부 가능
         /// </summary>

@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using HUtil.Runtime.Observable;
 using Unity.Properties;
+using HUtil.Runtime.Command;
 
 namespace HUtil.Runtime.Extension
 {
@@ -36,6 +37,34 @@ namespace HUtil.Runtime.Extension
             else
             {
                 throw new ArgumentException($"Property {propertyName} not found on object {obj.GetType().Name}");
+            }
+        }
+
+        /// <summary>
+        /// 주어진 객체 내부의 <see cref="CommandBase"/>를 가져옵니다.
+        /// </summary>
+        /// <param name="obj">객체</param>
+        /// <param name="commandName">명령 이름</param>
+        /// <returns><see cref="CommandBase"/></returns>
+        public static CommandBase GetCommand(object obj, string commandName)
+        {
+            if (string.IsNullOrEmpty(commandName))
+            {
+                throw new ArgumentNullException(nameof(commandName), "CommandName is null or empty");
+            }
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj), "Object is null");
+            }
+
+            object _obj = obj;
+            if (PropertyContainer.TryGetValue(ref _obj, commandName, out CommandBase value))
+            {
+                return value;
+            }
+            else
+            {
+                throw new ArgumentException($"Command {commandName} not found on object {obj.GetType().Name}");
             }
         }
     }

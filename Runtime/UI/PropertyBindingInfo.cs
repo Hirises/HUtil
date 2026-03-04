@@ -97,21 +97,21 @@ namespace HUtil.Runtime.UI
             }
             switch (Direction)
             {
-                case SyncronizeDirection.OneShotToTarget:
+                case SyncronizeDirection.OnceToUI:
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
                     setter(observable.Value);
                     break;
                 }
-                case SyncronizeDirection.OneWayToTarget:
+                case SyncronizeDirection.ToUI:
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
                     observable.Subscribe(setter).AddTo(disposable);
                     break;
                 }
-                case SyncronizeDirection.OneWayToSource:
+                case SyncronizeDirection.ToData:
                 {
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));
 

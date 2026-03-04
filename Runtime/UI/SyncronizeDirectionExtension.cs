@@ -17,11 +17,11 @@ namespace HUtil.Runtime.UI
             switch(direction){
                 case SyncronizeDirection.None:
                     return true;
-                case SyncronizeDirection.OneShotToTarget:
-                case SyncronizeDirection.OneWayToTarget:
-                    return flags.HasFlag(SyncronizeDirectionFlags.ToTarget);
-                case SyncronizeDirection.OneWayToSource:
-                    return flags.HasFlag(SyncronizeDirectionFlags.ToSource);
+                case SyncronizeDirection.OnceToUI:
+                case SyncronizeDirection.ToUI:
+                    return flags.HasFlag(SyncronizeDirectionFlags.ToUI);
+                case SyncronizeDirection.ToData:
+                    return flags.HasFlag(SyncronizeDirectionFlags.ToData);
                 case SyncronizeDirection.TwoWay:
                     return flags.HasFlag(SyncronizeDirectionFlags.Both);
             }

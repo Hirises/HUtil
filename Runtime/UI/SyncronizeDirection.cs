@@ -15,15 +15,15 @@ namespace HUtil.Runtime.UI
         /// <summary>
         /// 대상 UI에 1회만 동기화
         /// </summary>
-        OneShotToTarget,
+        OnceToUI,
         /// <summary>
         /// 대상 UI로만 동기화
         /// </summary>
-        OneWayToTarget,
+        ToUI,
         /// <summary>
         /// 대상 ViewModel로만 동기화
         /// </summary>
-        OneWayToSource,
+        ToData,
         /// <summary>
         /// 양방향 동기화
         /// </summary>
