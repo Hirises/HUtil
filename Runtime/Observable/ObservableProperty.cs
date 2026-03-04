@@ -28,6 +28,11 @@ namespace HUtil.Runtime.Observable
                 _onValueChanged?.Invoke(_value); //오버헤드를 조금이라도 줄이기 위해서 Notify() 대신 직접 콜
             }
         }
+
+        /// <summary>
+        /// 이 객체를 읽기 전용으로 반환합니다
+        /// </summary>
+        /// <returns>읽기 전용 관찰 가능 속성</returns>
         public IReadOnlyObservableProperty<T> AsReadOnly() => this;
 
         public ObservableProperty(T initialValue = default)
