@@ -13,6 +13,7 @@ namespace HUtil.Runtime.UI
     /// </summary>
     public class ViewRoot : MonoBinder
     {
+        [SerializeField] private string _viewModelType;
         [SerializeField, ReadOnly] private List<MonoBinder> _binders = new List<MonoBinder>();
 
         protected override void Reset()

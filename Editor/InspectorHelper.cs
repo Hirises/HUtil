@@ -1,0 +1,103 @@
+using System;
+using System.Collections;
+using System.Linq;
+using System.Reflection;
+
+using UnityEditor;
+using UnityEditor.IMGUI.Controls;
+
+using UnityEngine;
+
+namespace HUtil.Editor
+{
+    public static class InspectorHelper
+    {
+        
+        public static object GetActualObject(SerializedProperty property)
+        {
+            // 1. 최상위 부모 오브젝트 (MonoBehaviour 등) 가져오기
+            object obj = property.serializedObject.targetObject;
+            
+            // 2. propertyPath (예: "bindingList.Array.data[0]._info")를 따라가며 실제 인스턴스 탐색
+            string[] path = property.propertyPath.Replace(".Array.data[", "[").Split('.');
+            
+            foreach (var name in path)
+            {
+                if (name.Contains("["))
+                {
+                    // 리스트나 배열 처리
+                    var fieldName = name.Substring(0, name.IndexOf("["));
+                    var index = int.Parse(name.Substring(name.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                    
+                    var field = obj.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    obj = field.GetValue(obj);
+                    
+                    if (obj is IList list) obj = list[index];
+                }
+                else
+                {
+                    var field = obj.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (field == null) return null;
+                    obj = field.GetValue(obj);
+                }
+            }
+            return obj;
+        }
+
+        public static void DrawEnumField(Rect rect, SerializedProperty property)
+        {
+            property.enumValueIndex = EditorGUI.Popup(rect, property.enumValueIndex, property.enumDisplayNames);
+        }
+
+        public static void DrawFilteredEnumField<T>(Rect rect, SerializedProperty property, Func<T, bool> filter) where T : Enum
+        {
+            T[] values = Enum.GetValues(typeof(T)).Cast<T>().Where(filter).ToArray();
+            string[] displayNames = values.Select(value => value.ToString()).ToArray();
+            int index = Math.Clamp(property.enumValueIndex, 0, displayNames.Length - 1);
+            property.enumValueIndex = EditorGUI.Popup(rect, index, displayNames);
+        }
+
+        /// <summary>
+        /// 드롭다운 필드를 그립니다; string값을 사용합니다.
+        /// </summary>
+        /// <param name="rect">그릴 위치</param>
+        /// <param name="property">선택된 값</param>
+        /// <param name="options">옵션 리스트</param>
+        public static void DrawDropdownField(Rect rect, SerializedProperty property, string[] options)
+        {
+            if(GUI.Button(rect, property.stringValue, EditorStyles.popup)){
+                var state = new AdvancedDropdownState();
+                var dropdown = new SearchableDropdown(state, options, property);
+                dropdown.Show(rect);
+            }
+        }
+    }
+
+    public class SearchableDropdown : AdvancedDropdown
+    {
+        private string[] _options;
+        private SerializedProperty _property;
+
+        public SearchableDropdown(AdvancedDropdownState state, string[] options, SerializedProperty property) : base(state)
+        {
+            _options = options;
+            _property = property;
+        }
+
+        protected override AdvancedDropdownItem BuildRoot()
+        {
+            var root = new AdvancedDropdownItem("SearchableDropdown");
+            foreach(var option in _options){
+                var item = new AdvancedDropdownItem(option);
+                root.AddChild(item);
+            }
+            return root;
+        }
+
+        protected override void ItemSelected(AdvancedDropdownItem item)
+        {
+            _property.stringValue = item.name;
+            _property.serializedObject.ApplyModifiedProperties();
+        }
+    }
+}

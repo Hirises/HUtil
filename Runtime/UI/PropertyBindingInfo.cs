@@ -14,18 +14,26 @@ namespace HUtil.Runtime.UI
     [Serializable]
     public class PropertyBindingInfo
     {
+
+        [SerializeField]
+        private string _path;
+        [SerializeField]
+        private SyncronizeDirection _direction;
+
+        private SyncronizeDirectionFlags _allowDirection;
+
         /// <summary>
         /// 바인딩할 프로퍼티의 이름입니다
         /// </summary>
-        [field: SerializeField]
-        public string Path { get; private set; }
+        public string Path => _path;
         /// <summary>
         /// 바인딩할 방향입니다
         /// </summary>
-        [field: SerializeField]
-        public SyncronizeDirection Direction { get; private set; }
-
-        private SyncronizeDirectionFlags _allowDirection;
+        public SyncronizeDirection Direction => _direction;
+        /// <summary>
+        /// 허용가능한 바인딩 방향입니다
+        /// </summary>
+        public SyncronizeDirectionFlags AllowDirection => _allowDirection;
 
         /// <summary>
         /// 이 필드의 유효성을 검증합니다
