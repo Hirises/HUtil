@@ -1,0 +1,33 @@
+using UnityEngine;
+using System;
+using TMPro;
+using HUtil.Runtime.Extension;
+using HUtil.Runtime.Observable;
+using UnityEngine.UI;
+
+namespace HUtil.Runtime.UI.Binder
+{
+    /// <summary>
+    /// Button 바인딩 컴포넌트
+    /// </summary>
+    public class ButtonBinder : MonoBinder
+    {
+        [SerializeField] private Button _target;
+        [SerializeField] private CommandBindingInfo _onClick_cmd = new CommandBindingInfo(SyncronizeDirectionFlags.ToData);
+
+        protected void Reset()
+        {
+            _target = GetComponent<Button>();
+        }
+
+        protected void OnValidate()
+        {
+            _onClick_cmd.Validate();
+        }
+
+        protected override void BindInternal(object viewModel, CompositeDisposable disposable)
+        {
+            _onClick_cmd.Bind(viewModel, disposable, _target.onClick);
+        }
+    }
+}
