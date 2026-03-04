@@ -1,22 +1,24 @@
 using HUtil.Runtime.Observable;
 using HUtil.Runtime.UI.Binder;
 
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace HUtil.Runtime.UI {
     public class InputFieldBinder : MonoBinder {
-        [SerializeField] private InputField _target;
-        [SerializeField] private PropertyBindingInfo _text_prop;
+        [SerializeField] private TMP_InputField _target;
+        [SerializeField] private PropertyBindingInfo _text_prop = new PropertyBindingInfo(SyncronizeDirectionFlags.Both);
 
         protected void Reset()
         {
-            _target = GetComponent<InputField>();
+            _target = GetComponent<TMP_InputField>();
         }
 
         protected override void BindInternal(object viewModel, CompositeDisposable disposable)
         {
-            _text_prop.Bind<string>(viewModel, disposable, SetText);
+            _text_prop.Bind<string>(viewModel, disposable, SetText, _target.onValueChanged);
         }
 
         private void SetText(string value)
