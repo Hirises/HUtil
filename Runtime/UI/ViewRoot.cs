@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using Unity.Collections;
 using System;
 using HUtil.Runtime.Observable;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("HUtil.Editor")]
 namespace HUtil.Runtime.UI
 {
     /// <summary>
@@ -15,6 +17,8 @@ namespace HUtil.Runtime.UI
     {
         [SerializeField] private string _viewModelType;
         [SerializeField, ReadOnly] private List<MonoBinder> _binders = new List<MonoBinder>();
+
+        internal string ViewModelType => _viewModelType;
 
         protected override void Reset()
         {

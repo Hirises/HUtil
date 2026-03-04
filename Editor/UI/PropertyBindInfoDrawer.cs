@@ -6,6 +6,9 @@ using HUtil.Editor;
 
 using UnityEditor;
 using UnityEngine;
+using HUtil.Runtime.UI.Binder;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace HUtil.Editor.UI
 {
@@ -20,6 +23,14 @@ namespace HUtil.Editor.UI
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var instance = InspectorHelper.GetActualObject(property) as PropertyBindingInfo;
+            var binder = property.serializedObject.targetObject as MonoBinder;
+            if(binder == null){
+                base.OnGUI(position, property, label);
+                return;
+            }
+            var viewRoot = binder.FindViewRoot();
+            var viewModelType = ReflectionHelper.GetAllViewModelTypes().FirstOrDefault(t => t.FullName == viewRoot.ViewModelType);
+
             var direction = property.FindPropertyRelative("_direction");
             var path = property.FindPropertyRelative("_path");
 
@@ -38,9 +49,10 @@ namespace HUtil.Editor.UI
             // # Path
             // Direction이 None이면 Path는 숨김
             if(direction.enumValueIndex != (int)SyncronizeDirection.None){
-                string[] options = new string[] { "None", "Property", "Command" };
-                InspectorHelper.DrawDropdownField(contentRect.SliceRightRatio(0.5f), path, options);
+                string[] options = ReflectionHelper.GetAllAssignablePropertyNames(viewModelType).ToArray();
+                InspectorHelper.DrawDropdownField(contentRect.SliceRightRatio(0.5f), path, options.Select(o => new DropdownOption(o, o)).ToArray());
             }
         }
     }
+    
 }

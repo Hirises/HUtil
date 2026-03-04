@@ -63,7 +63,7 @@ namespace HUtil.Editor
         /// <param name="rect">그릴 위치</param>
         /// <param name="property">선택된 값</param>
         /// <param name="options">옵션 리스트</param>
-        public static void DrawDropdownField(Rect rect, SerializedProperty property, string[] options)
+        public static void DrawDropdownField(Rect rect, SerializedProperty property, DropdownOption[] options)
         {
             if(GUI.Button(rect, property.stringValue, EditorStyles.popup)){
                 var state = new AdvancedDropdownState();
@@ -73,12 +73,24 @@ namespace HUtil.Editor
         }
     }
 
+    public struct DropdownOption
+    {
+        public string Name;
+        public string Value;
+
+        public DropdownOption(string name, string value)
+        {
+            Name = name;
+            Value = value;
+        }
+    }
+
     public class SearchableDropdown : AdvancedDropdown
     {
-        private string[] _options;
+        private DropdownOption[] _options;
         private SerializedProperty _property;
 
-        public SearchableDropdown(AdvancedDropdownState state, string[] options, SerializedProperty property) : base(state)
+        public SearchableDropdown(AdvancedDropdownState state, DropdownOption[] options, SerializedProperty property) : base(state)
         {
             _options = options;
             _property = property;
@@ -86,9 +98,9 @@ namespace HUtil.Editor
 
         protected override AdvancedDropdownItem BuildRoot()
         {
-            var root = new AdvancedDropdownItem("SearchableDropdown");
+            var root = new AdvancedDropdownItem("Dropdown");
             foreach(var option in _options){
-                var item = new AdvancedDropdownItem(option);
+                var item = new DropdownOptionItem(option);
                 root.AddChild(item);
             }
             return root;
@@ -96,8 +108,18 @@ namespace HUtil.Editor
 
         protected override void ItemSelected(AdvancedDropdownItem item)
         {
-            _property.stringValue = item.name;
+            DropdownOptionItem dropdownOptionItem = item as DropdownOptionItem;
+            _property.stringValue = dropdownOptionItem.Option.Value;
             _property.serializedObject.ApplyModifiedProperties();
+        }
+    }
+
+    public class DropdownOptionItem : AdvancedDropdownItem
+    {
+        public DropdownOption Option;
+        public DropdownOptionItem(DropdownOption option) : base(option.Name)
+        {
+            Option = option;
         }
     }
 }
