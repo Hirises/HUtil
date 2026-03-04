@@ -25,15 +25,15 @@ namespace HUtil.Editor.UI
             var options = ReflectionHelper.GetAllViewModelTypes().Select(t => new DropdownOption(t.FullName)).ToArray();
             InspectorHelper.DrawDropdownField(fieldRect, viewModelType, options, "ViewModel");
 
+            // # Update Binder List
+            if(GUI.Button(EditorGUILayout.GetControlRect(), "Update Binder List")){
+                viewRoot.UpdateBinderList();
+            }
+
             // # Binders
             for(int i = 0; i < binders.arraySize; i++){
                 var binder = binders.GetArrayElementAtIndex(i);
                 EditorGUI.PropertyField(EditorGUILayout.GetControlRect(), binder, new GUIContent($"Binder {i}"));
-            }
-
-            // # Update Binder List
-            if(GUI.Button(EditorGUILayout.GetControlRect(), "Update Binder List")){
-                viewRoot.UpdateBinderList();
             }
         }
     }

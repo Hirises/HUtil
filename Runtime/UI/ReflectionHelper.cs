@@ -76,7 +76,7 @@ namespace HUtil.Runtime.Extension
         /// <summary>
         /// 모든 <see cref="IViewModel"/> 타입 구현체를 가져옵니다.
         /// </summary>
-        /// <returns><see cref="IViewModel"/> 타입 구현체 리스트</returns>
+        /// <returns><see cref="IViewModel"/> 타입 리스트</returns>
         public static List<Type> GetAllViewModelTypes()
         {
             // 1. TypeCache를 통해 IViewModel을 상속/구현한 모든 타입을 즉시 가져옵니다.
