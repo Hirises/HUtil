@@ -1,6 +1,8 @@
 using HUtil.Runtime.Observable;
 using HUtil.Runtime.UI.Binder;
 
+using NaughtyAttributes;
+
 using TMPro;
 
 using UnityEngine;
@@ -14,6 +16,11 @@ namespace HUtil.Runtime.UI {
         protected void Reset()
         {
             _target = GetComponent<TMP_InputField>();
+        }
+
+        protected void OnValidate()
+        {
+            _text_prop.Validate();
         }
 
         protected override void BindInternal(object viewModel, CompositeDisposable disposable)

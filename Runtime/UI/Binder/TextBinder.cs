@@ -19,6 +19,11 @@ namespace HUtil.Runtime.UI.Binder
             _target = GetComponent<TMP_Text>();
         }
 
+        protected void OnValidate()
+        {
+            _text_prop.Validate();
+        }
+
         protected override void BindInternal(object viewModel, CompositeDisposable disposable)
         {
             _text_prop.Bind<string>(viewModel, disposable, SetText);

@@ -27,6 +27,26 @@ namespace HUtil.Runtime.UI
 
         private SyncronizeDirectionFlags _allowDirection;
 
+        /// <summary>
+        /// 이 필드의 유효성을 검증합니다
+        /// </summary>
+        /// <returns>유효성 검증 결과. true일 경우 유효함</returns>
+        public bool Validate(){
+            if(!_allowDirection.IsAllowed(Direction)){
+                Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
+                return false;
+            }
+            if(Direction != SyncronizeDirection.None && string.IsNullOrEmpty(Path)){
+                Debug.LogWarning($"[UIBinder] Path is empty for this property setting!");
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 인스펙터용 바인딩 속성을 생성합니다
+        /// </summary>
+        /// <param name="allowDirection">허용가능한 바인딩 방향</param>
         public PropertyBindingInfo(SyncronizeDirectionFlags allowDirection){
             _allowDirection = allowDirection;
         }
@@ -66,7 +86,7 @@ namespace HUtil.Runtime.UI
         public void Bind<T>(object viewModel, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
         {
             if(!_allowDirection.IsAllowed(Direction)){
-                Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed for this property setting! {_allowDirection}");
+                Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }
             var observable = ReflectionHelper.GetObservableProperty<T>(viewModel, Path);
