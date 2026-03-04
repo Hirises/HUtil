@@ -63,6 +63,29 @@ namespace HUtil.Runtime.Observable
         }
 
         /// <summary>
+        /// 다른 관찰 가능 속성의 값을 이 속성에 반영합니다 (단방향 동기화)
+        /// </summary>
+        /// <param name="other">연결할 관찰 가능 속성</param>
+        /// <returns>구독을 취소할 수 있는 <see cref="IDisposable"/></returns>
+        public IDisposable Follow(IReadOnlyObservableProperty<T> other)
+        {
+            Value = other.Value;
+            return new Subscription(() => other.Subscribe((v) => Value = v));
+        }
+
+        /// <summary>
+        /// 다른 관찰 가능 속성과 이 속성을 동기화합니다 (양방향 동기화)
+        /// </summary>
+        /// <param name="other">동기화할 관찰 가능 속성</param>
+        /// <returns>구독을 취소할 수 있는 <see cref="IDisposable"/></returns>
+        public IDisposable Synchronize(ObservableProperty<T> other){
+            var disposable = new CompositeDisposable();
+            disposable.Add(this.Follow(other));
+            disposable.Add(other.Follow(this));
+            return disposable;
+        }
+
+        /// <summary>
         /// 해당 프로퍼티의 구독자들에게 강제로 메세지를 보냅니다
         /// </summary>
         public void Notify()
