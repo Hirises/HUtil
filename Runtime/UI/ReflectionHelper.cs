@@ -98,13 +98,13 @@ namespace HUtil.Runtime.Extension
         /// <param name="receivingType">받을 수 있는 타입</param>
         /// <param name="direction">동기화 하려는 방향</param>
         /// <returns>프로퍼티 이름 리스트</returns>
-        public static List<string> GetAllAssignablePropertyNames(Type viewModelType, BindingType receivingType, SyncronizeDirection direction)
+        public static List<string> GetAllAssignablePropertyNames(Type viewModelType, BindingType receivingType, BindingMode direction)
         {
             var propertyNames = new List<string>();
 
             var fields = viewModelType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             BindingType fieldType = BindingType.None;
-            SyncronizeDirectionFlags allowedDirections = SyncronizeDirectionFlags.None;
+            BindDirectionFlags allowedDirections = BindDirectionFlags.None;
             foreach(var field in fields){
 
                 //필드는 ObservableProperty<T>, ObservableTrigger, 또는 CommandBase를 상속하는 타입이어야 합니다.
@@ -114,7 +114,7 @@ namespace HUtil.Runtime.Extension
                     allowedDirections = field.GetCustomAttribute<ViewModelValueAttribute>().SyncronizeDirection;
                 }else if(field.FieldType.IsAssignableFrom(typeof(CommandBase))){
                     fieldType = BindingType.Command;
-                    allowedDirections = SyncronizeDirectionFlags.ToData;    //Command는 데이터로만 동기화 가능
+                    allowedDirections = BindDirectionFlags.ToData;    //Command는 데이터로만 동기화 가능
                 }else if(field.FieldType.IsAssignableFrom(typeof(ObservableTrigger))){
                     fieldType = BindingType.Trigger;
                     allowedDirections = field.GetCustomAttribute<ViewModelValueAttribute>().SyncronizeDirection;

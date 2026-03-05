@@ -35,7 +35,7 @@ namespace HUtil.Editor.UI
             var viewModelType = ReflectionHelper.GetAllViewModelTypes().FirstOrDefault(t => t.FullName == viewRoot.ViewModelType);
 
             var directionProp = property.FindPropertyRelative("_direction");
-            var direction = (SyncronizeDirection)directionProp.enumValueIndex;
+            var direction = (BindingMode)directionProp.enumValueIndex;
             var pathProp = property.FindPropertyRelative("_path");
 
             (var labelRect, var contentRect) = position.SliceVertical(EditorGUIUtility.labelWidth);
@@ -45,14 +45,14 @@ namespace HUtil.Editor.UI
 
             // # Direction
             var directionRect = contentRect;
-            if(directionProp.enumValueIndex != (int)SyncronizeDirection.None){
+            if(directionProp.enumValueIndex != (int)BindingMode.None){
                 directionRect = directionRect.SliceLeftRatio(0.5f);
             }
-            InspectorHelper.DrawFilteredEnumField<SyncronizeDirection>(directionRect, directionProp, direction => instance.AllowDirection.IsAllowed(direction));
+            InspectorHelper.DrawFilteredEnumField<BindingMode>(directionRect, directionProp, direction => instance.AllowDirection.IsAllowed(direction));
             
             // # Path
             // Direction이 None이면 Path는 숨김
-            if(directionProp.enumValueIndex != (int)SyncronizeDirection.None){
+            if(directionProp.enumValueIndex != (int)BindingMode.None){
                 string[] options = ReflectionHelper.GetAllAssignablePropertyNames(viewModelType, instance.ReceivingType, direction).ToArray();
                 InspectorHelper.DrawDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
             }

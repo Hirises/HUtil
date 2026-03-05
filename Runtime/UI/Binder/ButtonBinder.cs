@@ -13,7 +13,7 @@ namespace HUtil.Runtime.UI.Binder
     public class ButtonBinder : MonoBinder
     {
         [SerializeField] private Button _target;
-        [SerializeField] private CommandBindingInfo _onClick_cmd = new CommandBindingInfo(SyncronizeDirectionFlags.ToData);
+        [SerializeField] private CommandBindingInfo _onClick_cmd = new CommandBindingInfo(BindDirectionFlags.ToData);
 
         protected override void Reset()
         {

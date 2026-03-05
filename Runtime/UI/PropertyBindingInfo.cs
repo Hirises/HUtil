@@ -18,10 +18,10 @@ namespace HUtil.Runtime.UI
         [SerializeField]
         private string _path;
         [SerializeField]
-        private SyncronizeDirection _direction;
+        private BindingMode _direction;
 
         private BindingType _receivingType;
-        private SyncronizeDirectionFlags _allowDirection;
+        private BindDirectionFlags _allowDirection;
 
         /// <summary>
         /// 바인딩할 프로퍼티의 이름입니다
@@ -30,11 +30,11 @@ namespace HUtil.Runtime.UI
         /// <summary>
         /// 바인딩할 방향입니다
         /// </summary>
-        public SyncronizeDirection Direction => _direction;
+        public BindingMode Direction => _direction;
         /// <summary>
         /// 허용가능한 바인딩 방향입니다
         /// </summary>
-        public SyncronizeDirectionFlags AllowDirection => _allowDirection;
+        public BindDirectionFlags AllowDirection => _allowDirection;
         /// <summary>
         /// 이 프로퍼티가 받을 수 있는 타입입니다
         /// </summary>
@@ -49,7 +49,7 @@ namespace HUtil.Runtime.UI
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return false;
             }
-            if(Direction != SyncronizeDirection.None && string.IsNullOrEmpty(Path)){
+            if(Direction != BindingMode.None && string.IsNullOrEmpty(Path)){
                 Debug.LogWarning($"[UIBinder] Path is empty for this property setting!");
                 return false;
             }
@@ -60,7 +60,7 @@ namespace HUtil.Runtime.UI
         /// 인스펙터용 바인딩 속성을 생성합니다
         /// </summary>
         /// <param name="allowDirection">허용가능한 바인딩 방향</param>
-        public PropertyBindingInfo(BindingType receivingType, SyncronizeDirectionFlags allowDirection){
+        public PropertyBindingInfo(BindingType receivingType, BindDirectionFlags allowDirection){
             _receivingType = receivingType;
             _allowDirection = allowDirection;
         }
@@ -111,21 +111,21 @@ namespace HUtil.Runtime.UI
             }
             switch (Direction)
             {
-                case SyncronizeDirection.OnceToUI:
+                case BindingMode.OnceToUI:
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
                     setter(observable.Value);
                     break;
                 }
-                case SyncronizeDirection.ToUI:
+                case BindingMode.ToUI:
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
                     observable.Subscribe(setter).AddTo(disposable);
                     break;
                 }
-                case SyncronizeDirection.ToData:
+                case BindingMode.ToData:
                 {
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));
 
@@ -136,7 +136,7 @@ namespace HUtil.Runtime.UI
                     new UnityEventSubscription(() => onChange.RemoveListener(listener)).AddTo(disposable);
                     break;
                 }
-                case SyncronizeDirection.TwoWay:
+                case BindingMode.TwoWay:
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));

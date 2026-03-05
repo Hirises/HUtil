@@ -5,7 +5,7 @@ namespace HUtil.Runtime.UI
     /// <summary>
     /// 바인딩 동기화 방식
     /// </summary>
-    public enum SyncronizeDirection
+    public enum BindingMode
     {
         /// <summary>
         /// 동기화하지 않음

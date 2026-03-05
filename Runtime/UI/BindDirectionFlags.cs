@@ -6,7 +6,7 @@ namespace HUtil.Runtime.UI
     /// UI 동기화 방향 플레그
     /// </summary>
     [Flags]
-    public enum SyncronizeDirectionFlags
+    public enum BindDirectionFlags
     {
         /// <summary>
         /// 동기화 불가능
