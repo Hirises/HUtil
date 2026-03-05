@@ -51,7 +51,7 @@ namespace HUtil.Editor.UI
             if(directionProp.enumValueIndex != (int)BindingMode.None){
                 directionRect = directionRect.SliceLeftRatio(0.5f);
             }
-            InspectorHelper.DrawFilteredEnumField<BindingMode>(directionRect, directionProp, direction => instance.AllowDirection.IsAllowed(direction));
+            InspectorHelper.DrawFilteredEnumField<BindingMode>(directionRect, directionProp, direction => instance.AllowDirection.CanAccept(direction));
             
             // # Path
             // Direction이 None이면 Path는 숨김

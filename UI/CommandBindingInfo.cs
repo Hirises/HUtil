@@ -39,7 +39,7 @@ namespace HUtil.UI
         /// </summary>
         /// <returns>유효성 검증 결과. true일 경우 유효함</returns>
         public bool Validate(){
-            if(!_allowDirection.IsAllowed(Direction)){
+            if(!_allowDirection.CanAccept(Direction)){
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return false;
             }
@@ -74,7 +74,7 @@ namespace HUtil.UI
                 return;
             }
 
-            if(!_allowDirection.IsAllowed(Direction)){
+            if(!_allowDirection.CanAccept(Direction)){
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }

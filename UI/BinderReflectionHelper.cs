@@ -48,13 +48,13 @@ namespace HUtil.UI
         /// 주어진 객체 내부의 <see cref="CommandBase"/>를 가져옵니다.
         /// </summary>
         /// <param name="obj">객체</param>
-        /// <param name="commandName">명령 이름</param>
+        /// <param name="commandPath">필드 경로</param>
         /// <returns><see cref="CommandBase"/></returns>
-        public static CommandBase GetCommand(object obj, string commandName)
+        public static CommandBase GetCommand(object obj, string commandPath)
         {
-            if (string.IsNullOrEmpty(commandName))
+            if (string.IsNullOrEmpty(commandPath))
             {
-                throw new ArgumentNullException(nameof(commandName), "CommandName is null or empty");
+                throw new ArgumentNullException(nameof(commandPath), "CommandName is null or empty");
             }
             if (obj == null)
             {
@@ -62,13 +62,13 @@ namespace HUtil.UI
             }
 
             object _obj = obj;
-            if (PropertyContainer.TryGetValue(ref _obj, commandName, out CommandBase value))
+            if (PropertyContainer.TryGetValue(ref _obj, commandPath, out CommandBase value))
             {
                 return value;
             }
             else
             {
-                throw new ArgumentException($"Command {commandName} not found on object {obj.GetType().Name}");
+                throw new ArgumentException($"Command {commandPath} not found on object {obj.GetType().Name}");
             }
         }
         #endregion
@@ -93,13 +93,13 @@ namespace HUtil.UI
                 if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>))){
                     var underlyingType = field.FieldType.GetGenericArguments(typeof(ObservableProperty<>))[0];
                     fieldType = underlyingType.ToBindingType();
-                    allowedDirections = field.GetCustomAttribute<ViewModelValueAttribute>().SyncronizeDirection;
-                }else if(field.FieldType.IsAssignableFrom(typeof(CommandBase))){
+                    allowedDirections = field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None;
+                }else if(typeof(CommandBase).IsAssignableFrom(field.FieldType)){
                     fieldType = BindingType.Command;
                     allowedDirections = BindDirectionFlags.ToData;    //Command는 데이터로만 동기화 가능
-                }else if(field.FieldType.IsAssignableFrom(typeof(ObservableTrigger))){
+                }else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType)){
                     fieldType = BindingType.Trigger;
-                    allowedDirections = field.GetCustomAttribute<ViewModelValueAttribute>().SyncronizeDirection;
+                    allowedDirections = field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None;
                 }else{
                     continue;
                 }
@@ -109,7 +109,7 @@ namespace HUtil.UI
                     continue;
                 }
                 //방향검사
-                if(!allowedDirections.IsAllowed(bindMode)){
+                if(!allowedDirections.CanAccept(bindMode)){
                     continue;
                 }
 

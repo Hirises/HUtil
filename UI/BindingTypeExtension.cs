@@ -83,15 +83,15 @@ namespace HUtil.UI
         /// <returns>변환 가능하면 true, 아니면 false를 반환</returns>
         public static bool CanAccept(this BindingType destination, BindingType source)
         {
-            // 같은 타입인 경우 연결 가능
-            if (source == destination){
-                return true;
-            }
             // 둘 중 하나라도 None인 경우 연결 불가능
             if (source == BindingType.None || destination == BindingType.None) {
                 return false;
             }
 
+            // 같은 타입인 경우 연결 가능
+            if (source == destination){
+                return true;
+            }
             //특수 맵핑
             return destination switch
             {

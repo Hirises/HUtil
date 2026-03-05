@@ -1,3 +1,7 @@
+using HUtil.UI;
+
+using Unity.Properties;
+
 namespace HUtil.UI
 {
     /// <summary>
@@ -6,6 +10,6 @@ namespace HUtil.UI
     /// </summary>
     public interface IViewModel
     {
-        
+
     }
 }

@@ -14,7 +14,7 @@ namespace HUtil.UI
         /// <param name="flags">현재 설정된 동기화 방향 플래그</param>
         /// <param name="direction">체크할 동기화 방향</param>
         /// <returns>해당 방향이 허용되면 true, 아니면 false를 반환</returns>
-        public static bool IsAllowed(this BindDirectionFlags flags, BindingMode direction){
+        public static bool CanAccept(this BindDirectionFlags flags, BindingMode direction){
             switch(direction){
                 case BindingMode.None:
                     return true;
