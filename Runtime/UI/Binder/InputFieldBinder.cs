@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace HUtil.Runtime.UI {
     public class InputFieldBinder : MonoBinder {
         [SerializeField] private TMP_InputField _target;
-        [SerializeField] private PropertyBindingInfo _text_prop = new PropertyBindingInfo(SyncronizeDirectionFlags.Both);
+        [SerializeField] private PropertyBindingInfo _text_prop = new PropertyBindingInfo(BindingType.String, SyncronizeDirectionFlags.Both);
 
         protected override void Reset()
         {

@@ -92,20 +92,71 @@ namespace HUtil.Runtime.Extension
         }
 
         /// <summary>
-        /// 주어진 객체 내부의 보든 <see cref="ObservableProperty{T}"/> 및 <see cref="CommandBase"/>의 이름을 가져옵니다
+        /// 주어진 객체 내부의 바인딩 가능한 모든 프로퍼티의 이름을 가져옵니다
         /// </summary>
-        /// <param name="type">객체 타입</param>
+        /// <param name="viewModelType">객체 타입</param>
+        /// <param name="receivingType">받을 수 있는 타입</param>
+        /// <param name="direction">동기화 하려는 방향</param>
         /// <returns>프로퍼티 이름 리스트</returns>
-        public static List<string> GetAllAssignablePropertyNames(Type type)
+        public static List<string> GetAllAssignablePropertyNames(Type viewModelType, BindingType receivingType, SyncronizeDirection direction)
         {
             var propertyNames = new List<string>();
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var fields = viewModelType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            BindingType fieldType = BindingType.None;
+            SyncronizeDirectionFlags allowedDirections = SyncronizeDirectionFlags.None;
             foreach(var field in fields){
-                if(field.FieldType.IsSubclassOfRawGeneric(typeof(ObservableProperty<>)) || field.FieldType.IsAssignableFrom(typeof(CommandBase))){
-                    propertyNames.Add(field.Name);
+
+                //필드는 ObservableProperty<T>, ObservableTrigger, 또는 CommandBase를 상속하는 타입이어야 합니다.
+                if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>))){
+                    var underlyingType = field.FieldType.GetGenericArguments(typeof(ObservableProperty<>))[0];
+                    fieldType = underlyingType.ToBindingType();
+                    allowedDirections = field.GetCustomAttribute<ViewModelValueAttribute>().SyncronizeDirection;
+                }else if(field.FieldType.IsAssignableFrom(typeof(CommandBase))){
+                    fieldType = BindingType.Command;
+                    allowedDirections = SyncronizeDirectionFlags.ToData;    //Command는 데이터로만 동기화 가능
+                }else if(field.FieldType.IsAssignableFrom(typeof(ObservableTrigger))){
+                    fieldType = BindingType.Trigger;
+                    allowedDirections = field.GetCustomAttribute<ViewModelValueAttribute>().SyncronizeDirection;
+                }else{
+                    continue;
                 }
+
+                //할당 가능한 타입 검사
+                if(!fieldType.IsAssignableTo(receivingType)){
+                    continue;
+                }
+                //방향검사
+                if(!allowedDirections.IsAllowed(direction)){
+                    continue;
+                }
+
+                //추가
+                propertyNames.Add(field.Name);
             }
+
             return propertyNames;
+        }
+
+        /// <summary>
+        /// 이 타입이 주어진 제네릭 타입의 서브클래스인 경우, 선언된 제네릭 인수를 가져옵니다.
+        /// </summary>
+        /// <param name="toCheck">확인할 타입</param>
+        /// <param name="generic">제네릭 타입</param>
+        /// <returns>제네릭 인수</returns>
+        public static Type[] GetGenericArguments(this Type toCheck, Type generic){
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                // 현재 타입이 제네릭인지 확인하고, 원본 정의(Definition)를 가져옴
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    return toCheck.GetGenericArguments();
+                }
+                // 부모 클래스로 올라가며 다시 체크 (상속 관계 대응)
+                toCheck = toCheck.BaseType;
+            }
+            return new Type[0];
         }
 
         /// <summary>
@@ -114,7 +165,7 @@ namespace HUtil.Runtime.Extension
         /// <param name="toCheck">확인할 타입</param>
         /// <param name="generic">제네릭 타입</param>
         /// <returns>서브클래스 여부</returns>
-        public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic)
+        public static bool IsSubclassOfGeneric(this Type toCheck, Type generic)
         {
             while (toCheck != null && toCheck != typeof(object))
             {

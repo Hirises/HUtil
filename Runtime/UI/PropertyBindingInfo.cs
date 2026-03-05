@@ -20,6 +20,7 @@ namespace HUtil.Runtime.UI
         [SerializeField]
         private SyncronizeDirection _direction;
 
+        private BindingType _receivingType;
         private SyncronizeDirectionFlags _allowDirection;
 
         /// <summary>
@@ -34,6 +35,10 @@ namespace HUtil.Runtime.UI
         /// 허용가능한 바인딩 방향입니다
         /// </summary>
         public SyncronizeDirectionFlags AllowDirection => _allowDirection;
+        /// <summary>
+        /// 이 프로퍼티가 받을 수 있는 타입입니다
+        /// </summary>
+        public BindingType ReceivingType => _receivingType;
 
         /// <summary>
         /// 이 필드의 유효성을 검증합니다
@@ -55,7 +60,8 @@ namespace HUtil.Runtime.UI
         /// 인스펙터용 바인딩 속성을 생성합니다
         /// </summary>
         /// <param name="allowDirection">허용가능한 바인딩 방향</param>
-        public PropertyBindingInfo(SyncronizeDirectionFlags allowDirection){
+        public PropertyBindingInfo(BindingType receivingType, SyncronizeDirectionFlags allowDirection){
+            _receivingType = receivingType;
             _allowDirection = allowDirection;
         }
 

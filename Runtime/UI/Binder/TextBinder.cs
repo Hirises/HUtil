@@ -12,7 +12,7 @@ namespace HUtil.Runtime.UI.Binder
     public class TextBinder : MonoBinder
     {
         [SerializeField] private TMP_Text _target;
-        [SerializeField] private PropertyBindingInfo _text_prop = new PropertyBindingInfo(SyncronizeDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingInfo _text_prop = new PropertyBindingInfo(BindingType.String, SyncronizeDirectionFlags.ToUI);
 
         protected override void Reset()
         {

@@ -9,6 +9,10 @@ namespace HUtil.Runtime.UI
     public enum SyncronizeDirectionFlags
     {
         /// <summary>
+        /// 동기화 불가능
+        /// </summary>
+        None = 0x0,
+        /// <summary>
         /// View로 동기화하는 방향
         /// </summary>
         ToUI = 0x1,

@@ -8,10 +8,11 @@ namespace HUtil.Runtime.UI
     [AttributeUsage(validOn: AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
     public class ViewModelValueAttribute : Attribute
     {
+        private SyncronizeDirectionFlags _syncronizeDirection;
         /// <summary>
         /// 허용 가능한 바인딩 방향을 지정합니다
         /// </summary>
-        public SyncronizeDirectionFlags _syncronizeDirection { get; private set; }
+        public SyncronizeDirectionFlags SyncronizeDirection => _syncronizeDirection;
 
         public ViewModelValueAttribute(SyncronizeDirectionFlags syncronizeDirection = SyncronizeDirectionFlags.Both){
             this._syncronizeDirection = syncronizeDirection;

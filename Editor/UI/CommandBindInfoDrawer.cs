@@ -30,8 +30,9 @@ namespace HUtil.Editor.UI
             var viewRoot = binder.FindViewRoot();
             var viewModelType = ReflectionHelper.GetAllViewModelTypes().FirstOrDefault(t => t.FullName == viewRoot.ViewModelType);
 
-            var direction = property.FindPropertyRelative("_direction");
-            var path = property.FindPropertyRelative("_path");
+            var directionProp = property.FindPropertyRelative("_direction");
+            var direction = (SyncronizeDirection)directionProp.enumValueIndex;
+            var pathProp = property.FindPropertyRelative("_path");
 
             (var labelRect, var contentRect) = position.SliceVertical(EditorGUIUtility.labelWidth);
 
@@ -40,16 +41,16 @@ namespace HUtil.Editor.UI
 
             // # Direction
             var directionRect = contentRect;
-            if(direction.enumValueIndex != (int)SyncronizeDirection.None){
+            if(directionProp.enumValueIndex != (int)SyncronizeDirection.None){
                 directionRect = directionRect.SliceLeftRatio(0.5f);
             }
-            InspectorHelper.DrawFilteredEnumField<SyncronizeDirection>(directionRect, direction, direction => instance.AllowDirection.IsAllowed(direction));
+            InspectorHelper.DrawFilteredEnumField<SyncronizeDirection>(directionRect, directionProp, direction => instance.AllowDirection.IsAllowed(direction));
             
             // # Path
             // Direction이 None이면 Path는 숨김
-            if(direction.enumValueIndex != (int)SyncronizeDirection.None){
-                string[] options = ReflectionHelper.GetAllAssignablePropertyNames(viewModelType).ToArray();
-                InspectorHelper.DrawDropdownField(contentRect.SliceRightRatio(0.5f), path, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
+            if(directionProp.enumValueIndex != (int)SyncronizeDirection.None){
+                string[] options = ReflectionHelper.GetAllAssignablePropertyNames(viewModelType, BindingType.Command, direction).ToArray();
+                InspectorHelper.DrawDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
             }
         }
     }
