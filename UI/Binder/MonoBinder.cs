@@ -18,9 +18,9 @@ namespace HUtil.UI.Binder
 
         protected virtual void Reset()
         {
-            var viewRoot = FindUIComponent();
-            if (viewRoot != null){
-                viewRoot.UpdateBinderList();    //바인더 리스트를 업데이트 할 책임은 ViewRoot가 가짐. MonoBinder는 단순히 '업데이트 해줘!'하고 요청만 한다.
+            var uiComp = FindUIComponent();
+            if (uiComp != null){
+                uiComp.UpdateBinderList();    //바인더 리스트를 업데이트 할 책임은 UIComponent가 가짐. MonoBinder는 단순히 '업데이트 해줘!'하고 요청만 한다.
             }
         }
 

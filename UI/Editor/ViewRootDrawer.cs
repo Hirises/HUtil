@@ -14,7 +14,7 @@ namespace HUtil.Editor.UI
     public class ViewRootDrawer : UnityEditor.Editor
     {
         public override void OnInspectorGUI(){
-            var viewRoot = target as UIComponent;
+            var uiComponent = target as UIComponent;
 
             var viewModelType = serializedObject.FindProperty("_viewModelType");
             var binders = serializedObject.FindProperty("_binders");
@@ -26,9 +26,12 @@ namespace HUtil.Editor.UI
                                     .Select(t => new DropdownOption(t.FullName)).ToArray();
             InspectorHelper.DrawDropdownField(fieldRect, viewModelType, options, "ViewModel");
 
+            // Space
+            EditorGUILayout.GetControlRect();
+
             // # Update Binder List
             if(GUI.Button(EditorGUILayout.GetControlRect(), "Update Binder List")){
-                viewRoot.UpdateBinderList();
+                uiComponent.UpdateBinderList();
             }
 
             // # Binders

@@ -25,16 +25,19 @@ namespace HUtil.Editor.UI
         {
             //필요한 변수들 캐싱
             var instance = InspectorHelper.GetActualObject(property) as PropertyBindingInfo;
-            var fieldInfo = InspectorHelper.GetFieldInfo(property);
-            var viewModelValueAttribute = fieldInfo.GetCustomAttribute<ViewModelValueAttribute>();
             var binder = property.serializedObject.targetObject as MonoBinder;
-            if(binder == null){
-                base.OnGUI(position, property, label);
+            var fieldInfo = InspectorHelper.GetFieldInfo(property);
+            if(instance == null || binder == null || fieldInfo == null){
+                EditorGUI.HelpBox(position, $"Internal error: {instance} {binder} {fieldInfo}", MessageType.Error);
                 return;
             }
-            var viewRoot = binder.FindUIComponent();
+            var uiComponent = binder.FindUIComponent();
+            if(uiComponent == null){
+                EditorGUI.HelpBox(position, "UIComponent not found", MessageType.Error);
+                return;
+            }
             var viewModelType = InspectorHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel))
-                                    .FirstOrDefault(t => t.FullName == viewRoot.ViewModelType);
+                                    .FirstOrDefault(t => t.FullName == uiComponent.ViewModelType);
 
             //프로퍼티 캐싱
             var directionProp = property.FindPropertyRelative("_direction");
