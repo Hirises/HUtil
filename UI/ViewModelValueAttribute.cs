@@ -1,6 +1,6 @@
 using System;
 
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// ViewModel의 바인딩 가능한 속성을 지정하는 어트리뷰트

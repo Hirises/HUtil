@@ -7,7 +7,7 @@ using HUtil.Runtime.Observable;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// 커맨드 바인딩 인스펙터 속성

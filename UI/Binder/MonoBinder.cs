@@ -4,7 +4,7 @@ using HUtil.Runtime.Observable;
 
 using UnityEngine;
 
-namespace HUtil.Runtime.UI.Binder
+namespace HUtil.UI.Binder
 {
     /// <summary>
     /// ViewModel을 UI요소에 바인딩하는 기본 컴포넌트

@@ -1,6 +1,6 @@
 using System;
 
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// 바인딩 대상 타입

@@ -4,7 +4,7 @@ using TMPro;
 using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
 
-namespace HUtil.Runtime.UI.Binder
+namespace HUtil.UI.Binder
 {
     /// <summary>
     /// TMP_Text 바인딩 컴포넌트

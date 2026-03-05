@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using HUtil.Runtime.UI;
+using HUtil.UI;
 using HUtil.Runtime.Extension;
 
 using UnityEditor;

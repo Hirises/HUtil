@@ -1,6 +1,6 @@
 using System;
 
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// UI 동기화 방향 플레그

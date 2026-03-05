@@ -7,7 +7,7 @@ using HUtil.Runtime.Observable;
 
 using UnityEngine;
 
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// 바인딩 타입 확장 메서드

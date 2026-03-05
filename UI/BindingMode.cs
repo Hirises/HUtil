@@ -1,6 +1,6 @@
 using System;
 
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// 바인딩 동기화 방식

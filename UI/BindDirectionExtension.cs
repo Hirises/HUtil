@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// 동기화 방향 확장 메서드

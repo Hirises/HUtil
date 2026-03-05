@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HUtil.Runtime.Extension;
 
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// 바인더 리플렉션 관련 확장 메서드

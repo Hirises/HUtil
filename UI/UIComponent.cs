@@ -1,6 +1,6 @@
 using UnityEngine;
 
-using HUtil.Runtime.UI.Binder;
+using HUtil.UI.Binder;
 using System.Collections.Generic;
 using Unity.Collections;
 using System;
@@ -8,7 +8,7 @@ using HUtil.Runtime.Observable;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("HUtil.Editor")]
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// 재사용 가능한 UI 오브젝트의 단위

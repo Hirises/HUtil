@@ -1,12 +1,12 @@
 using System;
 
-using HUtil.Runtime.UI;
+using HUtil.UI;
 using HUtil.Runtime.Extension;
 using HUtil.Editor;
 
 using UnityEditor;
 using UnityEngine;
-using HUtil.Runtime.UI.Binder;
+using HUtil.UI.Binder;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;

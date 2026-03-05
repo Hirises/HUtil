@@ -1,4 +1,4 @@
-namespace HUtil.Runtime.UI
+namespace HUtil.UI
 {
     /// <summary>
     /// ViweModel 인터페이스<br />
@@ -6,5 +6,6 @@ namespace HUtil.Runtime.UI
     /// </summary>
     public interface IViewModel
     {
+        
     }
 }
