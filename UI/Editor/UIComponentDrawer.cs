@@ -11,7 +11,7 @@ using UnityEngine;
 namespace HUtil.Editor.UI
 {
     [CustomEditor(typeof(UIComponent))]
-    public class ViewRootDrawer : UnityEditor.Editor
+    public class UIComponentDrawer : UnityEditor.Editor
     {
         public override void OnInspectorGUI(){
             var uiComponent = target as UIComponent;
