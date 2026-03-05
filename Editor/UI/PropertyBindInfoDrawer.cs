@@ -23,6 +23,7 @@ namespace HUtil.Editor.UI
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            //필요한 변수들 캐싱
             var instance = InspectorHelper.GetActualObject(property) as PropertyBindingInfo;
             var fieldInfo = InspectorHelper.GetFieldInfo(property);
             var viewModelValueAttribute = fieldInfo.GetCustomAttribute<ViewModelValueAttribute>();
@@ -32,15 +33,17 @@ namespace HUtil.Editor.UI
                 return;
             }
             var viewRoot = binder.FindUIComponent();
-            var viewModelType = BinderReflectionHelper.GetAllViewModelTypes().FirstOrDefault(t => t.FullName == viewRoot.ViewModelType);
+            var viewModelType = InspectorHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel))
+                                    .FirstOrDefault(t => t.FullName == viewRoot.ViewModelType);
 
+            //프로퍼티 캐싱
             var directionProp = property.FindPropertyRelative("_direction");
             var direction = (BindingMode)directionProp.enumValueIndex;
             var pathProp = property.FindPropertyRelative("_path");
 
-            (var labelRect, var contentRect) = position.SliceVertical(EditorGUIUtility.labelWidth);
 
             // # Label
+            (var labelRect, var contentRect) = position.SliceVertical(EditorGUIUtility.labelWidth);
             EditorGUI.LabelField(labelRect, label);
 
             // # Direction

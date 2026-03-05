@@ -5,9 +5,6 @@ using Unity.Properties;
 using HUtil.Runtime.Command;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEditor;
-using HUtil.Runtime.UI;
-using System.Linq;
 using HUtil.Runtime.Extension;
 
 namespace HUtil.Runtime.UI
@@ -15,7 +12,7 @@ namespace HUtil.Runtime.UI
     /// <summary>
     /// 바인더 리플렉션 관련 확장 메서드
     /// </summary>
-    public static class BinderReflectionHelper
+    internal static class BinderReflectionHelper
     {
         #region GetProp
         /// <summary>
@@ -73,24 +70,6 @@ namespace HUtil.Runtime.UI
             {
                 throw new ArgumentException($"Command {commandName} not found on object {obj.GetType().Name}");
             }
-        }
-
-        /// <summary>
-        /// 모든 <see cref="IViewModel"/> 타입 구현체를 가져옵니다.
-        /// </summary>
-        /// <returns><see cref="IViewModel"/> 타입 리스트</returns>
-        public static List<Type> GetAllViewModelTypes()
-        {
-            // 1. TypeCache를 통해 IViewModel을 상속/구현한 모든 타입을 즉시 가져옵니다.
-            var typeCollection = TypeCache.GetTypesDerivedFrom<IViewModel>(); 
-            // 클래스인 경우: TypeCache.GetTypesDerivedFrom(typeof(ViewModelBase));
-
-            // 2. 추상 클래스(Abstract)나 인터페이스 자체는 인스턴스화할 수 없으므로 제외합니다.
-            var concreteTypes = typeCollection
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .ToList();
-
-            return concreteTypes;
         }
         #endregion
 

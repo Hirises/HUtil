@@ -22,7 +22,8 @@ namespace HUtil.Editor.UI
             // # ViewModel
             (var labelRect, var fieldRect) = EditorGUILayout.GetControlRect().SliceVertical(EditorGUIUtility.labelWidth);
             EditorGUI.LabelField(labelRect, "ViewModel");
-            var options = BinderReflectionHelper.GetAllViewModelTypes().Select(t => new DropdownOption(t.FullName)).ToArray();
+            var options = InspectorHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel))
+                                    .Select(t => new DropdownOption(t.FullName)).ToArray();
             InspectorHelper.DrawDropdownField(fieldRect, viewModelType, options, "ViewModel");
 
             // # Update Binder List
