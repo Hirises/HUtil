@@ -4,6 +4,7 @@ using TMPro;
 using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace HUtil.UI.Binder
 {
@@ -26,9 +27,9 @@ namespace HUtil.UI.Binder
             _onClick_cmd.Validate();
         }
 
-        protected override void BindInternal(object viewModel, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable)
         {
-            _onClick_cmd.Bind(viewModel, disposable, _target.onClick);
+            _onClick_cmd.Bind(bindMap, disposable, _target.onClick);
         }
     }
 }

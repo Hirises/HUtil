@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using HUtil.Runtime.Observable;
 using HUtil.UI.Binder;
 
@@ -22,9 +24,9 @@ namespace HUtil.UI.Binder {
             _text_prop.Validate();
         }
 
-        protected override void BindInternal(object viewModel, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable)
         {
-            _text_prop.Bind<string>(viewModel, disposable, SetText, _target.onValueChanged);
+            _text_prop.Bind<string>(bindMap, disposable, SetText, _target.onValueChanged);
         }
 
         private void SetText(string value)

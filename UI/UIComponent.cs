@@ -15,10 +15,10 @@ namespace HUtil.UI
     /// </summary>
     public class UIComponent : MonoBinder
     {
-        [SerializeField] private string _viewModelType;
+        [SerializeField] private List<ViewModelResolver> _viewModelResolvers;
         [SerializeField, ReadOnly] private List<MonoBinder> _binders = new List<MonoBinder>();
 
-        internal string ViewModelType => _viewModelType;
+        internal List<ViewModelResolver> ViewModelResolvers => _viewModelResolvers;
 
         protected override void Reset()
         {
@@ -57,19 +57,57 @@ namespace HUtil.UI
             }
         }
 
-        protected override void BindInternal(object viewModel, CompositeDisposable disposable)
-        {
-            foreach (var binder in _binders)
+        private void Awake(){
+            foreach (var resolver in _viewModelResolvers)
             {
-                binder.Bind(viewModel);
+                resolver.OnEnable();
             }
         }
 
-        public override void Unbind()
-        {
-            foreach (var binder in _binders)
+        protected override void OnDestroy(){
+            foreach (var resolver in _viewModelResolvers)
             {
-                binder.Unbind();
+                resolver.OnDisable();
+            }
+            base.OnDestroy();
+        }
+
+        //manual binding
+        public void ManualBind(object viewModel)
+        {
+            foreach (var resolver in _viewModelResolvers)
+            {
+                resolver.ManualBind(viewModel);
+            }
+        }
+
+        private void UpdateBindingState(){
+            bool isAllResolved = true;
+            foreach (var resolver in _viewModelResolvers)
+            {
+                if(!resolver.IsResolved){
+                    isAllResolved = false;
+                    break;
+                }
+            }
+
+            if(isAllResolved){
+                Dictionary<string, ViewModelProperty> bindMap = new Dictionary<string, ViewModelProperty>();
+                foreach (var resolver in _viewModelResolvers)
+                {
+                    resolver.Resolve(bindMap);
+                }
+                Bind(bindMap);
+            }else{
+                Unbind();
+            }
+        }
+
+        protected override void BindInternal(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable)
+        {
+            foreach (var resolver in _viewModelResolvers)
+            {
+                resolver.DynamicBind(bindMap, disposable);
             }
         }
     }

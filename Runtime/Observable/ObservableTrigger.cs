@@ -42,22 +42,5 @@ namespace HUtil.Runtime.Observable
             _onTriggered += onTriggered;
             return new Subscription(() => _onTriggered -= onTriggered);
         }
-
-        //구독 취소를 제공하기 위한 IDisposable
-        private class Subscription : IDisposable
-        {
-            private Action _unsubscribeAction;
-
-            public Subscription(Action unsubscribeAction)
-            {
-                _unsubscribeAction = unsubscribeAction;
-            }
-
-            public void Dispose()
-            {
-                _unsubscribeAction?.Invoke();
-                _unsubscribeAction = null;
-            }
-        }
     }
 }

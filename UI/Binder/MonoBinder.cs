@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using HUtil.Runtime.Observable;
 
@@ -37,16 +38,16 @@ namespace HUtil.UI.Binder
         /// <summary>
         /// 뷰모델을 바인딩합니다
         /// </summary>
-        /// <param name="viewModel">바인딩할 뷰모델</param>
-        public void Bind(object viewModel)
+        /// <param name="bindMap">바인딩할 뷰모델</param>
+        internal void Bind(Dictionary<string, ViewModelProperty> bindMap)
         {
-            if (viewModel == null)
+            if (bindMap == null)
             {
-                throw new ArgumentNullException(nameof(viewModel));
+                throw new ArgumentNullException(nameof(bindMap));
             }
 
             Unbind();
-            BindInternal(viewModel, _disposable);
+            BindInternal(bindMap, _disposable);
         }
 
         /// <summary>
@@ -59,9 +60,9 @@ namespace HUtil.UI.Binder
         /// }
         /// </code>
         /// </summary>
-        /// <param name="viewModel">바인딩할 뷰모델</param>
+        /// <param name="bindMap">바인딩할 뷰모델</param>
         /// <param name="disposable">바인딩 과정에서 발생하는 구독을 등록하기 위한 <see cref="CompositeDisposable"/><br />이 객체에 등록된 구독은 <see cref="Unbind"/>에서 자동으로 해제됩니다</param>
-        protected abstract void BindInternal(object viewModel, CompositeDisposable disposable);
+        protected abstract void BindInternal(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable);
 
         /// <summary>
         /// 바인딩된 뷰모델을 해제합니다

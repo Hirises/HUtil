@@ -45,6 +45,34 @@ namespace HUtil.UI
         }
 
         /// <summary>
+        /// 주어진 객체 내부의 <see cref="ObservableTrigger"/>를 가져옵니다.
+        /// </summary>
+        /// <param name="obj">객체</param>
+        /// <param name="propertyName">프로퍼티 이름</param>
+        /// <returns><see cref="ObservableTrigger"/></returns>
+        public static ObservableTrigger GetObservableTrigger(object obj, string propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                throw new ArgumentNullException(nameof(propertyName), "PropertyName is null or empty");
+            }
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj), "Object is null");
+            }
+
+            object _obj = obj;
+            if (PropertyContainer.TryGetValue(ref _obj, propertyName, out ObservableTrigger value))
+            {
+                return value;
+            }
+            else
+            {
+                throw new ArgumentException($"Trigger {propertyName} not found on object {obj.GetType().Name}");
+            }
+        }
+
+        /// <summary>
         /// 주어진 객체 내부의 <see cref="CommandBase"/>를 가져옵니다.
         /// </summary>
         /// <param name="obj">객체</param>

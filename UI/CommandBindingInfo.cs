@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using HUtil.Runtime.Command;
 using HUtil.Runtime.Extension;
@@ -68,7 +69,7 @@ namespace HUtil.UI
         /// <param name="viewModel">뷰 모델 객체</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onTrigger">UI 트리거 이벤트</param>
-        public void Bind(object viewModel, CompositeDisposable disposable, UnityEvent onTrigger)
+        public void Bind(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent onTrigger)
         {
             if(Direction == BindingMode.None){
                 return;
@@ -78,7 +79,7 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }
-            var command = BinderReflectionHelper.GetCommand(viewModel, Path);
+            var command = bindMap[Path].AsCommand();
             if (command == null)
             {
                 Debug.LogWarning($"[UIBinder] Cannot find command {Path} in viewmodel");

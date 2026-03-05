@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
@@ -72,9 +73,9 @@ namespace HUtil.UI
         /// <param name="viewModel">뷰 모델 객체</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
-        public void Bind<T>(object viewModel, CompositeDisposable disposable, Action<T> setter)
+        public void Bind<T>(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter)
         {
-            Bind(viewModel, disposable, setter, null);
+            Bind(bindMap, disposable, setter, null);
         }
 
         /// <summary>
@@ -84,9 +85,9 @@ namespace HUtil.UI
         /// <param name="viewModel">뷰 모델 객체</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(object viewModel, CompositeDisposable disposable, UnityEvent<T> onChange)
+        public void Bind<T>(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange)
         {
-            Bind(viewModel, disposable, null, onChange);
+            Bind(bindMap, disposable, null, onChange);
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace HUtil.UI
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(object viewModel, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
+        public void Bind<T>(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
         {
             if(Direction == BindingMode.None){
                 return;
@@ -107,7 +108,7 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }
-            var observable = BinderReflectionHelper.GetObservableProperty<T>(viewModel, Path);
+            var observable = bindMap[Path].AsObservableProperty<T>();
             if (observable == null)
             {
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");

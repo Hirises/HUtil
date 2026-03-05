@@ -105,22 +105,5 @@ namespace HUtil.Runtime.Observable
         public static implicit operator T(ObservableProperty<T> property) => property.Value;
 
         public override string ToString() => _value?.ToString();
-
-        //구독 취소를 제공하기 위한 IDisposable
-        private class Subscription : IDisposable
-        {
-            private Action _unsubscribeAction;
-
-            public Subscription(Action unsubscribeAction)
-            {
-                _unsubscribeAction = unsubscribeAction;
-            }
-
-            public void Dispose()
-            {
-                _unsubscribeAction?.Invoke();
-                _unsubscribeAction = null;
-            }
-        }
     }   
 }
