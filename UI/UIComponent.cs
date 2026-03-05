@@ -7,7 +7,7 @@ using System;
 using HUtil.Runtime.Observable;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("HUtil.Editor")]
+[assembly: InternalsVisibleTo("HUtil.UI.Editor")]
 namespace HUtil.UI
 {
     /// <summary>

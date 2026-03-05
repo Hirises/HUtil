@@ -1,7 +1,11 @@
 {
-    "name": "HUtil.Editor",
-    "rootNamespace": "HUtil.Editor",
-    "references": [],
+    "name": "HUtil.UI.Editor",
+    "rootNamespace": "HUtil.UI.Editor",
+    "references": [
+        "GUID:2e9ab8b014414ea428ff3fe5734ab9e9",
+        "GUID:e0081a0a5ca15c746b29e5ff55313d99",
+        "GUID:65d679c313d342448a79764fc45303f6"
+    ],
     "includePlatforms": [
         "Editor"
     ],
