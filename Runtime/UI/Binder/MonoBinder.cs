@@ -18,20 +18,20 @@ namespace HUtil.Runtime.UI.Binder
 
         protected virtual void Reset()
         {
-            var viewRoot = FindViewRoot();
+            var viewRoot = FindUIComponent();
             if (viewRoot != null){
                 viewRoot.UpdateBinderList();    //바인더 리스트를 업데이트 할 책임은 ViewRoot가 가짐. MonoBinder는 단순히 '업데이트 해줘!'하고 요청만 한다.
             }
         }
 
         /// <summary>
-        /// 이 바인더가 속한 ViewRoot를 찾습니다
+        /// 이 바인더가 속한 UIComponent를 찾습니다
         /// </summary>
-        /// <returns>찾은 ViewRoot, 없으면 null</returns>
-        public ViewRoot FindViewRoot()
+        /// <returns>찾은 UIComponent, 없으면 null</returns>
+        public UIComponent FindUIComponent()
         {
             if(transform.parent == null) return null;
-            return transform.parent.GetComponentInParent<ViewRoot>();
+            return transform.parent.GetComponentInParent<UIComponent>();
         }
 
         /// <summary>

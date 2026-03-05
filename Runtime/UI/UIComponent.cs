@@ -13,7 +13,7 @@ namespace HUtil.Runtime.UI
     /// <summary>
     /// 재사용 가능한 UI 오브젝트의 단위
     /// </summary>
-    public class ViewRoot : MonoBinder
+    public class UIComponent : MonoBinder
     {
         [SerializeField] private string _viewModelType;
         [SerializeField, ReadOnly] private List<MonoBinder> _binders = new List<MonoBinder>();
@@ -23,7 +23,7 @@ namespace HUtil.Runtime.UI
         protected override void Reset()
         {
             UpdateBinderList();
-            base.Reset();   //ViewRoot의 경우 본인의 바인더 리스트 업데이트 후 부모 클래스의 Reset을 호출해야 함.
+            base.Reset();   //UIComponent의 경우 본인의 바인더 리스트 업데이트 후 부모 클래스의 Reset을 호출해야 함.
         }
 
         //하위의 모든 MonoBinder를 찾아서 리스트에 추가합니다
@@ -44,9 +44,9 @@ namespace HUtil.Runtime.UI
             if (parent.gameObject.TryGetComponent<MonoBinder>(out var binder))
             {
                 _binders.Add(binder);
-                if (binder is ViewRoot)
+                if (binder is UIComponent)
                 {
-                    return; //ViewRoot 하위 노드는 탐색에서 제외
+                    return; //UIComponent 하위 노드는 탐색에서 제외
                 }
             }
 

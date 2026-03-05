@@ -2,6 +2,9 @@ using System;
 
 namespace HUtil.Runtime.UI
 {
+    /// <summary>
+    /// 바인딩 대상 타입
+    /// </summary>
     public enum BindingType
     {
         None,

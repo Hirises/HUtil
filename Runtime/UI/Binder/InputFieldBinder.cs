@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace HUtil.Runtime.UI {
+namespace HUtil.Runtime.UI.Binder {
     public class InputFieldBinder : MonoBinder {
         [SerializeField] private TMP_InputField _target;
         [SerializeField] private PropertyBindingInfo _text_prop = new PropertyBindingInfo(BindingType.String, BindDirectionFlags.Both);

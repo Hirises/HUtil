@@ -27,8 +27,8 @@ namespace HUtil.Editor.UI
                 base.OnGUI(position, property, label);
                 return;
             }
-            var viewRoot = binder.FindViewRoot();
-            var viewModelType = ReflectionHelper.GetAllViewModelTypes().FirstOrDefault(t => t.FullName == viewRoot.ViewModelType);
+            var viewRoot = binder.FindUIComponent();
+            var viewModelType = BinderReflectionHelper.GetAllViewModelTypes().FirstOrDefault(t => t.FullName == viewRoot.ViewModelType);
 
             var directionProp = property.FindPropertyRelative("_direction");
             var direction = (BindingMode)directionProp.enumValueIndex;
@@ -49,7 +49,7 @@ namespace HUtil.Editor.UI
             // # Path
             // Direction이 None이면 Path는 숨김
             if(directionProp.enumValueIndex != (int)BindingMode.None){
-                string[] options = ReflectionHelper.GetAllAssignablePropertyNames(viewModelType, BindingType.Command, direction).ToArray();
+                string[] options = BinderReflectionHelper.GetAllBindablePropertyNames(viewModelType, BindingType.Command, direction).ToArray();
                 InspectorHelper.DrawDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
             }
         }

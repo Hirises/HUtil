@@ -8,14 +8,16 @@ using System.Reflection;
 using UnityEditor;
 using HUtil.Runtime.UI;
 using System.Linq;
+using HUtil.Runtime.Extension;
 
-namespace HUtil.Runtime.Extension
+namespace HUtil.Runtime.UI
 {
     /// <summary>
-    /// 리플렉션 관련 확장 메서드
+    /// 바인더 리플렉션 관련 확장 메서드
     /// </summary>
-    public static class ReflectionHelper
+    public static class BinderReflectionHelper
     {
+        #region GetProp
         /// <summary>
         /// 주어진 객체 내부의 <see cref="ObservableProperty{T}"/>를 가져옵니다.
         /// </summary>
@@ -90,15 +92,16 @@ namespace HUtil.Runtime.Extension
 
             return concreteTypes;
         }
+        #endregion
 
         /// <summary>
-        /// 주어진 객체 내부의 바인딩 가능한 모든 프로퍼티의 이름을 가져옵니다
+        /// 주어진 ViewModel 타입 내부의 바인딩 가능한 모든 프로퍼티의 이름을 가져옵니다
         /// </summary>
         /// <param name="viewModelType">객체 타입</param>
         /// <param name="receivingType">받을 수 있는 타입</param>
-        /// <param name="direction">동기화 하려는 방향</param>
+        /// <param name="bindMode">동기화 하려는 방향</param>
         /// <returns>프로퍼티 이름 리스트</returns>
-        public static List<string> GetAllAssignablePropertyNames(Type viewModelType, BindingType receivingType, BindingMode direction)
+        public static List<string> GetAllBindablePropertyNames(Type viewModelType, BindingType receivingType, BindingMode bindMode)
         {
             var propertyNames = new List<string>();
 
@@ -123,11 +126,11 @@ namespace HUtil.Runtime.Extension
                 }
 
                 //할당 가능한 타입 검사
-                if(!fieldType.IsAssignableTo(receivingType)){
+                if(!receivingType.CanAccept(fieldType)){
                     continue;
                 }
                 //방향검사
-                if(!allowedDirections.IsAllowed(direction)){
+                if(!allowedDirections.IsAllowed(bindMode)){
                     continue;
                 }
 
@@ -136,49 +139,6 @@ namespace HUtil.Runtime.Extension
             }
 
             return propertyNames;
-        }
-
-        /// <summary>
-        /// 이 타입이 주어진 제네릭 타입의 서브클래스인 경우, 선언된 제네릭 인수를 가져옵니다.
-        /// </summary>
-        /// <param name="toCheck">확인할 타입</param>
-        /// <param name="generic">제네릭 타입</param>
-        /// <returns>제네릭 인수</returns>
-        public static Type[] GetGenericArguments(this Type toCheck, Type generic){
-            while (toCheck != null && toCheck != typeof(object))
-            {
-                // 현재 타입이 제네릭인지 확인하고, 원본 정의(Definition)를 가져옴
-                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur)
-                {
-                    return toCheck.GetGenericArguments();
-                }
-                // 부모 클래스로 올라가며 다시 체크 (상속 관계 대응)
-                toCheck = toCheck.BaseType;
-            }
-            return new Type[0];
-        }
-
-        /// <summary>
-        /// 이 타입이 주어진 제네릭 타입의 서브클래스인지 확인합니다.
-        /// </summary>
-        /// <param name="toCheck">확인할 타입</param>
-        /// <param name="generic">제네릭 타입</param>
-        /// <returns>서브클래스 여부</returns>
-        public static bool IsSubclassOfGeneric(this Type toCheck, Type generic)
-        {
-            while (toCheck != null && toCheck != typeof(object))
-            {
-                // 현재 타입이 제네릭인지 확인하고, 원본 정의(Definition)를 가져옴
-                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur)
-                {
-                    return true;
-                }
-                // 부모 클래스로 올라가며 다시 체크 (상속 관계 대응)
-                toCheck = toCheck.BaseType;
-            }
-            return false;
         }
     }
 }

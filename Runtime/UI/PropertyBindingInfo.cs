@@ -99,11 +99,15 @@ namespace HUtil.Runtime.UI
         /// <param name="onChange">UI 값 변경 이벤트</param>
         public void Bind<T>(object viewModel, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
         {
+            if(Direction == BindingMode.None){
+                return;
+            }
+
             if(!_allowDirection.IsAllowed(Direction)){
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }
-            var observable = ReflectionHelper.GetObservableProperty<T>(viewModel, Path);
+            var observable = BinderReflectionHelper.GetObservableProperty<T>(viewModel, Path);
             if (observable == null)
             {
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");

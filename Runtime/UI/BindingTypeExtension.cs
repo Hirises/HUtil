@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using HUtil.Runtime.Command;
@@ -8,78 +9,104 @@ using UnityEngine;
 
 namespace HUtil.Runtime.UI
 {
+    /// <summary>
+    /// 바인딩 타입 확장 메서드
+    /// </summary>
     public static class BindingTypeExtension
     {
+        // 1. 중앙 집중식 매핑 테이블 (Source of Truth)
+        private static readonly Dictionary<Type, BindingType> _typeToBindingMap = new()
+        {
+            { typeof(int), BindingType.Int },
+            { typeof(float), BindingType.Float },
+            { typeof(string), BindingType.String },
+            { typeof(bool), BindingType.Bool },
+            { typeof(long), BindingType.Long },
+            { typeof(double), BindingType.Double },
+            { typeof(DateTime), BindingType.DateTime },
+            { typeof(Vector2), BindingType.Vector2 },
+            { typeof(Vector3), BindingType.Vector3 },
+            { typeof(Vector4), BindingType.Vector4 },
+            { typeof(Quaternion), BindingType.Quaternion },
+            { typeof(Color), BindingType.Color },
+            { typeof(Color32), BindingType.Color32 },
+            { typeof(GameObject), BindingType.GameObject },
+            { typeof(Transform), BindingType.Transform },
+        };
+
+        // 역방향 매핑은 정적 생성자에서 자동으로 빌드
+        private static readonly Dictionary<BindingType, Type> _bindingToTypeMap = 
+            _typeToBindingMap.ToDictionary(x => x.Value, x => x.Key);
+
+        /// <summary>
+        /// 주어진 타입을 바인딩 타입 열거형으로 변환합니다
+        /// </summary>
+        /// <param name="type">변환할 타입</param>
+        /// <returns>변환된 바인딩 타입</returns>
         public static BindingType ToBindingType(this Type type)
         {
-            if (type == typeof(int)) return BindingType.Int;
-            if (type == typeof(float)) return BindingType.Float;
-            if (type == typeof(string)) return BindingType.String;
-            if (type == typeof(bool)) return BindingType.Bool;
-            if (type == typeof(long)) return BindingType.Long;
-            if (type == typeof(double)) return BindingType.Double;
-            if (type == typeof(DateTime)) return BindingType.DateTime;
+            if (type == null) return BindingType.None;
+
+            // 직접 매핑 확인
+            if (_typeToBindingMap.TryGetValue(type, out var bindingType)) return bindingType;
+
+            // 특수 조건(상속/인터페이스) 확인
             if (type.IsEnum) return BindingType.Enum;
-            if (type == typeof(GameObject)) return BindingType.GameObject;
-            if (type == typeof(Transform)) return BindingType.Transform;
-            if (type == typeof(CommandBase)) return BindingType.Command;
-            if (type == typeof(ObservableTrigger)) return BindingType.Trigger;
-            if (type == typeof(IViewModel)) return BindingType.ViewModel;
-            if (type == typeof(Vector2)) return BindingType.Vector2;
-            if (type == typeof(Vector3)) return BindingType.Vector3;
-            if (type == typeof(Vector4)) return BindingType.Vector4;
-            if (type == typeof(Quaternion)) return BindingType.Quaternion;
-            if (type == typeof(Color)) return BindingType.Color;
-            if (type == typeof(Color32)) return BindingType.Color32;
-            if (type == typeof(DateTime)) return BindingType.DateTime;
+            if (typeof(CommandBase).IsAssignableFrom(type)) return BindingType.Command;
+            if (typeof(ObservableTrigger).IsAssignableFrom(type)) return BindingType.Trigger;
+            if (typeof(IViewModel).IsAssignableFrom(type)) return BindingType.ViewModel;
+
             return BindingType.None;
         }
 
+        /// <summary>
+        /// 주어진 바인딩 타입을 실제 타입으로 변환합니다
+        /// </summary>
+        /// <param name="bindingType">변환할 바인딩 타입</param>
+        /// <returns>변환된 실제 타입</returns>
         public static Type ToType(this BindingType bindingType)
         {
-            if (bindingType == BindingType.Int) return typeof(int);
-            if (bindingType == BindingType.Float) return typeof(float);
-            if (bindingType == BindingType.String) return typeof(string);
-            if (bindingType == BindingType.Bool) return typeof(bool);
-            if (bindingType == BindingType.Long) return typeof(long);
-            if (bindingType == BindingType.Double) return typeof(double);
-            if (bindingType == BindingType.DateTime) return typeof(DateTime);
             if (bindingType == BindingType.Enum) return typeof(Enum);
-            if (bindingType == BindingType.GameObject) return typeof(GameObject);
-            if (bindingType == BindingType.Transform) return typeof(Transform);
+            // 인터페이스나 추상 클래스는 기본 대표 타입으로 반환
             if (bindingType == BindingType.Command) return typeof(CommandBase);
-            if (bindingType == BindingType.Trigger) return typeof(ObservableTrigger);
             if (bindingType == BindingType.ViewModel) return typeof(IViewModel);
-            if (bindingType == BindingType.Vector2) return typeof(Vector2);
-            if (bindingType == BindingType.Vector3) return typeof(Vector3);
-            if (bindingType == BindingType.Vector4) return typeof(Vector4);
-            if (bindingType == BindingType.Quaternion) return typeof(Quaternion);
-            if (bindingType == BindingType.Color) return typeof(Color);
-            if (bindingType == BindingType.Color32) return typeof(Color32);
-            if (bindingType == BindingType.DateTime) return typeof(DateTime);
-            return typeof(void);
+            if (bindingType == BindingType.Trigger) return typeof(ObservableTrigger);
+            
+            return _bindingToTypeMap.TryGetValue(bindingType, out var type) ? type : typeof(void);
         }
 
-        public static bool IsAssignableTo(this BindingType sendingType, BindingType receivingType){
-            BindingType[] assignableTypes = new BindingType[] { receivingType };
-            switch(receivingType){
-                case BindingType.String:
-                    assignableTypes = new BindingType[] { BindingType.String, BindingType.Int, BindingType.Float, 
-                        BindingType.Bool, BindingType.Long, BindingType.Double, BindingType.DateTime, BindingType.Enum,
-                        BindingType.Vector2, BindingType.Vector3, BindingType.Vector4, BindingType.Quaternion, 
-                        BindingType.Color, BindingType.Color32
-                    };
-                    break;
-                case BindingType.Long:
-                case BindingType.Int:
-                    assignableTypes = new BindingType[] { BindingType.Int, BindingType.Long };
-                    break;
-                case BindingType.Float:
-                case BindingType.Double:
-                    assignableTypes = new BindingType[] { BindingType.Float, BindingType.Double };
-                    break;
+        /// <summary>
+        /// 주어진 바인딩 입력에 출력을 연결할 수 있는지 검사합니다
+        /// </summary>
+        /// <param name="destination">입력 바인딩 타입</param>
+        /// <param name="source">출력 바인딩 타입</param>
+        /// <returns>변환 가능하면 true, 아니면 false를 반환</returns>
+        public static bool CanAccept(this BindingType destination, BindingType source)
+        {
+            // 같은 타입인 경우 연결 가능
+            if (source == destination){
+                return true;
             }
-            return assignableTypes.Contains(sendingType);
+            // 둘 중 하나라도 None인 경우 연결 불가능
+            if (source == BindingType.None || destination == BindingType.None) {
+                return false;
+            }
+
+            //특수 맵핑
+            return destination switch
+            {
+                // 모든 값 타입은 문자열로 연결 가능하다고 가정
+                BindingType.String => source != BindingType.Command && source != BindingType.Trigger
+                                    && source != BindingType.ViewModel && source != BindingType.GameObject
+                                    && source != BindingType.Transform,
+                
+                // 수치형 간 호환성 (묵시적 형변환 허용 범위)
+                BindingType.Long => source == BindingType.Int,
+                BindingType.Double => source == BindingType.Float,
+                
+                // 그 외에는 엄격하게 타입 일치(위에서 이미 체크됨)
+                _ => false
+            };
         }
     }
 }

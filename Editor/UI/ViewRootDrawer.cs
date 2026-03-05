@@ -10,11 +10,11 @@ using UnityEngine;
 
 namespace HUtil.Editor.UI
 {
-    [CustomEditor(typeof(ViewRoot))]
+    [CustomEditor(typeof(UIComponent))]
     public class ViewRootDrawer : UnityEditor.Editor
     {
         public override void OnInspectorGUI(){
-            var viewRoot = target as ViewRoot;
+            var viewRoot = target as UIComponent;
 
             var viewModelType = serializedObject.FindProperty("_viewModelType");
             var binders = serializedObject.FindProperty("_binders");
@@ -22,7 +22,7 @@ namespace HUtil.Editor.UI
             // # ViewModel
             (var labelRect, var fieldRect) = EditorGUILayout.GetControlRect().SliceVertical(EditorGUIUtility.labelWidth);
             EditorGUI.LabelField(labelRect, "ViewModel");
-            var options = ReflectionHelper.GetAllViewModelTypes().Select(t => new DropdownOption(t.FullName)).ToArray();
+            var options = BinderReflectionHelper.GetAllViewModelTypes().Select(t => new DropdownOption(t.FullName)).ToArray();
             InspectorHelper.DrawDropdownField(fieldRect, viewModelType, options, "ViewModel");
 
             // # Update Binder List

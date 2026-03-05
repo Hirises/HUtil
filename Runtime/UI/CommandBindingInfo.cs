@@ -70,11 +70,15 @@ namespace HUtil.Runtime.UI
         /// <param name="onTrigger">UI 트리거 이벤트</param>
         public void Bind(object viewModel, CompositeDisposable disposable, UnityEvent onTrigger)
         {
+            if(Direction == BindingMode.None){
+                return;
+            }
+
             if(!_allowDirection.IsAllowed(Direction)){
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }
-            var command = ReflectionHelper.GetCommand(viewModel, Path);
+            var command = BinderReflectionHelper.GetCommand(viewModel, Path);
             if (command == null)
             {
                 Debug.LogWarning($"[UIBinder] Cannot find command {Path} in viewmodel");
@@ -83,29 +87,12 @@ namespace HUtil.Runtime.UI
             switch (Direction)
             {
                 case BindingMode.OnceToUI:
-                {
-                    throw new NotSupportedException("OnceToUI direction is not allowed for command binding!");
-                }
                 case BindingMode.ToUI:
+                case BindingMode.TwoWay:
                 {
-                    if(command == null) throw new ArgumentNullException(nameof(command));
-
-                    //observable.Subscribe(setter).AddTo(disposable);
-                    break;
+                    throw new NotSupportedException($"\"{Direction}\" direction is not allowed for command binding!");
                 }
                 case BindingMode.ToData:
-                {
-                    if(command == null) throw new ArgumentNullException(nameof(command));
-                    if(onTrigger == null) throw new ArgumentNullException(nameof(onTrigger));
-
-                    void listener() {
-                        command.Execute(null);
-                    };
-                    onTrigger.AddListener(listener);
-                    new UnityEventSubscription(() => onTrigger.RemoveListener(listener)).AddTo(disposable);
-                    break;
-                }
-                case BindingMode.TwoWay:
                 {
                     if(command == null) throw new ArgumentNullException(nameof(command));
                     if(onTrigger == null) throw new ArgumentNullException(nameof(onTrigger));
