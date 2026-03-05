@@ -9,7 +9,7 @@ using UnityEngine;
 using HUtil.UI.Binder;
 using System.Linq;
 
-namespace HUtil.Editor.UI
+namespace HUtil.UI.Editor
 {
     [CustomPropertyDrawer(typeof(CommandBindingInfo))]
     public class CommandBindInfoDrawer : PropertyDrawer

@@ -7,8 +7,9 @@ using HUtil.Runtime.Extension;
 
 using UnityEditor;
 using UnityEngine;
+using HUtil.Editor;
 
-namespace HUtil.Editor.UI
+namespace HUtil.UI.Editor
 {
     [CustomEditor(typeof(UIComponent))]
     public class UIComponentDrawer : UnityEditor.Editor

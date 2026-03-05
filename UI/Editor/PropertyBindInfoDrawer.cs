@@ -11,7 +11,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace HUtil.Editor.UI
+namespace HUtil.UI.Editor
 {
     [CustomPropertyDrawer(typeof(PropertyBindingInfo))]
     public class PropertyBindInfoDrawer : PropertyDrawer
