@@ -28,12 +28,13 @@ namespace HUtil.UI.Editor
             }
             for(int i = 0; i < viewModelResolvers.arraySize; i++){
                 EditorGUILayout.Space(EditorGUIUtility.standardVerticalSpacing * 2);
-                var resolver = viewModelResolvers.GetArrayElementAtIndex(i);
-                EditorGUILayout.PropertyField(resolver, true);
                 if(GUI.Button(EditorGUILayout.GetControlRect(), "Remove ViewModel")){
                     uiComponent.RemoveViewModelResolver(i);
                     i--;
+                    continue;
                 }
+                var resolver = viewModelResolvers.GetArrayElementAtIndex(i);
+                EditorGUILayout.PropertyField(resolver, true);
             }
             if(viewModelResolvers.arraySize == 0)
             {
