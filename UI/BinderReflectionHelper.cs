@@ -102,6 +102,26 @@ namespace HUtil.UI
         #endregion
 
         /// <summary>
+        /// 주어진 필드의 바인딩 정보를 가져옵니다.
+        /// </summary>
+        /// <param name="field">필드</param>
+        /// <returns>(바인딩 타입, 허용된 방향)</returns>
+        public static (BindingType fieldType, BindDirectionFlags allowedDirections) GetBindingInfo(FieldInfo field)
+        {
+            //필드는 ObservableProperty<T>, ObservableTrigger, 또는 CommandBase를 상속하는 타입이어야 합니다.
+            if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>))){
+                var underlyingType = field.FieldType.GetGenericArguments(typeof(ObservableProperty<>))[0];
+                return (underlyingType.ToBindingType(), field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None);
+            }else if(typeof(CommandBase).IsAssignableFrom(field.FieldType)){
+                return (BindingType.Command, BindDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
+            }else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType)){
+                return (BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None);
+            }else{
+                return (BindingType.None, BindDirectionFlags.None);
+            }
+        }
+
+        /// <summary>
         /// 주어진 ViewModel 타입 내부의 바인딩 가능한 모든 프로퍼티의 이름을 가져옵니다
         /// </summary>
         /// <param name="viewModelType">객체 타입</param>
@@ -118,18 +138,8 @@ namespace HUtil.UI
             BindDirectionFlags allowedDirections = BindDirectionFlags.None;
             foreach(var field in fields){
 
-                //필드는 ObservableProperty<T>, ObservableTrigger, 또는 CommandBase를 상속하는 타입이어야 합니다.
-                if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>))){
-                    var underlyingType = field.FieldType.GetGenericArguments(typeof(ObservableProperty<>))[0];
-                    fieldType = underlyingType.ToBindingType();
-                    allowedDirections = field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None;
-                }else if(typeof(CommandBase).IsAssignableFrom(field.FieldType)){
-                    fieldType = BindingType.Command;
-                    allowedDirections = BindDirectionFlags.ToData;    //Command는 데이터로만 동기화 가능
-                }else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType)){
-                    fieldType = BindingType.Trigger;
-                    allowedDirections = field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None;
-                }else{
+                (fieldType, allowedDirections) = GetBindingInfo(field);
+                if(fieldType == BindingType.None){
                     continue;
                 }
 
@@ -139,6 +149,27 @@ namespace HUtil.UI
                 }
                 //방향검사
                 if(!allowedDirections.CanAccept(bindMode)){
+                    continue;
+                }
+
+                //추가
+                output.Add(field.Name);
+            }
+
+            return output;
+        }
+
+        public static List<string> GetAllBindablePropertyNames(Type viewModelType, List<string> output = null)
+        {
+            output ??= new();
+
+            var fields = viewModelType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            BindingType fieldType = BindingType.None;
+            BindDirectionFlags allowedDirections = BindDirectionFlags.None;
+            foreach(var field in fields){
+
+                (fieldType, allowedDirections) = GetBindingInfo(field);
+                if(fieldType == BindingType.None){
                     continue;
                 }
 

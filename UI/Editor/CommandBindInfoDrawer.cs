@@ -57,7 +57,7 @@ namespace HUtil.UI.Editor
             // Direction이 None이면 Path는 숨김
             if(directionProp.enumValueIndex != (int)BindingMode.None){
                 List<string> options = UIReflectionHelper.GetAllBindablePropertyNames(uiComponent, BindingType.Command, direction);
-                InspectorHelper.DrawDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
+                InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
             }
         }
     }

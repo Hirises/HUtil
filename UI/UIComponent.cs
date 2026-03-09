@@ -15,7 +15,7 @@ namespace HUtil.UI
     /// </summary>
     public class UIComponent : MonoBinder
     {
-        [SerializeField] private List<ViewModelResolver> _viewModelResolvers;
+        [SerializeField] private List<ViewModelResolver> _viewModelResolvers = new List<ViewModelResolver>();
         [SerializeField, ReadOnly] private List<MonoBinder> _binders = new List<MonoBinder>();
 
         internal List<ViewModelResolver> ViewModelResolvers => _viewModelResolvers;
@@ -60,6 +60,11 @@ namespace HUtil.UI
         internal void AddNewViewModelResolver()
         {
             _viewModelResolvers.Add(new ViewModelResolver(this));
+        }
+
+        internal void RemoveViewModelResolver(int index)
+        {
+            _viewModelResolvers.RemoveAt(index);
         }
 
         private void Awake(){

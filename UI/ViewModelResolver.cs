@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
@@ -30,9 +31,9 @@ namespace HUtil.UI
             /// </summary>
             DynamicBinding,
         }
+        [SerializeField] private string _viewModelType;
         [SerializeField] private BindingMethod _bindingMethod;
         [SerializeField] private PropertyBindingInfo _viewModelProp;
-        [SerializeField] private string _viewModelType;
         [SerializeField] private ViewModelBindingItem[] _bindMap;
         [SerializeField, HideInInspector] private UIComponent _parent;
 
@@ -43,7 +44,7 @@ namespace HUtil.UI
         public string ViewModelType => _viewModelType;
 
         public ViewModelResolver(UIComponent parent){
-            _bindingMethod = BindingMethod.DynamicBinding;
+            _bindingMethod = BindingMethod.ManualBinding;
             _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindDirectionFlags.ToUI);
             _viewModelType = string.Empty;
             _bindMap = new ViewModelBindingItem[0];
@@ -92,6 +93,11 @@ namespace HUtil.UI
         }
         #endregion
 
+        internal void RefreshBindingMap(Type viewModelType){
+            var options = BinderReflectionHelper.GetAllBindablePropertyNames(viewModelType);
+            _bindMap = options.Select(option => new ViewModelBindingItem(option, option)).ToArray();
+        }
+
         internal void Resolve(Dictionary<string, ViewModelProperty> bindMap){
             foreach(var bindInfo in _bindMap){
                 bindMap.Add(bindInfo.SourcePropertyPath, new ViewModelProperty(_viewModel, bindInfo.SourcePropertyPath));
@@ -108,9 +114,9 @@ namespace HUtil.UI
             public string SourcePropertyPath => _sourcePropertyPath;
             public string DestinationPropertyPath => _destinationPropertyPath;
 
-            public ViewModelBindingItem(){
-                _sourcePropertyPath = string.Empty;
-                _destinationPropertyPath = string.Empty;
+            public ViewModelBindingItem(string sourcePropertyPath, string destinationPropertyPath){
+                _sourcePropertyPath = sourcePropertyPath;
+                _destinationPropertyPath = destinationPropertyPath;
             }
         }
     }

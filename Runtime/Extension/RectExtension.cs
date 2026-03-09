@@ -6,7 +6,6 @@ namespace HUtil.Runtime.Extension
 {
     public static class RectExtension
     {
-
         public static (Rect left, Rect right) SliceVertical(this Rect rect, float leftWidth){
             return (rect.SliceLeft(leftWidth), rect.SliceRight(rect.width - leftWidth));
         }

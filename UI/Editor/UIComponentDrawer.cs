@@ -23,16 +23,21 @@ namespace HUtil.UI.Editor
             var binders = serializedObject.FindProperty("_binders");
 
             // # ViewModelResolver
+            if(GUI.Button(EditorGUILayout.GetControlRect(), "Add ViewModel")){
+                uiComponent.AddNewViewModelResolver();
+            }
             for(int i = 0; i < viewModelResolvers.arraySize; i++){
+                EditorGUILayout.Space(EditorGUIUtility.standardVerticalSpacing * 2);
                 var resolver = viewModelResolvers.GetArrayElementAtIndex(i);
                 EditorGUILayout.PropertyField(resolver, true);
+                if(GUI.Button(EditorGUILayout.GetControlRect(), "Remove ViewModel")){
+                    uiComponent.RemoveViewModelResolver(i);
+                    i--;
+                }
             }
             if(viewModelResolvers.arraySize == 0)
             {
                 EditorGUILayout.LabelField("No ViewModel");
-            }
-            if(GUI.Button(EditorGUILayout.GetControlRect(), "Add ViewModel")){
-                uiComponent.AddNewViewModelResolver();
             }
 
             // Space

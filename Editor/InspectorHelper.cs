@@ -13,6 +13,14 @@ namespace HUtil.Editor
 {
     public static class InspectorHelper
     {
+        public static Rect GetStartLine(this Rect rect){
+            return new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+        }
+
+        public static Rect GetNextLine(this Rect rect){
+            return new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, rect.width, EditorGUIUtility.singleLineHeight);
+        }
+
         /// <summary>
         /// <see cref="SerializedProperty"/>에서 실제 필드 정보를 가져옵니다.
         /// </summary>
@@ -37,7 +45,13 @@ namespace HUtil.Editor
                     fieldInfo = obj.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                     obj = fieldInfo.GetValue(obj);
                     
-                    if (obj is IList list) obj = list[index];
+                    if (obj is IList list) {
+                        if(index < list.Count){
+                            obj = list[index];
+                        }else{
+                            return null;
+                        }
+                    }
                 }
                 else
                 {
@@ -73,7 +87,13 @@ namespace HUtil.Editor
                     var field = obj.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                     obj = field.GetValue(obj);
                     
-                    if (obj is IList list) obj = list[index];
+                    if (obj is IList list){
+                        if(index < list.Count){
+                            obj = list[index];
+                        }else{
+                            return null;
+                        }
+                    }
                 }
                 else
                 {
@@ -142,7 +162,7 @@ namespace HUtil.Editor
         /// <param name="rect">그릴 위치</param>
         /// <param name="property">선택된 값</param>
         /// <param name="options">옵션 리스트</param>
-        public static void DrawDropdownField(Rect rect, SerializedProperty property, DropdownOption[] options, string title = "Dropdown")
+        public static void DrawSearchableDropdownField(Rect rect, SerializedProperty property, DropdownOption[] options, string title = "Dropdown")
         {
             if(GUI.Button(rect, property.stringValue, EditorStyles.popup)){
                 var state = new AdvancedDropdownState();
