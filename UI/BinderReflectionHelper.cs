@@ -107,10 +107,11 @@ namespace HUtil.UI
         /// <param name="viewModelType">객체 타입</param>
         /// <param name="receivingType">받을 수 있는 타입</param>
         /// <param name="bindMode">동기화 하려는 방향</param>
+        /// <param name="output">값을 전달받을 리스트</param>
         /// <returns>프로퍼티 이름 리스트</returns>
-        public static List<string> GetAllBindablePropertyNames(Type viewModelType, BindingType receivingType, BindingMode bindMode)
+        public static List<string> GetAllBindablePropertyNames(Type viewModelType, BindingType receivingType, BindingMode bindMode, List<string> output = null)
         {
-            var propertyNames = new List<string>();
+            output ??= new();
 
             var fields = viewModelType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             BindingType fieldType = BindingType.None;
@@ -142,10 +143,10 @@ namespace HUtil.UI
                 }
 
                 //추가
-                propertyNames.Add(field.Name);
+                output.Add(field.Name);
             }
 
-            return propertyNames;
+            return output;
         }
     }
 }

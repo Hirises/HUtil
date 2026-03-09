@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
 
 using Unity.Properties;
@@ -32,22 +33,23 @@ namespace HUtil.UI
         [SerializeField] private BindingMethod _bindingMethod;
         [SerializeField] private PropertyBindingInfo _viewModelProp;
         [SerializeField] private string _viewModelType;
-        [SerializeField] private List<ViewModelBindingItem> _bindMap;
+        [SerializeField] private ViewModelBindingItem[] _bindMap;
+        [SerializeField, HideInInspector] private UIComponent _parent;
 
         private object _viewModel;
         private IDisposable _subscription;
-        private Action _onViewModelChanged;
 
         public bool IsResolved => _viewModel != null;
+        public string ViewModelType => _viewModelType;
 
-        public ViewModelResolver(Action onViewModelChanged){
+        public ViewModelResolver(UIComponent parent){
             _bindingMethod = BindingMethod.DynamicBinding;
             _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindDirectionFlags.ToUI);
             _viewModelType = string.Empty;
-            _bindMap = new List<ViewModelBindingItem>();
+            _bindMap = new ViewModelBindingItem[0];
             _viewModel = null;
             _subscription = null;
-            _onViewModelChanged = onViewModelChanged;
+            _parent = parent;
         }
 
         #region Bind ViewModel
@@ -86,7 +88,7 @@ namespace HUtil.UI
 
         private void SetViewModel(object viewModel){
             _viewModel = viewModel;
-            _onViewModelChanged?.Invoke();
+            _parent?.UpdateBindingState();
         }
         #endregion
 
@@ -97,7 +99,7 @@ namespace HUtil.UI
         }
 
         // 딕셔너리 비주얼라이즈하기 귀찮아서 사용함
-        [SerializeField]
+        [Serializable]
         private class ViewModelBindingItem
         {
             [SerializeField] private string _sourcePropertyPath;

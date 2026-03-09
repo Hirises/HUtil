@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using HUtil.UI.Binder;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace HUtil.UI.Editor
 {
@@ -33,8 +34,7 @@ namespace HUtil.UI.Editor
                 EditorGUI.HelpBox(position, "UIComponent not found", MessageType.Error);
                 return;
             }
-            var viewModelType = InspectorHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel))
-                                    .FirstOrDefault(t => t.FullName == uiComponent.ViewModelType);
+            var viewModelTypes = UIReflectionHelper.GetAllViewModelTypes(uiComponent);
 
             //프로퍼티 캐싱
             var directionProp = property.FindPropertyRelative("_direction");
@@ -52,14 +52,14 @@ namespace HUtil.UI.Editor
                 directionRect = directionRect.SliceLeftRatio(0.5f);
             }
             InspectorHelper.DrawFilteredEnumField<BindingMode>(directionRect, directionProp, direction => instance.AllowDirection.CanAccept(direction));
-            
+
             // # Path
             // Direction이 None이면 Path는 숨김
             if(directionProp.enumValueIndex != (int)BindingMode.None){
-                string[] options = BinderReflectionHelper.GetAllBindablePropertyNames(viewModelType, BindingType.Command, direction).ToArray();
+                List<string> options = UIReflectionHelper.GetAllBindablePropertyNames(uiComponent, BindingType.Command, direction);
                 InspectorHelper.DrawDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
             }
         }
     }
-    
+
 }

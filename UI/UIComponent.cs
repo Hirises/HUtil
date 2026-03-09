@@ -57,6 +57,11 @@ namespace HUtil.UI
             }
         }
 
+        internal void AddNewViewModelResolver()
+        {
+            _viewModelResolvers.Add(new ViewModelResolver(this));
+        }
+
         private void Awake(){
             foreach (var resolver in _viewModelResolvers)
             {
@@ -81,7 +86,7 @@ namespace HUtil.UI
             }
         }
 
-        private void UpdateBindingState(){
+        internal void UpdateBindingState(){
             bool isAllResolved = true;
             foreach (var resolver in _viewModelResolvers)
             {
