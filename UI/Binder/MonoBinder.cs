@@ -46,6 +46,8 @@ namespace HUtil.UI.Binder
                 throw new ArgumentNullException(nameof(bindMap));
             }
 
+            Debug.Log($"Bind: {gameObject.name}");
+
             Unbind();
             BindInternal(bindMap, _disposable);
         }

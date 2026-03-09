@@ -77,6 +77,9 @@ namespace HUtil.UI
             if(_bindingMethod != BindingMethod.ManualBinding){  //이거 지울까?
                 return;
             }
+            if(viewModel.GetType().FullName != _viewModelType){
+                return;
+            }
             SetViewModel(viewModel);
         }
 
@@ -93,15 +96,22 @@ namespace HUtil.UI
         }
         #endregion
 
-        internal void RefreshBindingMap(Type viewModelType){
-            var options = BinderReflectionHelper.GetAllBindablePropertyNames(viewModelType);
-            _bindMap = options.Select(option => new ViewModelBindingItem(option, option)).ToArray();
+        internal void Resolve(Dictionary<string, ViewModelProperty> bindMap){
+            if(!IsResolved){
+                return;
+            }
+            foreach(var bindInfo in _bindMap){
+                bindMap.Add(bindInfo.DestinationPropertyPath, new ViewModelProperty(_viewModel, bindInfo.SourcePropertyPath));
+            }
         }
 
-        internal void Resolve(Dictionary<string, ViewModelProperty> bindMap){
+        internal string ResolveName(string sourcePropertyPath){
             foreach(var bindInfo in _bindMap){
-                bindMap.Add(bindInfo.SourcePropertyPath, new ViewModelProperty(_viewModel, bindInfo.SourcePropertyPath));
+                if(bindInfo.SourcePropertyPath == sourcePropertyPath){
+                    return bindInfo.DestinationPropertyPath;
+                }
             }
+            return sourcePropertyPath;
         }
 
         // 딕셔너리 비주얼라이즈하기 귀찮아서 사용함

@@ -106,18 +106,18 @@ namespace HUtil.UI
         /// </summary>
         /// <param name="field">필드</param>
         /// <returns>(바인딩 타입, 허용된 방향)</returns>
-        public static (BindingType fieldType, BindDirectionFlags allowedDirections) GetBindingInfo(FieldInfo field)
+        public static BindingInfo GetBindingInfo(FieldInfo field)
         {
             //필드는 ObservableProperty<T>, ObservableTrigger, 또는 CommandBase를 상속하는 타입이어야 합니다.
             if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>))){
                 var underlyingType = field.FieldType.GetGenericArguments(typeof(ObservableProperty<>))[0];
-                return (underlyingType.ToBindingType(), field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None);
+                return new BindingInfo(field.Name, underlyingType.ToBindingType(), field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None);
             }else if(typeof(CommandBase).IsAssignableFrom(field.FieldType)){
-                return (BindingType.Command, BindDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
+                return new BindingInfo(field.Name, BindingType.Command, BindDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
             }else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType)){
-                return (BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None);
+                return new BindingInfo(field.Name, BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None);
             }else{
-                return (BindingType.None, BindDirectionFlags.None);
+                return new BindingInfo(field.Name, BindingType.None, BindDirectionFlags.None);
             }
         }
 
@@ -138,8 +138,8 @@ namespace HUtil.UI
             BindDirectionFlags allowedDirections = BindDirectionFlags.None;
             foreach(var field in fields){
 
-                (fieldType, allowedDirections) = GetBindingInfo(field);
-                if(fieldType == BindingType.None){
+                var bindingInfo = GetBindingInfo(field);
+                if(!bindingInfo.IsValid){
                     continue;
                 }
 
@@ -164,17 +164,33 @@ namespace HUtil.UI
             output ??= new();
 
             var fields = viewModelType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            BindingType fieldType = BindingType.None;
-            BindDirectionFlags allowedDirections = BindDirectionFlags.None;
             foreach(var field in fields){
 
-                (fieldType, allowedDirections) = GetBindingInfo(field);
-                if(fieldType == BindingType.None){
+                var bindingInfo = GetBindingInfo(field);
+                if(!bindingInfo.IsValid){
                     continue;
                 }
 
                 //추가
                 output.Add(field.Name);
+            }
+
+            return output;
+        }
+
+        public static List<BindingInfo> GetAllBindingInfos(Type viewModelType, List<BindingInfo> output = null)
+        {
+            output ??= new();
+
+            var fields = viewModelType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach(var field in fields){
+                var bindingInfo = GetBindingInfo(field);
+                if(!bindingInfo.IsValid){
+                    continue;
+                }
+
+                //추가
+                output.Add(bindingInfo);
             }
 
             return output;
