@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using HUtil.Runtime.Observable;
 
@@ -20,15 +21,17 @@ namespace HUtil.UI
                 _subscriptions[viewModelType] = subscriptions;
             }
             subscriptions.Add(onViewModelChanged);
+            UnityEngine.Debug.Log($"Subscribe: {viewModelType}");
 
             return new Subscription(() => _subscriptions[viewModelType].Remove(onViewModelChanged));
         }
 
-        public static void Bind(IViewModel viewModel){
-            var typeName = viewModel.GetType().Name;
+        public static void StaticBind(IViewModel viewModel){
+            var typeName = viewModel.GetType().FullName;
             _viewModels[typeName] = viewModel;
 
             if(_subscriptions.TryGetValue(typeName, out var subscriptions)){
+                UnityEngine.Debug.Log($"StaticBind: {typeName} {subscriptions.Count}");
                 foreach(var callback in subscriptions){
                     callback(viewModel);
                 }

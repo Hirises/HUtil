@@ -103,23 +103,25 @@ namespace HUtil.UI
 
             Debug.Log($"UpdateBindingState: {gameObject.name} {isAllResolved}");
 
+            Unbind();
             if(isAllResolved){
                 Dictionary<string, ViewModelProperty> bindMap = new Dictionary<string, ViewModelProperty>();
                 foreach (var resolver in _viewModelResolvers)
                 {
                     resolver.Resolve(bindMap);
                 }
-                Bind(bindMap);
-            }else{
-                Unbind();
+                foreach (var binder in _binders)
+                {
+                    binder.Bind(bindMap);
+                }
             }
         }
 
         protected override void BindInternal(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable)
         {
-            foreach (var binder in _binders)
+            foreach (var resolver in _viewModelResolvers)
             {
-                binder.Bind(bindMap);
+                resolver.DynamicBind(bindMap, disposable);
             }
         }
     }

@@ -18,7 +18,7 @@ namespace HUtil.UI.Editor
             var bindMapProp = property.FindPropertyRelative("_bindMap");
 
             bool useDynamicBinding = bindingMethodProp.enumValueIndex == (int)ViewModelResolver.BindingMethod.DynamicBinding;
-            int numLines = 2 + (useDynamicBinding ? 1 : 0) + bindMapProp.arraySize;
+            int numLines = 3 + (useDynamicBinding ? 1 : 0) + bindMapProp.arraySize;
 
             return ((EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * numLines) - EditorGUIUtility.standardVerticalSpacing;
         }

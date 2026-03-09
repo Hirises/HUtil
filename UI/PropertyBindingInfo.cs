@@ -20,8 +20,9 @@ namespace HUtil.UI
         private string _path;
         [SerializeField]
         private BindingMode _direction;
-
+        [SerializeField]
         private BindingType _receivingType;
+        [SerializeField]
         private BindDirectionFlags _allowDirection;
 
         /// <summary>

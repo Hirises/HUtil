@@ -70,6 +70,9 @@ namespace HUtil.UI
             if(_bindingMethod != BindingMethod.DynamicBinding){
                 return;
             }
+            if(IsResolved){
+                return;
+            }
             _viewModelProp.Bind<IViewModel>(bindMap, disposable, SetViewModel);
         }
 
