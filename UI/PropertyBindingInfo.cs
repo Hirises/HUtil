@@ -23,7 +23,7 @@ namespace HUtil.UI
         [SerializeField]
         private BindingType _receivingType;
         [SerializeField]
-        private BindDirectionFlags _allowDirection;
+        private BindingDirectionFlags _allowDirection;
 
         /// <summary>
         /// 바인딩할 프로퍼티의 이름입니다
@@ -36,7 +36,7 @@ namespace HUtil.UI
         /// <summary>
         /// 허용가능한 바인딩 방향입니다
         /// </summary>
-        public BindDirectionFlags AllowDirection => _allowDirection;
+        public BindingDirectionFlags AllowDirection => _allowDirection;
         /// <summary>
         /// 이 프로퍼티가 받을 수 있는 타입입니다
         /// </summary>
@@ -62,7 +62,7 @@ namespace HUtil.UI
         /// 인스펙터용 바인딩 속성을 생성합니다
         /// </summary>
         /// <param name="allowDirection">허용가능한 바인딩 방향</param>
-        public PropertyBindingInfo(BindingType receivingType, BindDirectionFlags allowDirection){
+        public PropertyBindingInfo(BindingType receivingType, BindingDirectionFlags allowDirection){
             _receivingType = receivingType;
             _allowDirection = allowDirection;
         }

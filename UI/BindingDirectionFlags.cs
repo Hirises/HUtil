@@ -6,7 +6,7 @@ namespace HUtil.UI
     /// UI 동기화 방향 플레그
     /// </summary>
     [Flags]
-    public enum BindDirectionFlags
+    public enum BindingDirectionFlags
     {
         /// <summary>
         /// 동기화 불가능

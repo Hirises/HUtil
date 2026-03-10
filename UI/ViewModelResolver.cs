@@ -58,7 +58,7 @@ namespace HUtil.UI
         /// <param name="parent">부모 UIComponent</param>
         public ViewModelResolver(UIComponent parent){
             _bindingMethod = BindingMethod.ManualBinding;
-            _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindDirectionFlags.ToUI);
+            _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindingDirectionFlags.ToUI);
             _viewModelType = string.Empty;
             _bindMap = new ViewModelBindingItem[0];
             _viewModel = null;

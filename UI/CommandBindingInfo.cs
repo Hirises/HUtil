@@ -21,7 +21,7 @@ namespace HUtil.UI
         [SerializeField]
         private BindingMode _direction;
         [SerializeField]
-        private BindDirectionFlags _allowDirection;
+        private BindingDirectionFlags _allowDirection;
 
         /// <summary>
         /// 바인딩할 커맨드의 이름입니다
@@ -34,7 +34,7 @@ namespace HUtil.UI
         /// <summary>
         /// 허용된 바인딩 방향입니다
         /// </summary>
-        internal BindDirectionFlags AllowDirection => _allowDirection;
+        internal BindingDirectionFlags AllowDirection => _allowDirection;
 
         /// <summary>
         /// 이 필드의 유효성을 검증합니다
@@ -60,7 +60,7 @@ namespace HUtil.UI
         /// 인스펙터용 바인딩 속성을 생성합니다
         /// </summary>
         /// <param name="allowDirection">허용가능한 바인딩 방향</param>
-        public CommandBindingInfo(BindDirectionFlags allowDirection){
+        public CommandBindingInfo(BindingDirectionFlags allowDirection){
             _allowDirection = allowDirection;
         }
 

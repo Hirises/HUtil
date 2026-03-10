@@ -9,7 +9,7 @@ namespace HUtil.UI
     {
         private string _propertyPath;
         private BindingType _type;
-        private BindDirectionFlags _allowedDirection;
+        private BindingDirectionFlags _allowedDirection;
 
         /// <summary>
         /// 해당 필드의 이름
@@ -22,14 +22,14 @@ namespace HUtil.UI
         /// <summary>
         /// 해당 필드에 허용된 바인딩 방향
         /// </summary>
-        public BindDirectionFlags AllowedDirection => _allowedDirection;
+        public BindingDirectionFlags AllowedDirection => _allowedDirection;
 
         /// <summary>
         /// 유효한 필드인지 여부
         /// </summary>
-        public bool IsValid => Type != BindingType.None && AllowedDirection != BindDirectionFlags.None;
+        public bool IsValid => Type != BindingType.None && AllowedDirection != BindingDirectionFlags.None;
 
-        public BindingInfo(string sourcePropertyPath, BindingType sourceType, BindDirectionFlags sourceDirection){
+        public BindingInfo(string sourcePropertyPath, BindingType sourceType, BindingDirectionFlags sourceDirection){
             _propertyPath = sourcePropertyPath;
             _type = sourceType;
             _allowedDirection = sourceDirection;

@@ -113,19 +113,19 @@ namespace HUtil.UI
             if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>)))    //ObservableProperty<T>
             {
                 var underlyingType = field.FieldType.GetGenericArgumentsOfType(typeof(ObservableProperty<>))[0];  //제네릭 안쪽에 들어간 타입을 꺼내옴
-                return new BindingInfo(field.Name, underlyingType.ToBindingType(), field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindDirectionFlags.None);
+                return new BindingInfo(field.Name, underlyingType.ToBindingType(), field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
             }
             else if(typeof(CommandBase).IsAssignableFrom(field.FieldType))    //CommandBase
             {
-                return new BindingInfo(field.Name, BindingType.Command, BindDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
+                return new BindingInfo(field.Name, BindingType.Command, BindingDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
             }
             else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType))    //ObservableTrigger
             {
-                return new BindingInfo(field.Name, BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindDirectionFlags.None);
+                return new BindingInfo(field.Name, BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
             }
 
             //지원하지 않는 타입
-            return new BindingInfo(field.Name, BindingType.None, BindDirectionFlags.None);
+            return new BindingInfo(field.Name, BindingType.None, BindingDirectionFlags.None);
         }
 
         /// <summary>
