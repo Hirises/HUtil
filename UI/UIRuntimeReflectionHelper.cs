@@ -100,6 +100,35 @@ namespace HUtil.UI
                 throw new ArgumentException($"Command {commandPath} not found on object {obj.GetType().Name}");
             }
         }
+
+        /// <summary>
+        /// 주어진 객체 내부의 <see cref="ObservableList{T}"/>를 가져옵니다.
+        /// </summary>
+        /// <typeparam name="T">리스트 아이템 타입</typeparam>
+        /// <param name="obj">객체</param>
+        /// <param name="listPath">리스트 경로</param>
+        /// <returns><see cref="ObservableList{T}"/></returns>
+        public static ObservableList<T> GetObservableList<T>(object obj, string listPath)
+        {
+            if (string.IsNullOrEmpty(listPath))
+            {
+                throw new ArgumentNullException(nameof(listPath), "ListPath is null or empty");
+            }
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj), "Object is null");
+            }
+
+            object _obj = obj;
+            if (PropertyContainer.TryGetValue(ref _obj, listPath, out ObservableList<T> value))
+            {
+                return value;
+            }
+            else
+            {
+                throw new ArgumentException($"List {listPath} not found on object {obj.GetType().Name}");
+            }
+        }
         #endregion
 
         /// <summary>
@@ -122,6 +151,10 @@ namespace HUtil.UI
             else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType))    //ObservableTrigger
             {
                 return new BindingInfo(field.Name, BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
+            }
+            else if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableList<>)))    //ObservableList<T>
+            {
+                return new BindingInfo(field.Name, BindingType.List, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
             }
 
             //지원하지 않는 타입

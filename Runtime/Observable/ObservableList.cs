@@ -57,6 +57,39 @@ namespace HUtil.Runtime.Observable
             return new ScriptableDisposable(() => _onChanged -= onChanged);
         }
 
+        /// <summary>
+        /// 변경 이벤트를 적용하고, 알림을 발생시킵니다
+        /// </summary>
+        /// <param name="changeEvent">적용할 변경 이벤트</param>
+        public void ApplyChange(ListChangeEvent<T> changeEvent)
+        {
+            ApplyChangeWithoutNotify(changeEvent);
+            Notify(changeEvent.Action, changeEvent.Item, changeEvent.Index);
+        }
+
+        /// <summary>
+        /// 변경 이벤트를 적용하지만, 알림을 발생시키지 않습니다
+        /// </summary>
+        /// <param name="changeEvent">적용할 변경 이벤트</param>
+        public void ApplyChangeWithoutNotify(ListChangeEvent<T> changeEvent)
+        {
+            switch (changeEvent.Action)
+            {
+                case ListChangeAction.Add:
+                    _list.Add(changeEvent.Item);
+                    break;
+                case ListChangeAction.Remove:
+                    _list.Remove(changeEvent.Item);
+                    break;
+                case ListChangeAction.Replace:
+                    _list[changeEvent.Index] = changeEvent.Item;
+                    break;
+                case ListChangeAction.Clear:
+                    _list.Clear();
+                    break;
+            }
+        }
+
         // --- IList<T> 구현부 (데이터 변경 + 알림) ---
         public void Add(T item)
         {

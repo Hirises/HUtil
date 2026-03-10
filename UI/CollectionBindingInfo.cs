@@ -9,19 +9,13 @@ using UnityEngine.Events;
 
 namespace HUtil.UI
 {
-    /// <summary>
-    /// 프로퍼티 바인딩 인스펙터 속성
-    /// </summary>
     [Serializable]
-    public class PropertyBindingInfo
-    {
-
+    public class CollectionBindingInfo
+    {       
         [SerializeField]
         private string _path;
         [SerializeField]
         private BindingMode _direction;
-        [SerializeField]
-        private BindingType _receivingType;
         [SerializeField]
         private BindingDirectionFlags _allowDirection;
 
@@ -37,10 +31,6 @@ namespace HUtil.UI
         /// 허용가능한 바인딩 방향입니다
         /// </summary>
         public BindingDirectionFlags AllowDirection => _allowDirection;
-        /// <summary>
-        /// 이 프로퍼티가 받을 수 있는 타입입니다
-        /// </summary>
-        public BindingType ReceivingType => _receivingType;
 
         /// <summary>
         /// 이 필드의 유효성을 검증합니다
@@ -62,19 +52,17 @@ namespace HUtil.UI
         /// 인스펙터용 바인딩 속성을 생성합니다
         /// </summary>
         /// <param name="allowDirection">허용가능한 바인딩 방향</param>
-        public PropertyBindingInfo(BindingType receivingType, BindingDirectionFlags allowDirection){
-            _receivingType = receivingType;
+        public CollectionBindingInfo(BindingDirectionFlags allowDirection){
             _allowDirection = allowDirection;
         }
 
         /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
-        /// <typeparam name="T">대상 타입</typeparam>
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
-        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, Action<T> setter)
+        public void Bind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, Action<ListChangeEvent<IViewModel>> setter)
         {
             Bind(bindMap, disposable, setter, null);
         }
@@ -82,11 +70,10 @@ namespace HUtil.UI
         /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
-        /// <typeparam name="T">대상 타입</typeparam>
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange)
+        public void Bind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent<ListChangeEvent<IViewModel>> onChange)
         {
             Bind(bindMap, disposable, null, onChange);
         }
@@ -94,12 +81,11 @@ namespace HUtil.UI
         /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
-        /// <typeparam name="T">대상 타입</typeparam>
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
+        public void Bind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, Action<ListChangeEvent<IViewModel>> setter, UnityEvent<ListChangeEvent<IViewModel>> onChange)
         {
             if(Direction == BindingMode.None){
                 return;
@@ -112,7 +98,7 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
-            var observable = property.AsObservableProperty<T>();
+            var observable = property.AsObservableList<IViewModel>();
             if (observable == null)
             {
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
@@ -125,7 +111,7 @@ namespace HUtil.UI
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
-                    setter(observable.Value);
+                    observable.Subscribe(setter).Dispose();
                     break;
                 }
                 case BindingMode.ToUI:
@@ -139,8 +125,8 @@ namespace HUtil.UI
                 {
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));
 
-                    void listener(T value) {
-                        observable.Value = value;
+                    void listener(ListChangeEvent<IViewModel> @event) {
+                        ApplyChange(@event, observable);
                     };
                     onChange.AddListener(listener);
                     new ScriptableDisposable(() => onChange.RemoveListener(listener)).AddTo(disposable);
@@ -151,8 +137,8 @@ namespace HUtil.UI
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));
 
-                    void listener(T value) {
-                        observable.Value = value;
+                    void listener(ListChangeEvent<IViewModel> @event) {
+                        ApplyChange(@event, observable);
                     };
                     onChange.AddListener(listener);
                     new ScriptableDisposable(() => onChange.RemoveListener(listener)).AddTo(disposable);
@@ -160,6 +146,11 @@ namespace HUtil.UI
                     break;
                 }
             }
+        }
+
+        private void ApplyChange(ListChangeEvent<IViewModel> @event, ObservableList<IViewModel> observable)
+        {
+            observable.ApplyChange(@event);
         }
     }
 }

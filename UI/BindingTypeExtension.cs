@@ -55,6 +55,7 @@ namespace HUtil.UI
             if (typeof(CommandBase).IsAssignableFrom(type)) return BindingType.Command;
             if (typeof(ObservableTrigger).IsAssignableFrom(type)) return BindingType.Trigger;
             if (typeof(IViewModel).IsAssignableFrom(type)) return BindingType.ViewModel;
+            if (typeof(ObservableList<>).IsAssignableFrom(type)) return BindingType.List;
 
             return BindingType.None;
         }
@@ -71,6 +72,7 @@ namespace HUtil.UI
             if (bindingType == BindingType.Command) return typeof(CommandBase);
             if (bindingType == BindingType.ViewModel) return typeof(IViewModel);
             if (bindingType == BindingType.Trigger) return typeof(ObservableTrigger);
+            if (bindingType == BindingType.List) return typeof(ObservableList<>);
             
             return _bindingToTypeMap.TryGetValue(bindingType, out var type) ? type : typeof(void);
         }

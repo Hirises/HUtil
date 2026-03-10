@@ -29,6 +29,7 @@ namespace HUtil.UI
         Transform,
         Command,
         Trigger,
+        List,
 
         ViewModel,
     }

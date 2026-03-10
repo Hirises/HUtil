@@ -67,7 +67,7 @@ namespace HUtil.UI
         /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
-        /// <param name="viewModel">뷰 모델 객체</param>
+        /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onTrigger">UI 트리거 이벤트</param>
         public void Bind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent onTrigger)
