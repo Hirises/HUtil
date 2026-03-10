@@ -92,6 +92,7 @@ namespace HUtil.UI
         /// <param name="viewModel">바인딩할 ViewModel</param>
         public void ManualBind(IViewModel viewModel)
         {
+            UnityEngine.Debug.Log($"ManualBind: {viewModel.GetType().FullName}");
             foreach (var resolver in _viewModelResolvers)
             {
                 resolver.ManualBind(viewModel);
@@ -114,7 +115,6 @@ namespace HUtil.UI
 
             Debug.Log($"UpdateBindingState: {gameObject.name} {isAllResolved}");
 
-            Unbind();   //중복 바인딩 방지
             if(isAllResolved){
                 Dictionary<string, ResolvedProperty> bindMap = new Dictionary<string, ResolvedProperty>();
                 foreach (var resolver in _viewModelResolvers)
@@ -125,6 +125,8 @@ namespace HUtil.UI
                 {
                     binder.Bind(bindMap);
                 }
+            }else{
+                Unbind();
             }
         }
 

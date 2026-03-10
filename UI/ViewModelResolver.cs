@@ -95,6 +95,7 @@ namespace HUtil.UI
             if(_bindingMethod != BindingMethod.ManualBinding){
                 return;
             }
+            ManualUnbind();
             SetViewModel(viewModel);
         }
 
@@ -106,10 +107,11 @@ namespace HUtil.UI
         }
 
         private void SetViewModel(IViewModel viewModel){
-            if(viewModel != null && viewModel.GetType().FullName != _viewModelType){
-                //타입이 불일치하면 return
-                return;
-            }
+            // if(viewModel != null && viewModel.GetType().FullName != _viewModelType){
+            //     //타입이 불일치하면 return
+            //     return;
+            // }
+            UnityEngine.Debug.Log($"SetViewModel: {viewModel?.GetType().FullName}");
             _viewModel = viewModel;
             _parent?.UpdateBindingState();
         }

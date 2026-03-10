@@ -22,6 +22,8 @@ namespace HUtil.UI
         /// <param name="onViewModelChanged">ViewModel이 변경될 때 호출될 콜백 (nullable)</param>
         /// <returns>구독을 취소할 수 있는 IDisposable</returns>
         public static IDisposable Subscribe(string viewModelType, Action<IViewModel> onViewModelChanged){
+            UnityEngine.Debug.Log($"Subscribe: {viewModelType}");
+
             if(_viewModels.TryGetValue(viewModelType, out var viewModel)){
                 onViewModelChanged(viewModel);
             }
@@ -31,9 +33,15 @@ namespace HUtil.UI
                 _subscriptions[viewModelType] = subscriptions;
             }
             subscriptions.Add(onViewModelChanged);
-            UnityEngine.Debug.Log($"Subscribe: {viewModelType}");
 
-            return new ScriptableDisposable(() => _subscriptions[viewModelType].Remove(onViewModelChanged));
+            return new ScriptableDisposable(() => {
+                if(_subscriptions.TryGetValue(viewModelType, out var subscriptions)){
+                    subscriptions.Remove(onViewModelChanged);
+                    if(subscriptions.Count == 0){
+                        _subscriptions.Remove(viewModelType);
+                    }
+                }
+            });
         }
 
         /// <summary>
@@ -41,14 +49,13 @@ namespace HUtil.UI
         /// </summary>
         /// <param name="viewModel">등록할 ViewModel</param>
         public static void StaticBind(IViewModel viewModel){
-            var typeName = viewModel.GetType().FullName;
-
             StaticUnbind(viewModel);
 
+            var typeName = viewModel.GetType().FullName;
             _viewModels[typeName] = viewModel;
+            UnityEngine.Debug.Log($"StaticBind: {typeName}");
 
             if(_subscriptions.TryGetValue(typeName, out var subscriptions)){
-                UnityEngine.Debug.Log($"StaticBind: {typeName} {subscriptions.Count}");
                 foreach(var callback in subscriptions){
                     callback(viewModel);
                 }
@@ -62,13 +69,12 @@ namespace HUtil.UI
         public static void StaticUnbind(IViewModel viewModel){
             var typeName = viewModel.GetType().FullName;
             _viewModels.Remove(typeName);
+            UnityEngine.Debug.Log($"StaticUnbind: {typeName}");
 
             if(_subscriptions.TryGetValue(typeName, out var subscriptions)){
-                UnityEngine.Debug.Log($"StaticUnbind: {typeName} {subscriptions.Count}");
                 foreach(var callback in subscriptions){
                     callback(null);
                 }
-                _subscriptions.Remove(typeName);
             }
         }
     }
