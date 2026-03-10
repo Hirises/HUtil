@@ -138,18 +138,5 @@ namespace HUtil.UI
                 resolver.DynamicBind(bindMap, disposable);
             }
         }
-
-        [Serializable]
-        private class InternalViewModelItem{
-            [SerializeField] private BindingType _bindingType;
-            [SerializeField] private BindingDirectionFlags _allowedDirection;
-            [SerializeField] private string _propertyPath;
-
-            public InternalViewModelItem(BindingType bindingType, BindingDirectionFlags allowedDirection, string propertyPath){
-                _bindingType = bindingType;
-                _allowedDirection = allowedDirection;
-                _propertyPath = propertyPath;
-            }
-        }
     }
 }
