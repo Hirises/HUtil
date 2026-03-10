@@ -8,20 +8,20 @@ namespace HUtil.UI
     [AttributeUsage(validOn: AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
     public class BindableAttribute : Attribute
     {
-        private BindDirectionFlags _syncronizeDirection;
+        private BindDirectionFlags _allowedDirection;
         /// <summary>
         /// 허용 가능한 바인딩 방향을 지정합니다<br />
         /// Command는 이 설정의 영향을 받지 않습니다
         /// </summary>
-        public BindDirectionFlags SyncronizeDirection => _syncronizeDirection;
+        public BindDirectionFlags AllowedDirection => _allowedDirection;
 
         /// <summary>
         /// 기본 생성자
         /// </summary>
-        /// <param name="syncronizeDirection">허용 가능한 바인딩 방향<br />
+        /// <param name="allowedDirection">허용 가능한 바인딩 방향<br />
         /// Command는 이 설정의 영향을 받지 않습니다</param>
-        public BindableAttribute(BindDirectionFlags syncronizeDirection = BindDirectionFlags.Both){
-            this._syncronizeDirection = syncronizeDirection;
+        public BindableAttribute(BindDirectionFlags allowedDirection = BindDirectionFlags.Both){
+            this._allowedDirection = allowedDirection;
         }
     }
 }

@@ -92,21 +92,9 @@ namespace HUtil.UI
             if (source == destination){
                 return true;
             }
-            //특수 맵핑
-            return destination switch
-            {
-                // 모든 값 타입은 문자열로 연결 가능하다고 가정
-                BindingType.String => source != BindingType.Command && source != BindingType.Trigger
-                                    && source != BindingType.ViewModel && source != BindingType.GameObject
-                                    && source != BindingType.Transform,
-                
-                // 수치형 간 호환성 (묵시적 형변환 허용 범위)
-                BindingType.Long => source == BindingType.Int,
-                BindingType.Double => source == BindingType.Float,
-                
-                // 그 외에는 엄격하게 타입 일치(위에서 이미 체크됨)
-                _ => false
-            };
+            
+            //이 외에는 불가능
+            return false;
         }
     }
 }

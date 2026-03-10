@@ -70,22 +70,26 @@ namespace HUtil.UI
         /// <param name="viewModel">뷰 모델 객체</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onTrigger">UI 트리거 이벤트</param>
-        public void Bind(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent onTrigger)
+        public void Bind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent onTrigger)
         {
             if(Direction == BindingMode.None){
                 return;
             }
-
             if(!_allowDirection.CanAccept(Direction)){
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }
-            var command = bindMap[Path].AsCommand();
-            if (command == null)
-            {
-                Debug.LogWarning($"[UIBinder] Cannot find command {Path} in viewmodel");
+            if(!bindMap.TryGetValue(Path, out var property)){
+                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
+            var command = property.AsCommand();
+            if (command == null)
+            {
+                Debug.LogWarning($"[UIBinder] Property {Path} is not a command!");
+                return;
+            }
+
             switch (Direction)
             {
                 case BindingMode.OnceToUI:
@@ -103,25 +107,9 @@ namespace HUtil.UI
                         command.Execute(null);
                     };
                     onTrigger.AddListener(listener);
-                    new UnityEventSubscription(() => onTrigger.RemoveListener(listener)).AddTo(disposable);
+                    new ScriptableDisposable(() => onTrigger.RemoveListener(listener)).AddTo(disposable);
                     break;
                 }
-            }
-        }
-
-        private class UnityEventSubscription : IDisposable
-        {
-            private Action _unsubscribeAction;
-
-            public UnityEventSubscription(Action unsubscribeAction)
-            {
-                _unsubscribeAction = unsubscribeAction;
-            }
-
-            public void Dispose()
-            {
-                _unsubscribeAction?.Invoke();
-                _unsubscribeAction = null;
             }
         }
     }

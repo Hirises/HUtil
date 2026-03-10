@@ -63,7 +63,7 @@ namespace HUtil.UI.Editor
             var viewModelType = InspectorHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).FirstOrDefault(type => type.FullName == viewModelTypeProp.stringValue);
             if(viewModelType != null){
                 EditorGUI.indentLevel++;
-                var bindList = BinderReflectionHelper.GetAllBindablePropertyNames(viewModelType);
+                var bindList = UIRuntimeReflectionHelper.GetAllBindablePropertyNames(viewModelType);
                 if(bindList.Count != bindMapProp.arraySize){
                     bindMapProp.ClearArray();
                     bindMapProp.arraySize = bindList.Count;

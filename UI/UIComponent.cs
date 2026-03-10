@@ -26,6 +26,7 @@ namespace HUtil.UI
             base.Reset();   //UIComponent의 경우 본인의 바인더 리스트 업데이트 후 부모 클래스의 Reset을 호출해야 함.
         }
 
+#region [Internal] BinderList Management
         //하위의 모든 MonoBinder를 찾아서 리스트에 추가합니다
         internal void UpdateBinderList()
         {
@@ -56,7 +57,9 @@ namespace HUtil.UI
                 FindBindersRecursive(child);
             }
         }
+#endregion
 
+#region [Internal] ViewModelResolver Management
         internal void AddNewViewModelResolver()
         {
             _viewModelResolvers.Add(new ViewModelResolver(this));
@@ -66,6 +69,7 @@ namespace HUtil.UI
         {
             _viewModelResolvers.RemoveAt(index);
         }
+#endregion
 
         private void Awake(){
             foreach (var resolver in _viewModelResolvers)
@@ -82,8 +86,11 @@ namespace HUtil.UI
             base.OnDestroy();
         }
 
-        //manual binding
-        public void ManualBind(object viewModel)
+        /// <summary>
+        /// ViewModel을 수동으로 바인딩합니다
+        /// </summary>
+        /// <param name="viewModel">바인딩할 ViewModel</param>
+        public void ManualBind(IViewModel viewModel)
         {
             foreach (var resolver in _viewModelResolvers)
             {
@@ -91,7 +98,11 @@ namespace HUtil.UI
             }
         }
 
+        /// <summary>
+        /// Resolver들의 바인딩 상태를 확인하고, 하위 Binder들에게 바인딩을 요청합니다
+        /// </summary>
         internal void UpdateBindingState(){
+            //전부 Resolve되었는지 확인
             bool isAllResolved = true;
             foreach (var resolver in _viewModelResolvers)
             {
@@ -103,9 +114,9 @@ namespace HUtil.UI
 
             Debug.Log($"UpdateBindingState: {gameObject.name} {isAllResolved}");
 
-            Unbind();
+            Unbind();   //중복 바인딩 방지
             if(isAllResolved){
-                Dictionary<string, ViewModelProperty> bindMap = new Dictionary<string, ViewModelProperty>();
+                Dictionary<string, ResolvedProperty> bindMap = new Dictionary<string, ResolvedProperty>();
                 foreach (var resolver in _viewModelResolvers)
                 {
                     resolver.Resolve(bindMap);
@@ -117,8 +128,9 @@ namespace HUtil.UI
             }
         }
 
-        protected override void BindInternal(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
         {
+            //상위 UIComponent에서 내려오는 요청은 본인의 DynamicBind로 처리 (내부 리로드는 실행하지 않음)
             foreach (var resolver in _viewModelResolvers)
             {
                 resolver.DynamicBind(bindMap, disposable);

@@ -11,6 +11,9 @@ using UnityEngine;
 
 namespace HUtil.UI
 {
+    /// <summary>
+    /// <see cref="UIComponent"/>가 ViewModel 바인딩 정보를 관리하기 위한 내부 클래스
+    /// </summary>
     [Serializable]
     public class ViewModelResolver
     {
@@ -37,12 +40,22 @@ namespace HUtil.UI
         [SerializeField] private ViewModelBindingItem[] _bindMap;
         [SerializeField, HideInInspector] private UIComponent _parent;
 
-        private object _viewModel;
+        private IViewModel _viewModel;
         private IDisposable _subscription;
 
+        /// <summary>
+        /// 뷰모델이 바인딩 되어있는지 여부
+        /// </summary>
         public bool IsResolved => _viewModel != null;
+        /// <summary>
+        /// 뷰모델의 타입
+        /// </summary>
         public string ViewModelType => _viewModelType;
 
+        /// <summary>
+        /// 생성자
+        /// </summary>
+        /// <param name="parent">부모 UIComponent</param>
         public ViewModelResolver(UIComponent parent){
             _bindingMethod = BindingMethod.ManualBinding;
             _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindDirectionFlags.ToUI);
@@ -55,6 +68,7 @@ namespace HUtil.UI
 
         #region Bind ViewModel
         internal void OnEnable(){
+            //StaticBinding을 위한 구독처리
             if(_bindingMethod != BindingMethod.StaticBinding){
                 return;
             }
@@ -62,11 +76,12 @@ namespace HUtil.UI
         }
 
         internal void OnDisable(){
+            //구독 해제
             _subscription?.Dispose();
             _subscription = null;
         }
 
-        internal void DynamicBind(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable){
+        internal void DynamicBind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable){
             if(_bindingMethod != BindingMethod.DynamicBinding){
                 return;
             }
@@ -76,39 +91,50 @@ namespace HUtil.UI
             _viewModelProp.Bind<IViewModel>(bindMap, disposable, SetViewModel);
         }
 
-        internal void ManualBind(object viewModel){
-            if(_bindingMethod != BindingMethod.ManualBinding){  //이거 지울까?
-                return;
-            }
-            if(viewModel.GetType().FullName != _viewModelType){
+        internal void ManualBind(IViewModel viewModel){
+            if(_bindingMethod != BindingMethod.ManualBinding){
                 return;
             }
             SetViewModel(viewModel);
         }
 
         internal void ManualUnbind(){
-            if(_bindingMethod != BindingMethod.ManualBinding){  //이거 지울까?
+            if(_bindingMethod != BindingMethod.ManualBinding){
                 return;
             }
             SetViewModel(null);
         }
 
-        private void SetViewModel(object viewModel){
+        private void SetViewModel(IViewModel viewModel){
+            if(viewModel != null && viewModel.GetType().FullName != _viewModelType){
+                //타입이 불일치하면 return
+                return;
+            }
             _viewModel = viewModel;
             _parent?.UpdateBindingState();
         }
         #endregion
 
-        internal void Resolve(Dictionary<string, ViewModelProperty> bindMap){
+        /// <summary>
+        /// 뷰모델을 해석하고, 바인딩 정보를 생성합니다
+        /// </summary>
+        /// <param name="bindMap">바인딩 정보를 저장할 딕셔너리</param>
+        internal void Resolve(Dictionary<string, ResolvedProperty> bindMap){
             if(!IsResolved){
                 return;
             }
             foreach(var bindInfo in _bindMap){
-                bindMap.Add(bindInfo.DestinationPropertyPath, new ViewModelProperty(_viewModel, bindInfo.SourcePropertyPath));
+                bindMap.Add(bindInfo.DestinationPropertyPath, new ResolvedProperty(_viewModel, bindInfo.SourcePropertyPath));
             }
         }
 
-        internal string ResolveName(string sourcePropertyPath){
+        /// <summary>
+        /// 외부 프로퍼티 경로를 내부 프로퍼티 경로로 변환합니다 <br />
+        /// 만약 매핑 정보에 없는 경우 원본 경로를 반환합니다
+        /// </summary>
+        /// <param name="sourcePropertyPath">외부 프로퍼티 경로</param>
+        /// <returns>내부 프로퍼티 경로</returns>
+        internal string ConvertPropertyPath(string sourcePropertyPath){
             foreach(var bindInfo in _bindMap){
                 if(bindInfo.SourcePropertyPath == sourcePropertyPath){
                     return bindInfo.DestinationPropertyPath;

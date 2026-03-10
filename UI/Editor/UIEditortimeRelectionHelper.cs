@@ -6,16 +6,16 @@ using HUtil.Editor;
 
 namespace HUtil.UI.Editor
 {
-    public static class UIReflectionHelper
+    public static class UIEditortimeReflectionHelper
     {
         public static List<BindingInfo> GetAllResolvedBindingInfos(ViewModelResolver viewModelResolver, List<BindingInfo> output = null)
         {
             Type viewModelType = InspectorHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).FirstOrDefault(type => type.FullName == viewModelResolver.ViewModelType);
-            var bindingInfos = BinderReflectionHelper.GetAllBindingInfos(viewModelType);
+            var bindingInfos = UIRuntimeReflectionHelper.GetAllBindingInfos(viewModelType);
             output ??= new();
             foreach(var bindingInfo in bindingInfos){
-                var customName = viewModelResolver.ResolveName(bindingInfo.SourcePropertyPath);
-                output.Add(new BindingInfo(customName, bindingInfo.SourceType, bindingInfo.SourceDirection));
+                var internalPropertyPath = viewModelResolver.ConvertPropertyPath(bindingInfo.PropertyPath);
+                output.Add(new BindingInfo(internalPropertyPath, bindingInfo.Type, bindingInfo.AllowedDirection));
             }
             return output;
         }
@@ -32,7 +32,7 @@ namespace HUtil.UI.Editor
             foreach(var viewModelResolver in uiComponent.ViewModelResolvers){
                 GetAllResolvedBindingInfos(viewModelResolver, output);
             }
-            return output.Where(b => b.CanAccept(receivingType, bindingMode)).Select(b => b.SourcePropertyPath).ToList();
+            return output.Where(b => b.CanAccept(receivingType, bindingMode)).Select(b => b.PropertyPath).ToList();
         }
     }
 }

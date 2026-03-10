@@ -36,7 +36,7 @@ namespace HUtil.UI.Editor
                 EditorGUI.HelpBox(position, "UIComponent not found", MessageType.Error);
                 return;
             }
-            var viewModelTypes = UIReflectionHelper.GetAllViewModelTypes(uiComponent);
+            var viewModelTypes = UIEditortimeReflectionHelper.GetAllViewModelTypes(uiComponent);
 
             //프로퍼티 캐싱
             var directionProp = property.FindPropertyRelative("_direction");
@@ -58,7 +58,7 @@ namespace HUtil.UI.Editor
             // # Path
             // Direction이 None이면 Path는 숨김
             if(directionProp.enumValueIndex != (int)BindingMode.None){
-                List<string> options = UIReflectionHelper.GetAllBindablePropertyNames(uiComponent, instance.ReceivingType, direction);
+                List<string> options = UIEditortimeReflectionHelper.GetAllBindablePropertyNames(uiComponent, instance.ReceivingType, direction);
                 InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
             }
         }

@@ -10,10 +10,11 @@ using HUtil.Runtime.Extension;
 namespace HUtil.UI
 {
     /// <summary>
-    /// 바인더 리플렉션 관련 확장 메서드
+    /// UI 런타임 리플렉션 관련 확장 메서드
     /// </summary>
-    internal static class BinderReflectionHelper
+    internal static class UIRuntimeReflectionHelper
     {
+        //property bag을 이용해서 런타임에 필드를 조회하는 메소드들
         #region GetProp
         /// <summary>
         /// 주어진 객체 내부의 <see cref="ObservableProperty{T}"/>를 가져옵니다.
@@ -109,56 +110,30 @@ namespace HUtil.UI
         public static BindingInfo GetBindingInfo(FieldInfo field)
         {
             //필드는 ObservableProperty<T>, ObservableTrigger, 또는 CommandBase를 상속하는 타입이어야 합니다.
-            if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>))){
-                var underlyingType = field.FieldType.GetGenericArguments(typeof(ObservableProperty<>))[0];
-                return new BindingInfo(field.Name, underlyingType.ToBindingType(), field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None);
-            }else if(typeof(CommandBase).IsAssignableFrom(field.FieldType)){
-                return new BindingInfo(field.Name, BindingType.Command, BindDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
-            }else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType)){
-                return new BindingInfo(field.Name, BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.SyncronizeDirection ?? BindDirectionFlags.None);
-            }else{
-                return new BindingInfo(field.Name, BindingType.None, BindDirectionFlags.None);
+            if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>)))    //ObservableProperty<T>
+            {
+                var underlyingType = field.FieldType.GetGenericArgumentsOfType(typeof(ObservableProperty<>))[0];  //제네릭 안쪽에 들어간 타입을 꺼내옴
+                return new BindingInfo(field.Name, underlyingType.ToBindingType(), field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindDirectionFlags.None);
             }
+            else if(typeof(CommandBase).IsAssignableFrom(field.FieldType))    //CommandBase
+            {
+                return new BindingInfo(field.Name, BindingType.Command, BindDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
+            }
+            else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType))    //ObservableTrigger
+            {
+                return new BindingInfo(field.Name, BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindDirectionFlags.None);
+            }
+
+            //지원하지 않는 타입
+            return new BindingInfo(field.Name, BindingType.None, BindDirectionFlags.None);
         }
 
         /// <summary>
         /// 주어진 ViewModel 타입 내부의 바인딩 가능한 모든 프로퍼티의 이름을 가져옵니다
         /// </summary>
         /// <param name="viewModelType">객체 타입</param>
-        /// <param name="receivingType">받을 수 있는 타입</param>
-        /// <param name="bindMode">동기화 하려는 방향</param>
         /// <param name="output">값을 전달받을 리스트</param>
         /// <returns>프로퍼티 이름 리스트</returns>
-        public static List<string> GetAllBindablePropertyNames(Type viewModelType, BindingType receivingType, BindingMode bindMode, List<string> output = null)
-        {
-            output ??= new();
-
-            var fields = viewModelType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            BindingType fieldType = BindingType.None;
-            BindDirectionFlags allowedDirections = BindDirectionFlags.None;
-            foreach(var field in fields){
-
-                var bindingInfo = GetBindingInfo(field);
-                if(!bindingInfo.IsValid){
-                    continue;
-                }
-
-                //할당 가능한 타입 검사
-                if(!receivingType.CanAccept(fieldType)){
-                    continue;
-                }
-                //방향검사
-                if(!allowedDirections.CanAccept(bindMode)){
-                    continue;
-                }
-
-                //추가
-                output.Add(field.Name);
-            }
-
-            return output;
-        }
-
         public static List<string> GetAllBindablePropertyNames(Type viewModelType, List<string> output = null)
         {
             output ??= new();
@@ -178,6 +153,12 @@ namespace HUtil.UI
             return output;
         }
 
+        /// <summary>
+        /// 주어진 ViewModel 타입 내부의 바인딩 가능한 모든 프로퍼티의 바인딩 정보를 가져옵니다
+        /// </summary>
+        /// <param name="viewModelType">객체 타입</param>
+        /// <param name="output">값을 전달받을 리스트</param>
+        /// <returns>바인딩 정보 리스트</returns>
         public static List<BindingInfo> GetAllBindingInfos(Type viewModelType, List<BindingInfo> output = null)
         {
             output ??= new();

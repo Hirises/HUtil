@@ -13,7 +13,7 @@ namespace HUtil.Runtime.Extension
         /// <param name="toCheck">확인할 타입</param>
         /// <param name="generic">제네릭 타입</param>
         /// <returns>제네릭 인수</returns>
-        public static Type[] GetGenericArguments(this Type toCheck, Type generic){
+        public static Type[] GetGenericArgumentsOfType(this Type toCheck, Type generic){
             while (toCheck != null && toCheck != typeof(object))
             {
                 // 현재 타입이 제네릭인지 확인하고, 원본 정의(Definition)를 가져옴

@@ -74,7 +74,7 @@ namespace HUtil.UI
         /// <param name="viewModel">뷰 모델 객체</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
-        public void Bind<T>(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter)
+        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, Action<T> setter)
         {
             Bind(bindMap, disposable, setter, null);
         }
@@ -86,7 +86,7 @@ namespace HUtil.UI
         /// <param name="viewModel">뷰 모델 객체</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange)
+        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange)
         {
             Bind(bindMap, disposable, null, onChange);
         }
@@ -99,22 +99,26 @@ namespace HUtil.UI
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(Dictionary<string, ViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
+        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
         {
             if(Direction == BindingMode.None){
                 return;
             }
-
             if(!_allowDirection.CanAccept(Direction)){
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }
-            var observable = bindMap[Path].AsObservableProperty<T>();
+            if(!bindMap.TryGetValue(Path, out var property)){
+                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
+                return;
+            }
+            var observable = property.AsObservableProperty<T>();
             if (observable == null)
             {
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
+
             switch (Direction)
             {
                 case BindingMode.OnceToUI:
@@ -139,7 +143,7 @@ namespace HUtil.UI
                         observable.Value = value;
                     };
                     onChange.AddListener(listener);
-                    new UnityEventSubscription(() => onChange.RemoveListener(listener)).AddTo(disposable);
+                    new ScriptableDisposable(() => onChange.RemoveListener(listener)).AddTo(disposable);
                     break;
                 }
                 case BindingMode.TwoWay:
@@ -151,26 +155,10 @@ namespace HUtil.UI
                         observable.Value = value;
                     };
                     onChange.AddListener(listener);
-                    new UnityEventSubscription(() => onChange.RemoveListener(listener)).AddTo(disposable);
+                    new ScriptableDisposable(() => onChange.RemoveListener(listener)).AddTo(disposable);
                     observable.Subscribe(setter).AddTo(disposable);
                     break;
                 }
-            }
-        }
-
-        private class UnityEventSubscription : IDisposable
-        {
-            private Action _unsubscribeAction;
-
-            public UnityEventSubscription(Action unsubscribeAction)
-            {
-                _unsubscribeAction = unsubscribeAction;
-            }
-
-            public void Dispose()
-            {
-                _unsubscribeAction?.Invoke();
-                _unsubscribeAction = null;
             }
         }
     }
