@@ -59,7 +59,7 @@ namespace HUtil.Runtime.Observable
             {
                 onValueChanged(_value);
             }
-            return new Subscription(() => _onValueChanged -= onValueChanged);
+            return new ScriptableDisposable(() => _onValueChanged -= onValueChanged);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace HUtil.Runtime.Observable
         public IDisposable Follow(IReadOnlyObservableProperty<T> other)
         {
             Value = other.Value;
-            return new Subscription(() => other.Subscribe((v) => Value = v));
+            return new ScriptableDisposable(() => other.Subscribe((v) => Value = v));
         }
 
         /// <summary>

@@ -40,7 +40,7 @@ namespace HUtil.Runtime.Observable
             }
 
             _onTriggered += onTriggered;
-            return new Subscription(() => _onTriggered -= onTriggered);
+            return new ScriptableDisposable(() => _onTriggered -= onTriggered);
         }
     }
 }

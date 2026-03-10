@@ -24,8 +24,8 @@ namespace HUtil.UI.Editor
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label){
-            var resolver = InspectorHelper.GetActualObject(property) as ViewModelResolver;
-            var fieldInfo = InspectorHelper.GetFieldInfo(property);
+            var resolver = property.GetActualObject() as ViewModelResolver;
+            var fieldInfo = property.GetFieldInfo();
             if(resolver == null || fieldInfo == null){
                 EditorGUI.HelpBox(position, $"Internal error: {resolver} {fieldInfo}", MessageType.Error);
                 return;

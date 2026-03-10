@@ -3,9 +3,9 @@ using System;
 namespace HUtil.Runtime.Extension
 {
     /// <summary>
-    /// 리플렉션 관련 확장 메서드
+    /// 런타임에서 동작하는 리플렉션 관련 확장 메서드
     /// </summary>
-    public static class ReflectionHelper
+    public static class RuntimeReflectionHelper
     {
         /// <summary>
         /// 이 타입이 주어진 제네릭 타입의 서브클래스인 경우, 선언된 제네릭 인수를 가져옵니다.

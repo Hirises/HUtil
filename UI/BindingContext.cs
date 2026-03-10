@@ -23,7 +23,7 @@ namespace HUtil.UI
             subscriptions.Add(onViewModelChanged);
             UnityEngine.Debug.Log($"Subscribe: {viewModelType}");
 
-            return new Subscription(() => _subscriptions[viewModelType].Remove(onViewModelChanged));
+            return new ScriptableDisposable(() => _subscriptions[viewModelType].Remove(onViewModelChanged));
         }
 
         public static void StaticBind(IViewModel viewModel){

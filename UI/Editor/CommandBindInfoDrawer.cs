@@ -23,7 +23,7 @@ namespace HUtil.UI.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             //필요한 변수들 캐싱
-            var instance = InspectorHelper.GetActualObject(property) as CommandBindingInfo;
+            var instance = property.GetActualObject() as CommandBindingInfo;
             var binder = property.serializedObject.targetObject as MonoBinder;
             if(instance == null || binder == null){
                 EditorGUI.HelpBox(position, $"Internal error: {instance} {binder}", MessageType.Error);
