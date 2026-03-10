@@ -18,7 +18,13 @@ namespace HUtil.Editor.Animation
         private bool _isCapturedA = false;
         private bool _isCapturedB = false;
 
+        /// <summary>
+        /// A 포즈가 캡처되었는지 여부
+        /// </summary>
         public bool IsCapturedA => _isCapturedA;
+        /// <summary>
+        /// B 포즈가 캡처되었는지 여부
+        /// </summary>
         public bool IsCapturedB => _isCapturedB;
 
         /// <summary>
@@ -28,8 +34,11 @@ namespace HUtil.Editor.Animation
         public AnimationSnapshot(GameObject targetObject)
         {
             this.targetObject = targetObject;
+            _isCapturedA = false;
+            _isCapturedB = false;
         }
         
+        #region public Methods
         /// <summary>
         /// A 포즈를 캡처합니다.
         /// </summary>
@@ -37,6 +46,7 @@ namespace HUtil.Editor.Animation
         public void CapturePoseA()
         {
             CapturePose(poseA);
+            _isCapturedA = true;
         }
 
         /// <summary>
@@ -46,8 +56,35 @@ namespace HUtil.Editor.Animation
         public void CapturePoseB()
         {
             CapturePose(poseB);
+            _isCapturedB = true;
         }
 
+        /// <summary>
+        /// 모든 포즈를 초기화합니다.
+        /// </summary>
+        public void ClearAll(){
+            ClearPoseA();
+            ClearPoseB();
+        }
+
+        /// <summary>
+        /// A 포즈를 초기화합니다.
+        /// </summary>
+        public void ClearPoseA(){
+            poseA.Clear();
+            _isCapturedA = false;
+        }
+
+        /// <summary>
+        /// B 포즈를 초기화합니다.
+        /// </summary>
+        public void ClearPoseB(){
+            poseB.Clear();
+            _isCapturedB = false;
+        }
+        #endregion
+
+        #region [Internal] Capture Logics
         private void CapturePose(Dictionary<string, float> poseDict)
         {
             if (targetObject == null) return;
@@ -100,12 +137,14 @@ namespace HUtil.Editor.Animation
                 default: return 0f;
             }
         }
+        #endregion
 
+        #region Create Animation Clip
         /// <summary>
-        /// 캡쳐본을 바탕으로 애니메이션 클립을 생성합니다.
+        /// A와 B 캡쳐본을 바탕으로 변경된 사항만 애니메이션 클립으로 생성합니다.
         /// </summary>
         /// <param name="clipName">클립 이름</param>
-        public void CreateAnimationClip(string clipName, string assetPath = "Assets/CapturedAnimations/")
+        public void CreateAnimationClipAB(string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
             if (!IsCapturedA || !IsCapturedB) return;
 
@@ -126,8 +165,8 @@ namespace HUtil.Editor.Animation
                     string propertyPath = parts[1];
 
                     System.Type compType = System.Type.GetType(typeName);
-                    AnimationCurve curve = AnimationCurve.EaseInOut(0, valA, 1f, valB);
-                    
+                    AnimationCurve curve = AnimationCurve.Linear(0, valA, 1f, valA);
+
                     clip.SetCurve("", compType, propertyPath, curve);
                     curvesAdded++;
                 }
@@ -140,5 +179,54 @@ namespace HUtil.Editor.Animation
                 Debug.Log($"{curvesAdded}개의 필드 변화를 포함한 클립 생성 성공!");
             }
         }
+
+        /// <summary>
+        /// A와 B로 변화하는 애니메이션 클립을 생성합니다.
+        /// </summary>
+        /// <param name="clipName">클립 이름</param>
+        public void CreateAnimationClipDelta(string clipName, float duration = 1f, bool isEaseInOut = true, string assetPath = "Assets/CapturedAnimations/")
+        {
+            if (!IsCapturedA || !IsCapturedB) return;
+
+            AnimationClip clip = new AnimationClip();
+            int curvesAdded = 0;
+
+            foreach (var key in poseA.Keys)
+            {
+                if (!poseB.ContainsKey(key)) continue;
+
+                float valA = poseA[key];
+                float valB = poseB[key];
+
+                if (!Mathf.Approximately(valA, valB))
+                {
+                    string[] parts = key.Split('|');
+                    string typeName = parts[0];
+                    string propertyPath = parts[1];
+
+                    System.Type compType = System.Type.GetType(typeName);
+                    AnimationCurve curve = null;
+                    if (isEaseInOut)
+                    {
+                        curve = AnimationCurve.EaseInOut(0, valA, duration, valB);
+                    }
+                    else
+                    {
+                        curve = AnimationCurve.Linear(0, valA, duration, valB);
+                    }
+
+                    clip.SetCurve("", compType, propertyPath, curve);
+                    curvesAdded++;
+                }
+            }
+
+            if (curvesAdded > 0)
+            {
+                AssetDatabase.CreateAsset(clip, $"{assetPath}{clipName}.anim");
+                AssetDatabase.SaveAssets();
+                Debug.Log($"{curvesAdded}개의 필드 변화를 포함한 클립 생성 성공!");
+            }
+        }
+        #endregion
     }
 }
