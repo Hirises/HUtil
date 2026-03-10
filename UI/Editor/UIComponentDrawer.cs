@@ -23,18 +23,22 @@ namespace HUtil.UI.Editor
             var binders = serializedObject.FindProperty("_binders");
 
             // # ViewModelResolver
+            EditorGUILayout.LabelField("# ViewModel Resolvers", EditorStyles.boldLabel);
             if(GUI.Button(EditorGUILayout.GetControlRect(), "Add ViewModel")){
                 uiComponent.AddNewViewModelResolver();
             }
             for(int i = 0; i < viewModelResolvers.arraySize; i++){
                 EditorGUILayout.Space(EditorGUIUtility.standardVerticalSpacing * 2);
+                EditorGUILayout.BeginVertical(GUI.skin.box);
                 if(GUI.Button(EditorGUILayout.GetControlRect(), "Remove ViewModel")){
                     uiComponent.RemoveViewModelResolver(i);
                     i--;
+                    EditorGUILayout.EndVertical();
                     continue;
                 }
                 var resolver = viewModelResolvers.GetArrayElementAtIndex(i);
                 EditorGUILayout.PropertyField(resolver, true);
+                EditorGUILayout.EndVertical();
             }
             if(viewModelResolvers.arraySize == 0)
             {
@@ -45,6 +49,8 @@ namespace HUtil.UI.Editor
             EditorGUILayout.GetControlRect();
 
             // # Update Binder List
+            EditorGUILayout.LabelField("# Binder List", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             if(GUI.Button(EditorGUILayout.GetControlRect(), "Update Binder List")){
                 uiComponent.UpdateBinderList();
             }
@@ -54,6 +60,7 @@ namespace HUtil.UI.Editor
                 var binder = binders.GetArrayElementAtIndex(i);
                 EditorGUILayout.PropertyField(binder, new GUIContent($"Binder {i}"));
             }
+            EditorGUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();
         }
