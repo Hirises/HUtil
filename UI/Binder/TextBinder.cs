@@ -13,7 +13,7 @@ namespace HUtil.UI.Binder
     public class TextBinder : MonoBinder
     {
         [SerializeField] private TMP_Text _target;
-        [SerializeField] private PropertyBindingInfo _text_prop = new PropertyBindingInfo(BindingType.String, BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingInfo _baseText_prop = new PropertyBindingInfo(BindingType.String, BindingDirectionFlags.ToUI);
 
         protected override void Reset()
         {
@@ -21,17 +21,17 @@ namespace HUtil.UI.Binder
             _target = GetComponent<TMP_Text>();
         }
 
-        protected void OnValidate()
+        protected virtual void OnValidate()
         {
-            _text_prop.Validate();
+            _baseText_prop.Validate();
         }
 
         protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
         {
-            _text_prop.Bind<string>(bindMap, disposable, SetText);
+            _baseText_prop.Bind<string>(bindMap, disposable, SetText);
         }
 
-        private void SetText(string value)
+        protected virtual void SetText(string value)
         {
             _target.text = value;
         }

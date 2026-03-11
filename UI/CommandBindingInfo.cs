@@ -65,6 +65,55 @@ namespace HUtil.UI
         }
 
         /// <summary>
+        /// 바인딩을 진행합니다
+        /// </summary>
+        /// <param name="bindMap">바인딩 맵</param>
+        /// <param name="disposable">구독 관리용 disposable</param>
+        /// <param name="onTrigger">UI 트리거 이벤트</param>
+        /// <typeparam name="T">이벤트 파라미터 타입</typeparam>
+        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onTrigger){
+            if(Direction == BindingMode.None){
+                return;
+            }
+            if(!_allowDirection.CanAccept(Direction)){
+                Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
+                return;
+            }
+            if(!bindMap.TryGetValue(Path, out var property)){
+                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
+                return;
+            }
+            var command = property.AsCommand();
+            if (command == null)
+            {
+                Debug.LogWarning($"[UIBinder] Property {Path} is not a command!");
+                return;
+            }
+
+            switch (Direction)
+            {
+                case BindingMode.OnceToUI:
+                case BindingMode.ToUI:
+                case BindingMode.TwoWay:
+                {
+                    throw new NotSupportedException($"\"{Direction}\" direction is not allowed for command binding!");
+                }
+                case BindingMode.ToData:
+                {
+                    if(command == null) throw new ArgumentNullException(nameof(command));
+                    if(onTrigger == null) throw new ArgumentNullException(nameof(onTrigger));
+
+                    void listener(T value) {
+                        command.Execute(value);
+                    };
+                    onTrigger.AddListener(listener);
+                    new ScriptableDisposable(() => onTrigger.RemoveListener(listener)).AddTo(disposable);
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
         /// <param name="bindMap">바인딩 맵</param>
