@@ -12,9 +12,16 @@ namespace HUtil.Editor.Animation
     /// </summary>
     public class AnimationSnapshot
     {
+        private struct PoseData{
+            public Type componentType;
+            public SerializedPropertyType propertyType;
+            public string propertyPath;
+            public object value;
+        }
+        
         private GameObject targetObject;
-        private Dictionary<string, float> poseA = new Dictionary<string, float>();
-        private Dictionary<string, float> poseB = new Dictionary<string, float>();
+        private Dictionary<string, PoseData> poseA = new Dictionary<string, PoseData>();
+        private Dictionary<string, PoseData> poseB = new Dictionary<string, PoseData>();
         private bool _isCapturedA = false;
         private bool _isCapturedB = false;
 
@@ -85,7 +92,7 @@ namespace HUtil.Editor.Animation
         #endregion
 
         #region [Internal] Capture Logics
-        private void CapturePose(Dictionary<string, float> poseDict)
+        private void CapturePose(Dictionary<string, PoseData> poseDict)
         {
             if (targetObject == null) return;
             poseDict.Clear();
@@ -103,13 +110,13 @@ namespace HUtil.Editor.Animation
                         // 그 안의 r, g, b, a는 hasChildren이 false라 기록됨!
                         if (!prop.hasChildren && IsSupportedType(prop))
                         {
-                            AddPoseToDict(poseDict, comp, prop);
+                            AddPoseToList(poseDict, comp, prop);
                         }
                         if(prop.propertyType == SerializedPropertyType.Color){
-                            AddPoseToDict(poseDict, comp, prop.FindPropertyRelative("r"));
-                            AddPoseToDict(poseDict, comp, prop.FindPropertyRelative("g"));
-                            AddPoseToDict(poseDict, comp, prop.FindPropertyRelative("b"));
-                            AddPoseToDict(poseDict, comp, prop.FindPropertyRelative("a"));
+                            AddPoseToList(poseDict, comp, prop.FindPropertyRelative("r"));
+                            AddPoseToList(poseDict, comp, prop.FindPropertyRelative("g"));
+                            AddPoseToList(poseDict, comp, prop.FindPropertyRelative("b"));
+                            AddPoseToList(poseDict, comp, prop.FindPropertyRelative("a"));
                         }
                     }
                 }
@@ -130,14 +137,18 @@ namespace HUtil.Editor.Animation
         }
 
         // 헬퍼: 딕셔너리에 데이터 추가
-        private void AddPoseToDict(Dictionary<string, float> poseDict, Component comp, SerializedProperty prop)
+        private void AddPoseToList(Dictionary<string, PoseData> poseDict, Component comp, SerializedProperty prop)
         {
-            string key = $"{comp.GetType().AssemblyQualifiedName}|{prop.propertyPath}";
-            poseDict[key] = GetPropertyValueAsFloat(prop);
-            Debug.Log($"Captured: {prop.propertyPath} = {poseDict[key]}");
+            PoseData pose = new PoseData();
+            pose.componentType = comp.GetType();
+            pose.propertyPath = prop.propertyPath;
+            pose.propertyType = prop.propertyType;
+            pose.value = GetPropertyValue(prop);
+            poseDict.Add($"{comp.GetType().FullName}|{prop.propertyPath}", pose);
+            Debug.Log($"Captured: {prop.propertyPath} = {pose.value}");
         }
 
-        private float GetPropertyValueAsFloat(SerializedProperty prop)
+        private object GetPropertyValue(SerializedProperty prop)
         {
             switch (prop.propertyType)
             {
@@ -151,89 +162,83 @@ namespace HUtil.Editor.Animation
         #endregion
 
         #region Create Animation Clip
-        /// <summary>
-        /// A와 B 캡쳐본을 바탕으로 변경된 사항만 애니메이션 클립으로 생성합니다.
-        /// </summary>
-        /// <param name="clipName">클립 이름</param>
+        public AnimationClip CreateAnimationClipA(string clipName, string assetPath = "Assets/CapturedAnimations/")
+        {
+            return CreateAnimationClip(poseA, clipName, assetPath);
+        }
+
+        public AnimationClip CreateAnimationClipB(string clipName, string assetPath = "Assets/CapturedAnimations/")
+        {
+            return CreateAnimationClip(poseB, clipName, assetPath);
+        }
+
         public AnimationClip CreateAnimationClipAB(string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
-            if (!IsCapturedA || !IsCapturedB) return null;
-
-            AnimationClip clip = new AnimationClip();
-            int curvesAdded = 0;
-
-            foreach (var key in poseA.Keys)
-            {
-                if (!poseB.ContainsKey(key)) continue;
-
-                float valA = poseA[key];
-                float valB = poseB[key];
-
-                if (!Mathf.Approximately(valA, valB))
-                {
-                    string[] parts = key.Split('|');
-                    string typeName = parts[0];
-                    string propertyPath = parts[1];
-
-                    System.Type compType = System.Type.GetType(typeName);
-                    AnimationCurve curve = AnimationCurve.Linear(0, valA, 1f, valA);
-
-                    clip.SetCurve("", compType, propertyPath, curve);
-                    curvesAdded++;
+            Dictionary<string, PoseData> poseDict = new Dictionary<string, PoseData>();
+            foreach(var poseKey in poseA.Keys){
+                if(poseB.ContainsKey(poseKey) && !IsPoseEquals(poseA[poseKey], poseB[poseKey])){
+                    poseDict.Add(poseKey, poseB[poseKey]);
                 }
             }
+            return CreateAnimationClip(poseDict, clipName, assetPath);
+        }
 
-            if (curvesAdded > 0)
-            {
-                CreateSubDirectoryRecursive(assetPath);
-                AssetDatabase.CreateAsset(clip, $"{assetPath}{clipName}.anim");
-                AssetDatabase.SaveAssets();
-                Debug.Log($"{curvesAdded}개의 필드 변화를 포함한 클립 생성 성공!");
-                return clip;
-            }else{
-                Debug.Log("클립 생성 실패! 변경된 필드가 없습니다.");
-                return null;
+        public AnimationClip CreateAnimationClipBA(string clipName, string assetPath = "Assets/CapturedAnimations/")
+        {
+            Dictionary<string, PoseData> poseDict = new Dictionary<string, PoseData>();
+            foreach(var poseKey in poseA.Keys){
+                if(poseB.ContainsKey(poseKey) && !IsPoseEquals(poseA[poseKey], poseB[poseKey])){
+                    poseDict.Add(poseKey, poseA[poseKey]);
+                }
+            }
+            return CreateAnimationClip(poseDict, clipName, assetPath);
+        }
+
+        private bool IsPoseEquals(PoseData poseA, PoseData poseB)
+        {
+            if(poseA.propertyType != poseB.propertyType) return false;
+            switch(poseA.propertyType){
+                case SerializedPropertyType.Float:
+                    return Mathf.Approximately((float)poseA.value, (float)poseB.value);
+                case SerializedPropertyType.Integer:
+                    return (int)poseA.value == (int)poseB.value;
+                case SerializedPropertyType.Boolean:
+                    return (bool)poseA.value == (bool)poseB.value;
+                case SerializedPropertyType.Enum:
+                    return (int)poseA.value == (int)poseB.value;
+                default:
+                    return false;
             }
         }
 
-        /// <summary>
-        /// A와 B로 변화하는 애니메이션 클립을 생성합니다.
-        /// </summary>
-        /// <param name="clipName">클립 이름</param>
-        public AnimationClip CreateAnimationClipDelta(string clipName, float duration = 1f, bool isEaseInOut = true, string assetPath = "Assets/CapturedAnimations/")
+        private AnimationClip CreateAnimationClip(Dictionary<string, PoseData> poseDict, string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
-            if (!IsCapturedA || !IsCapturedB) return null;
-
             AnimationClip clip = new AnimationClip();
             int curvesAdded = 0;
 
-            foreach (var key in poseA.Keys)
+            foreach (var poseKey in poseDict.Keys)
             {
-                if (!poseB.ContainsKey(key)) continue;
-
-                float valA = poseA[key];
-                float valB = poseB[key];
-
-                if (!Mathf.Approximately(valA, valB))
+                var pose = poseDict[poseKey];
+                AnimationCurve curve = null;
+                switch (pose.propertyType)
                 {
-                    string[] parts = key.Split('|');
-                    string typeName = parts[0];
-                    string propertyPath = parts[1];
-
-                    System.Type compType = System.Type.GetType(typeName);
-                    AnimationCurve curve = null;
-                    if (isEaseInOut)
-                    {
-                        curve = AnimationCurve.EaseInOut(0, valA, duration, valB);
-                    }
-                    else
-                    {
-                        curve = AnimationCurve.Linear(0, valA, duration, valB);
-                    }
-
-                    clip.SetCurve("", compType, propertyPath, curve);
-                    curvesAdded++;
+                    case SerializedPropertyType.Float:
+                    case SerializedPropertyType.Boolean:
+                        float valFloat = (float)pose.value;
+                        curve = AnimationCurve.Linear(0, valFloat, 1f, valFloat);
+                        clip.SetCurve("", pose.componentType, pose.propertyPath, curve);
+                        break;
+                    case SerializedPropertyType.Enum:
+                    case SerializedPropertyType.Integer:
+                            int valInt = (int)pose.value;
+                            Debug.Log($"valInt {pose.propertyPath}: {valInt} {BitConverter.ToSingle(BitConverter.GetBytes(valInt), 0)}");
+                            curve = AnimationCurve.Constant(0, 1f, BitConverter.ToSingle(BitConverter.GetBytes(valInt), 0));
+                            AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.DiscreteCurve("", pose.componentType, pose.propertyPath), curve);
+                        break;
+                    default:
+                        continue;
                 }
+                curvesAdded++;
             }
 
             if (curvesAdded > 0)
@@ -246,7 +251,7 @@ namespace HUtil.Editor.Animation
             }else{
                 Debug.Log("클립 생성 실패! 변경된 필드가 없습니다.");
                 return null;
-            }   
+            }
         }
 
         private void CreateSubDirectoryRecursive(string assetPath){

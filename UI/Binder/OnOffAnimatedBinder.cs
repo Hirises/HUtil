@@ -9,7 +9,10 @@ using UnityEngine;
 
 namespace HUtil.UI.Binder
 {
-    public class PropertyBinder : MonoBinder
+    /// <summary>
+    /// 동적 애니메이션 클립 생성을 이용한 멀티 바인더
+    /// </summary>
+    public class OnOffAnimatedBinder : MonoBinder
     {
         [SerializeField] private GameObject _target;
         [SerializeField] private AnimationClip _onAnimation;
