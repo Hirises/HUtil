@@ -38,7 +38,7 @@ namespace HUtil.Editor.Animation
                 List<Type> excludeComponentTypes = new List<Type>();
                 excludeComponentTypes.AddRange(ignoreComponentTypes);
                 foreach(var type in includeComponentTypesDerivedFrom){
-                    excludeComponentTypes.AddRange(InspectorHelper.GetAllConcreteTypesDerivedFrom(type));
+                    excludeComponentTypes.AddRange(EditortimeReflectionHelper.GetAllConcreteTypesDerivedFrom(type));
                 }
                 this.ignoreComponentTypes = excludeComponentTypes.ToArray();
                 this.ignorePropertyPaths = ignorePropertyPaths;

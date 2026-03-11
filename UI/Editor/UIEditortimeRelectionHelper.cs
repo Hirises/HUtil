@@ -104,7 +104,7 @@ namespace HUtil.UI.Editor
         /// <returns>바인딩 정보 리스트</returns>
         public static List<BindingInfo> GetAllResolvedBindingInfos(ViewModelResolver viewModelResolver, List<BindingInfo> output = null)
         {
-            Type viewModelType = InspectorHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).FirstOrDefault(type => type.FullName == viewModelResolver.ViewModelType);
+            Type viewModelType = EditortimeReflectionHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).FirstOrDefault(type => type.FullName == viewModelResolver.ViewModelType);
             var bindingInfos = GetAllBindingInfos(viewModelType);
             output ??= new();
             foreach(var bindingInfo in bindingInfos){
@@ -122,7 +122,7 @@ namespace HUtil.UI.Editor
         public static List<Type> GetAllViewModelTypes(UIComponent uiComponent)
         {
             var typeNameSet = uiComponent.ViewModelResolvers.Select(vmr => vmr.ViewModelType).ToHashSet();
-            return InspectorHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).Where(typeStr => typeNameSet.Contains(typeStr.FullName)).ToList();
+            return EditortimeReflectionHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).Where(typeStr => typeNameSet.Contains(typeStr.FullName)).ToList();
         }
 
         /// <summary>

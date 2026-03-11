@@ -33,25 +33,6 @@ namespace HUtil.Editor
         }
 
         /// <summary>
-        /// 모든 <paramref name="baseType"/> 타입 구현체를 가져옵니다.
-        /// </summary>
-        /// <param name="baseType">기반 타입</param>
-        /// <returns>구현체 타입 리스트</returns>
-        public static List<Type> GetAllConcreteTypesDerivedFrom(Type baseType)
-        {
-            // 1. TypeCache를 통해 IViewModel을 상속/구현한 모든 타입을 즉시 가져옵니다.
-            var typeCollection = TypeCache.GetTypesDerivedFrom(baseType); 
-            // 클래스인 경우: TypeCache.GetTypesDerivedFrom(typeof(ViewModelBase));
-
-            // 2. 추상 클래스(Abstract)나 인터페이스 자체는 인스턴스화할 수 없으므로 제외합니다.
-            var concreteTypes = typeCollection
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .ToList();
-
-            return concreteTypes;
-        }
-
-        /// <summary>
         /// 열거형 필드를 그립니다.
         /// </summary>
         /// <param name="rect">그릴 위치</param>
