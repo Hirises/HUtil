@@ -11,6 +11,9 @@ using UnityEngine.EventSystems;
 
 namespace HUtil.UI.Binder
 {
+    /// <summary>
+    /// 클릭, 호버 이벤트를 처리하는 TMP_Text 바인딩 컴포넌트
+    /// </summary>
     public class InteractiveTextBinder : MonoBinder, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
     {
         [SerializeField] private TMP_Text _target;
