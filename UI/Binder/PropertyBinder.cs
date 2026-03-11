@@ -14,7 +14,7 @@ namespace HUtil.UI.Binder
         [SerializeField] private GameObject _target;
         [SerializeField] private AnimationClip _onAnimation;
         [SerializeField] private AnimationClip _offAnimation;
-        [SerializeField] private PropertyBindingInfo _bool_prop = new PropertyBindingInfo(BindingType.Bool, BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingInfo _isOn_prop = new PropertyBindingInfo(BindingType.Bool, BindingDirectionFlags.ToUI);
 
         protected override void Reset()
         {
@@ -24,12 +24,12 @@ namespace HUtil.UI.Binder
 
         protected void OnValidate()
         {
-            _bool_prop.Validate();
+            _isOn_prop.Validate();
         }
 
         protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
         {
-            _bool_prop.Bind<bool>(bindMap, disposable, SetBool);
+            _isOn_prop.Bind<bool>(bindMap, disposable, SetBool);
         }
 
         private void SetBool(bool value)

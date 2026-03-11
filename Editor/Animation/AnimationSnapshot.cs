@@ -91,25 +91,28 @@ namespace HUtil.Editor.Animation
             poseDict.Clear();
 
             foreach (var comp in targetObject.GetComponents<Component>())
-            {
-                if (comp == null) continue;
-                SerializedObject so = new SerializedObject(comp);
-                SerializedProperty prop = so.GetIterator();
-
-                while (prop.NextVisible(true))
                 {
-                    // 핵심: property.numericValue를 쓰지 않고, 
-                    // 수치로 변환 가능한 모든 하위 필드(x, y, r, g, b 등)를 낱개로 캡처
-                    if (prop.hasChildren) continue; // 부모 속성은 건너뛰고 실제 값 필드만 캡처
+                    SerializedObject so = new SerializedObject(comp);
+                    SerializedProperty prop = so.GetIterator();
 
-                    if (IsSupportedType(prop))
+                    // enterChildren을 true로 두면 모든 계층을 하나씩 다 방문함
+                    while (prop.NextVisible(true))
                     {
-                        string key = $"{comp.GetType().AssemblyQualifiedName}|{prop.propertyPath}";
-                        poseDict[key] = GetPropertyValueAsFloat(prop);
+                        // 자식이 없는 '말단(Leaf)' 노드이면서 지원하는 타입일 때만 기록
+                        // Color 전체는 hasChildren이 true라 무시되고, 
+                        // 그 안의 r, g, b, a는 hasChildren이 false라 기록됨!
+                        if (!prop.hasChildren && IsSupportedType(prop))
+                        {
+                            AddPoseToDict(poseDict, comp, prop);
+                        }
+                        if(prop.propertyType == SerializedPropertyType.Color){
+                            AddPoseToDict(poseDict, comp, prop.FindPropertyRelative("r"));
+                            AddPoseToDict(poseDict, comp, prop.FindPropertyRelative("g"));
+                            AddPoseToDict(poseDict, comp, prop.FindPropertyRelative("b"));
+                            AddPoseToDict(poseDict, comp, prop.FindPropertyRelative("a"));
+                        }
                     }
                 }
-            }
-            Debug.Log($"포즈 캡처 완료! ({poseDict.Count}개 데이터)");
         }
 
         private bool IsSupportedType(SerializedProperty prop)
@@ -124,6 +127,14 @@ namespace HUtil.Editor.Animation
                 default:
                     return false;
             }
+        }
+
+        // 헬퍼: 딕셔너리에 데이터 추가
+        private void AddPoseToDict(Dictionary<string, float> poseDict, Component comp, SerializedProperty prop)
+        {
+            string key = $"{comp.GetType().AssemblyQualifiedName}|{prop.propertyPath}";
+            poseDict[key] = GetPropertyValueAsFloat(prop);
+            Debug.Log($"Captured: {prop.propertyPath} = {poseDict[key]}");
         }
 
         private float GetPropertyValueAsFloat(SerializedProperty prop)
@@ -144,9 +155,9 @@ namespace HUtil.Editor.Animation
         /// A와 B 캡쳐본을 바탕으로 변경된 사항만 애니메이션 클립으로 생성합니다.
         /// </summary>
         /// <param name="clipName">클립 이름</param>
-        public void CreateAnimationClipAB(string clipName, string assetPath = "Assets/CapturedAnimations/")
+        public AnimationClip CreateAnimationClipAB(string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
-            if (!IsCapturedA || !IsCapturedB) return;
+            if (!IsCapturedA || !IsCapturedB) return null;
 
             AnimationClip clip = new AnimationClip();
             int curvesAdded = 0;
@@ -174,9 +185,14 @@ namespace HUtil.Editor.Animation
 
             if (curvesAdded > 0)
             {
+                CreateSubDirectoryRecursive(assetPath);
                 AssetDatabase.CreateAsset(clip, $"{assetPath}{clipName}.anim");
                 AssetDatabase.SaveAssets();
                 Debug.Log($"{curvesAdded}개의 필드 변화를 포함한 클립 생성 성공!");
+                return clip;
+            }else{
+                Debug.Log("클립 생성 실패! 변경된 필드가 없습니다.");
+                return null;
             }
         }
 
@@ -184,9 +200,9 @@ namespace HUtil.Editor.Animation
         /// A와 B로 변화하는 애니메이션 클립을 생성합니다.
         /// </summary>
         /// <param name="clipName">클립 이름</param>
-        public void CreateAnimationClipDelta(string clipName, float duration = 1f, bool isEaseInOut = true, string assetPath = "Assets/CapturedAnimations/")
+        public AnimationClip CreateAnimationClipDelta(string clipName, float duration = 1f, bool isEaseInOut = true, string assetPath = "Assets/CapturedAnimations/")
         {
-            if (!IsCapturedA || !IsCapturedB) return;
+            if (!IsCapturedA || !IsCapturedB) return null;
 
             AnimationClip clip = new AnimationClip();
             int curvesAdded = 0;
@@ -222,9 +238,30 @@ namespace HUtil.Editor.Animation
 
             if (curvesAdded > 0)
             {
+                CreateSubDirectoryRecursive(assetPath);
                 AssetDatabase.CreateAsset(clip, $"{assetPath}{clipName}.anim");
                 AssetDatabase.SaveAssets();
                 Debug.Log($"{curvesAdded}개의 필드 변화를 포함한 클립 생성 성공!");
+                return clip;
+            }else{
+                Debug.Log("클립 생성 실패! 변경된 필드가 없습니다.");
+                return null;
+            }   
+        }
+
+        private void CreateSubDirectoryRecursive(string assetPath){
+            var folders = assetPath.Split('/');
+            var currentPath = "";
+            foreach(var folder in folders){
+                if(string.IsNullOrEmpty(folder)) continue;
+                if(string.IsNullOrEmpty(currentPath)){
+                    currentPath = folder;
+                    continue;
+                }
+                if(!AssetDatabase.IsValidFolder($"{currentPath}/{folder}")){
+                    AssetDatabase.CreateFolder(currentPath, folder);
+                }
+                currentPath = $"{currentPath}/{folder}";
             }
         }
         #endregion
