@@ -21,10 +21,19 @@ namespace HUtil.Editor.Animation
             public object value;
         }
 
+        /// <summary>
+        /// 스냅샷을 캡쳐하는 옵션
+        /// </summary>
         public struct CaptureOption{
             public Type[] ignoreComponentTypes;
             public string[] ignorePropertyPaths;
 
+            /// <summary>
+            /// 생성자
+            /// </summary>
+            /// <param name="ignoreComponentTypes">무시할 컴포넌트 타입(상속은 무시)</param>
+            /// <param name="includeComponentTypesDerivedFrom">무시할 컴포넌트 타입(이 타입의 서브클래스도 무시함)</param>
+            /// <param name="ignorePropertyPaths">무시할 프로퍼티 경로</param>
             public CaptureOption(Type[] ignoreComponentTypes, Type[] includeComponentTypesDerivedFrom, string[] ignorePropertyPaths){
                 List<Type> excludeComponentTypes = new List<Type>();
                 excludeComponentTypes.AddRange(ignoreComponentTypes);
@@ -194,16 +203,34 @@ namespace HUtil.Editor.Animation
         #endregion
 
         #region Create Animation Clip
+        /// <summary>
+        /// A 포즈를 애니메이션 클립으로 생성합니다.
+        /// </summary>
+        /// <param name="clipName">클립 이름</param>
+        /// <param name="assetPath">클립 저장 경로</param>
+        /// <returns>생성된 애니메이션 클립</returns>
         public AnimationClip CreateAnimationClipA(string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
             return CreateAnimationClip(poseA, clipName, assetPath);
         }
 
+        /// <summary>
+        /// B 포즈를 애니메이션 클립으로 생성합니다.
+        /// </summary>
+        /// <param name="clipName">클립 이름</param>
+        /// <param name="assetPath">클립 저장 경로</param>
+        /// <returns>생성된 애니메이션 클립</returns>
         public AnimationClip CreateAnimationClipB(string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
             return CreateAnimationClip(poseB, clipName, assetPath);
         }
 
+        /// <summary>
+        /// A->B에서 달라진 필드만만 애니메이션 클립으로 생성합니다.
+        /// </summary>
+        /// <param name="clipName">클립 이름</param>
+        /// <param name="assetPath">클립 저장 경로</param>
+        /// <returns>생성된 애니메이션 클립</returns>
         public AnimationClip CreateAnimationClipAB(string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
             Dictionary<string, PoseData> poseDict = new Dictionary<string, PoseData>();
@@ -215,6 +242,12 @@ namespace HUtil.Editor.Animation
             return CreateAnimationClip(poseDict, clipName, assetPath);
         }
 
+        /// <summary>
+        /// B->A에서 달라진 필드만만 애니메이션 클립으로 생성합니다.
+        /// </summary>
+        /// <param name="clipName">클립 이름</param>
+        /// <param name="assetPath">클립 저장 경로</param>
+        /// <returns>생성된 애니메이션 클립</returns>
         public AnimationClip CreateAnimationClipBA(string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
             Dictionary<string, PoseData> poseDict = new Dictionary<string, PoseData>();
