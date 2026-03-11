@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 using UnityEditor;
 
@@ -18,12 +20,28 @@ namespace HUtil.Editor.Animation
             public string propertyPath;
             public object value;
         }
+
+        public struct CaptureOption{
+            public Type[] ignoreComponentTypes;
+            public string[] ignorePropertyPaths;
+
+            public CaptureOption(Type[] ignoreComponentTypes, Type[] includeComponentTypesDerivedFrom, string[] ignorePropertyPaths){
+                List<Type> excludeComponentTypes = new List<Type>();
+                excludeComponentTypes.AddRange(ignoreComponentTypes);
+                foreach(var type in includeComponentTypesDerivedFrom){
+                    excludeComponentTypes.AddRange(InspectorHelper.GetAllConcreteTypesDerivedFrom(type));
+                }
+                this.ignoreComponentTypes = excludeComponentTypes.ToArray();
+                this.ignorePropertyPaths = ignorePropertyPaths;
+            }
+        }
         
         private GameObject targetObject;
         private Dictionary<string, PoseData> poseA = new Dictionary<string, PoseData>();
         private Dictionary<string, PoseData> poseB = new Dictionary<string, PoseData>();
         private bool _isCapturedA = false;
         private bool _isCapturedB = false;
+        private CaptureOption? _captureOption;
 
         /// <summary>
         /// A 포즈가 캡처되었는지 여부
@@ -38,11 +56,12 @@ namespace HUtil.Editor.Animation
         /// 생성자
         /// </summary>
         /// <param name="targetObject">대상 오브젝트</param>
-        public AnimationSnapshot(GameObject targetObject)
+        public AnimationSnapshot(GameObject targetObject, CaptureOption? captureOption = null)
         {
             this.targetObject = targetObject;
             _isCapturedA = false;
             _isCapturedB = false;
+            _captureOption = captureOption;
         }
         
         #region public Methods
@@ -52,7 +71,7 @@ namespace HUtil.Editor.Animation
         /// <param name="poseDict">캡처된 필드 변경사항</param>
         public void CapturePoseA()
         {
-            CapturePose(poseA);
+            CapturePose(poseA, _captureOption);
             _isCapturedA = true;
         }
 
@@ -62,7 +81,7 @@ namespace HUtil.Editor.Animation
         /// <param name="poseDict">캡처된 필드 변경사항</param>
         public void CapturePoseB()
         {
-            CapturePose(poseB);
+            CapturePose(poseB, _captureOption);
             _isCapturedB = true;
         }
 
@@ -92,34 +111,45 @@ namespace HUtil.Editor.Animation
         #endregion
 
         #region [Internal] Capture Logics
-        private void CapturePose(Dictionary<string, PoseData> poseDict)
+        private void CapturePose(Dictionary<string, PoseData> poseDict, CaptureOption? captureOption = null)
         {
             if (targetObject == null) return;
             poseDict.Clear();
 
             foreach (var comp in targetObject.GetComponents<Component>())
-                {
-                    SerializedObject so = new SerializedObject(comp);
-                    SerializedProperty prop = so.GetIterator();
+            {
+                if(captureOption.HasValue && captureOption.Value.ignoreComponentTypes.Contains(comp.GetType())) continue;
 
-                    // enterChildren을 true로 두면 모든 계층을 하나씩 다 방문함
-                    while (prop.NextVisible(true))
+                SerializedObject so = new SerializedObject(comp);
+                SerializedProperty prop = so.GetIterator();
+
+                // enterChildren을 true로 두면 모든 계층을 하나씩 다 방문함
+                while (prop.NextVisible(true))
+                {
+                    if(captureOption.HasValue && captureOption.Value.ignorePropertyPaths.Contains(prop.propertyPath)) continue;
+
+                    // 자식이 없는 '말단(Leaf)' 노드이면서 지원하는 타입일 때만 기록
+                    // Color 전체는 hasChildren이 true라 무시되고, 
+                    // 그 안의 r, g, b, a는 hasChildren이 false라 기록됨!
+                    if (!prop.hasChildren && IsSupportedType(prop))
                     {
-                        // 자식이 없는 '말단(Leaf)' 노드이면서 지원하는 타입일 때만 기록
-                        // Color 전체는 hasChildren이 true라 무시되고, 
-                        // 그 안의 r, g, b, a는 hasChildren이 false라 기록됨!
-                        if (!prop.hasChildren && IsSupportedType(prop))
-                        {
-                            AddPoseToList(poseDict, comp, prop);
-                        }
-                        if(prop.propertyType == SerializedPropertyType.Color){
-                            AddPoseToList(poseDict, comp, prop.FindPropertyRelative("r"));
-                            AddPoseToList(poseDict, comp, prop.FindPropertyRelative("g"));
-                            AddPoseToList(poseDict, comp, prop.FindPropertyRelative("b"));
-                            AddPoseToList(poseDict, comp, prop.FindPropertyRelative("a"));
-                        }
+                        AddPoseToList(poseDict, comp, prop);
+                        continue;
                     }
+                    if(prop.propertyType == SerializedPropertyType.Color){
+                        AddPoseToList(poseDict, comp, prop.FindPropertyRelative("r"));
+                        AddPoseToList(poseDict, comp, prop.FindPropertyRelative("g"));
+                        AddPoseToList(poseDict, comp, prop.FindPropertyRelative("b"));
+                        AddPoseToList(poseDict, comp, prop.FindPropertyRelative("a"));
+                        continue;
+                    }
+                    if(prop.propertyType == SerializedPropertyType.ObjectReference){
+                        AddPoseToList(poseDict, comp, prop);
+                        continue;
+                    }
+                    Debug.Log($"Skipped: {prop.propertyPath} {prop.propertyType}");
                 }
+            }
         }
 
         private bool IsSupportedType(SerializedProperty prop)
@@ -130,6 +160,7 @@ namespace HUtil.Editor.Animation
                 case SerializedPropertyType.Integer:
                 case SerializedPropertyType.Boolean:
                 case SerializedPropertyType.Enum:
+                case SerializedPropertyType.ObjectReference:
                     return true;
                 default:
                     return false;
@@ -156,6 +187,7 @@ namespace HUtil.Editor.Animation
                 case SerializedPropertyType.Integer: return prop.intValue;
                 case SerializedPropertyType.Boolean: return prop.boolValue ? 1f : 0f;
                 case SerializedPropertyType.Enum: return prop.enumValueIndex;
+                case SerializedPropertyType.ObjectReference: return prop.objectReferenceValue;
                 default: return 0f;
             }
         }
@@ -175,8 +207,8 @@ namespace HUtil.Editor.Animation
         public AnimationClip CreateAnimationClipAB(string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
             Dictionary<string, PoseData> poseDict = new Dictionary<string, PoseData>();
-            foreach(var poseKey in poseA.Keys){
-                if(poseB.ContainsKey(poseKey) && !IsPoseEquals(poseA[poseKey], poseB[poseKey])){
+            foreach(var poseKey in poseB.Keys){
+                if(poseA.ContainsKey(poseKey) && !IsPoseEquals(poseA[poseKey], poseB[poseKey])){
                     poseDict.Add(poseKey, poseB[poseKey]);
                 }
             }
@@ -206,6 +238,8 @@ namespace HUtil.Editor.Animation
                     return (bool)poseA.value == (bool)poseB.value;
                 case SerializedPropertyType.Enum:
                     return (int)poseA.value == (int)poseB.value;
+                case SerializedPropertyType.ObjectReference:
+                    return poseA.value == poseB.value;
                 default:
                     return false;
             }
@@ -234,6 +268,16 @@ namespace HUtil.Editor.Animation
                             Debug.Log($"valInt {pose.propertyPath}: {valInt} {BitConverter.ToSingle(BitConverter.GetBytes(valInt), 0)}");
                             curve = AnimationCurve.Constant(0, 1f, BitConverter.ToSingle(BitConverter.GetBytes(valInt), 0));
                             AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.DiscreteCurve("", pose.componentType, pose.propertyPath), curve);
+                        break;
+                    case SerializedPropertyType.ObjectReference:
+                        ObjectReferenceKeyframe[] keyframes = new ObjectReferenceKeyframe[2];
+                        keyframes[0] = new ObjectReferenceKeyframe();
+                        keyframes[0].time = 0;
+                        keyframes[0].value = (UnityEngine.Object)pose.value;
+                        keyframes[1] = new ObjectReferenceKeyframe();
+                        keyframes[1].time = 1f;
+                        keyframes[1].value = (UnityEngine.Object)pose.value;
+                        AnimationUtility.SetObjectReferenceCurve(clip, EditorCurveBinding.DiscreteCurve("", pose.componentType, pose.propertyPath), keyframes);
                         break;
                     default:
                         continue;
