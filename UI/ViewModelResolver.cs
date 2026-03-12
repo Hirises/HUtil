@@ -35,8 +35,8 @@ namespace HUtil.UI
             DynamicBinding,
         }
         [SerializeField] private string _viewModelType;
-        [SerializeField] private BindingMethod _bindingMethod;
-        [SerializeField] private PropertyBindingInfo _viewModelProp;
+        [SerializeField] private BindingMethod _bindingMethod = BindingMethod.ManualBinding;
+        [SerializeField] private PropertyBindingInfo _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindingDirectionFlags.ToUI);
         [SerializeField] private ViewModelBindingItem[] _bindMap;
 
         private IViewModel _viewModel;
@@ -51,11 +51,8 @@ namespace HUtil.UI
         /// </summary>
         public string ViewModelType => _viewModelType;
 
-        /// <summary>
-        /// 생성자
-        /// </summary>
-        /// <param name="parent">부모 UIComponent</param>
         public ViewModelResolver(){
+            Debug.Log("ViewModelResolver Constructor");
             _bindingMethod = BindingMethod.ManualBinding;
             _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindingDirectionFlags.ToUI);
             _viewModelType = string.Empty;
@@ -116,28 +113,13 @@ namespace HUtil.UI
         /// 뷰모델을 해석하고, 바인딩 정보를 생성합니다
         /// </summary>
         /// <param name="bindMap">바인딩 정보를 저장할 딕셔너리</param>
-        internal void Resolve(Dictionary<string, ResolvedProperty> bindMap){
+        internal void GenerateBindMap(Dictionary<string, ResolvedProperty> bindMap){
             if(!IsResolved){
                 return;
             }
             foreach(var bindInfo in _bindMap){
                 bindMap.Add(bindInfo.DestinationPropertyPath, new ResolvedProperty(_viewModel, bindInfo.SourcePropertyPath));
             }
-        }
-
-        /// <summary>
-        /// 외부 프로퍼티 경로를 내부 프로퍼티 경로로 변환합니다 <br />
-        /// 만약 매핑 정보에 없는 경우 원본 경로를 반환합니다
-        /// </summary>
-        /// <param name="sourcePropertyPath">외부 프로퍼티 경로</param>
-        /// <returns>내부 프로퍼티 경로</returns>
-        internal string ConvertPropertyPath(string sourcePropertyPath){
-            foreach(var bindInfo in _bindMap){
-                if(bindInfo.SourcePropertyPath == sourcePropertyPath){
-                    return bindInfo.DestinationPropertyPath;
-                }
-            }
-            return sourcePropertyPath;
         }
 
         /// <summary>

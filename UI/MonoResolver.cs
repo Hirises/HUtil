@@ -65,20 +65,21 @@ namespace HUtil.UI
             Dictionary<string, ResolvedProperty> bindMap = new Dictionary<string, ResolvedProperty>();
             foreach (var resolver in _viewModelResolvers)
             {
-                resolver.Resolve(bindMap);
+                resolver.GenerateBindMap(bindMap);
             }
             //propagate
         }
 #endregion
     
-       internal override List<BindingInfo> GetAllBindingInfos()
-       {
+        internal override List<BindingInfo> GetAllBindingInfos()
+        {
+            //resolver들의 바인딩 정보를 가져옴
             List<BindingInfo> output = new();
             foreach(var resolver in _viewModelResolvers){
                 resolver.GetAllBindingInfos(output);
             }
             return output;
-       }
+        }
     
     }
 }

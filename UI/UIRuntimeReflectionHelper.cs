@@ -171,6 +171,10 @@ namespace HUtil.UI
         {
             output ??= new();
 
+            if(viewModelType == null){
+                return output;
+            }
+
             var fields = viewModelType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach(var field in fields){
                 var bindingInfo = GetBindingInfo(field);
