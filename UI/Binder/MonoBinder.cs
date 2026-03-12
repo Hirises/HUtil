@@ -12,13 +12,21 @@ namespace HUtil.UI.Binder
     /// </summary>
     public abstract class MonoBinder : MonoBehaviour
     {
+        [SerializeField] private MonoBinder _parentBinder = null;
+        [SerializeField] private List<MonoBinder> _childBinders = new List<MonoBinder>();
+        /// <summary>
+        /// 이 바인더의 상위 바인더
+        /// </summary>
+        internal MonoBinder ParentBinder => _parentBinder;
+        /// <summary>
+        /// 이 바인더가 관리하는 하위 바인더들
+        /// </summary>
+        public IReadOnlyList<MonoBinder> ChildBinders => _childBinders;
+
         /// <summary>
         /// 바인딩 과정에서 발생하는 구독을 전파할지 여부
         /// </summary>
         protected virtual bool IsPropagateBindMap => false;
-
-        [SerializeField] private MonoBinder _parentBinder = null;
-        [SerializeField] private List<MonoBinder> _childBinders = new List<MonoBinder>();
 
         /// <summary>
         /// 바인딩 과정에서 발생하는 구독을 안전하게 해제하기 위한 <see cref="CompositeDisposable"/>
@@ -149,6 +157,7 @@ namespace HUtil.UI.Binder
         }
 #endregion
 
+#region Bind & Unbind
         /// <summary>
         /// 뷰모델을 바인딩합니다
         /// </summary>
@@ -157,15 +166,21 @@ namespace HUtil.UI.Binder
         {
             if (bindMap == null)
             {
-                throw new ArgumentNullException(nameof(bindMap));
+                BindingContext.LogWarning($"BindMap is null", gameObject);
+                return;
             }
-
-            Debug.Log($"Bind: {gameObject.name}");
-
+    
+            BindingContext.LogDebug($"Bind", gameObject);
+    
             Unbind();
             BindInternal(bindMap, _disposable);
+            if(IsPropagateBindMap){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+                foreach(var childBinder in _childBinders){
+                    childBinder.Bind(bindMap);
+                }
+            }
         }
-
+    
         /// <summary>
         /// 내부 바인딩 로직을 수행합니다
         /// <code>
@@ -179,19 +194,33 @@ namespace HUtil.UI.Binder
         /// <param name="bindMap">바인딩할 뷰모델</param>
         /// <param name="disposable">바인딩 과정에서 발생하는 구독을 등록하기 위한 <see cref="CompositeDisposable"/><br />이 객체에 등록된 구독은 <see cref="Unbind"/>에서 자동으로 해제됩니다</param>
         protected abstract void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable);
-
+    
         /// <summary>
         /// 바인딩된 뷰모델을 해제합니다
         /// </summary>
-        public virtual void Unbind()
+        public void Unbind()
+        {
+            UnbindInternal();
+            if(IsPropagateBindMap){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+                foreach(var childBinder in _childBinders){
+                    childBinder.Unbind();
+                }
+            }
+        }
+    
+        /// <summary>
+        /// 내부 바인딩 해제 로직을 수행합니다 (본인만 신경쓰면 됩니다)
+        /// </summary>
+        protected virtual void UnbindInternal()
         {
             _disposable.Clear();
         }
-
+    
         protected virtual void OnDestroy()
         {
             //컴포넌트가 파괴될 때 구독 해제
             _disposable.Dispose();
         }
+#endregion
     }
 }

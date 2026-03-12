@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using HUtil.Runtime.Observable;
 
@@ -12,18 +13,11 @@ namespace HUtil.UI.Binder
     {
         protected override bool IsPropagateBindMap => true;
 
-        [SerializeField] private Transform _root;
         [SerializeField] private CollectionBindingInfo _list_prop = new CollectionBindingInfo(BindingDirectionFlags.ToUI);
         [SerializeField] private UIComponent _itemPrefab;
         [SerializeField] private bool _autoDestroyItem = true;
 
         private List<UIComponent> _items = new List<UIComponent>();
-
-        protected override void Reset()
-        {
-            base.Reset();
-            _root = transform;
-        }
 
         protected void OnValidate()
         {
@@ -33,9 +27,9 @@ namespace HUtil.UI.Binder
         protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
         {
             if(_autoDestroyItem){
-                for (int i = 0; i < _root.childCount; i++)
+                for (int i = 0; i < transform.childCount; i++)
                 {
-                    var child = _root.GetChild(i);
+                    var child = transform.GetChild(i);
                     if(child.gameObject == _itemPrefab.gameObject){
                         child.gameObject.SetActive(false);
                         continue;
@@ -47,7 +41,7 @@ namespace HUtil.UI.Binder
             _list_prop.Bind(bindMap, disposable, SetList);
         }
 
-        public override void Unbind()
+        protected override void UnbindInternal()
         {
             foreach (var item in _items)
             {
@@ -55,7 +49,7 @@ namespace HUtil.UI.Binder
                 Destroy(item.gameObject);
             }
             _items.Clear();
-            base.Unbind();
+            base.UnbindInternal();
         }
 
         private void SetList(ListChangeEvent<IViewModel> @event)
@@ -64,7 +58,7 @@ namespace HUtil.UI.Binder
             {
                 case ListChangeAction.Add:
                 {
-                    var item = Instantiate(_itemPrefab, _root);
+                    var item = Instantiate(_itemPrefab, transform);
                     item.ManualBind(@event.Item);
                     item.gameObject.SetActive(true);
                     _items.Insert(@event.Index, item);
