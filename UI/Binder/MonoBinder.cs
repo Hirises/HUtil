@@ -175,9 +175,11 @@ namespace HUtil.UI.Binder
             Unbind();
             BindInternal(bindMap, _disposable);
             if(IsPropagateBindMap){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+                BeforePropagate(bindMap);
                 foreach(var childBinder in _childBinders){
                     childBinder.Bind(bindMap);
                 }
+                AfterPropagate(bindMap);
             }
         }
     
@@ -194,6 +196,24 @@ namespace HUtil.UI.Binder
         /// <param name="bindMap">바인딩할 뷰모델</param>
         /// <param name="disposable">바인딩 과정에서 발생하는 구독을 등록하기 위한 <see cref="CompositeDisposable"/><br />이 객체에 등록된 구독은 <see cref="Unbind"/>에서 자동으로 해제됩니다</param>
         protected abstract void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable);
+
+        /// <summary>
+        /// 하위로 전파하기 전에 호출됩니다
+        /// </summary>
+        /// <param name="bindMap">바인딩할 뷰모델</param>
+        protected virtual void BeforePropagate(Dictionary<string, ResolvedProperty> bindMap)
+        {
+            //pass
+        }
+
+        /// <summary>
+        /// 하위로 전파한 후에 호출됩니다
+        /// </summary>
+        /// <param name="bindMap">바인딩할 뷰모델</param>
+        protected virtual void AfterPropagate(Dictionary<string, ResolvedProperty> bindMap)
+        {
+            //pass
+        }
     
         /// <summary>
         /// 바인딩된 뷰모델을 해제합니다
