@@ -2,7 +2,8 @@
     "name": "HUtil.Attribute.Editor",
     "rootNamespace": "HUtil.Attribute.Editor",
     "references": [
-        "GUID:931bab70c20b4ab4e9f8ee701441c033"
+        "GUID:931bab70c20b4ab4e9f8ee701441c033",
+        "GUID:65d679c313d342448a79764fc45303f6"
     ],
     "includePlatforms": [
         "Editor"

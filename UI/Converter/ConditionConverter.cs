@@ -20,7 +20,7 @@ namespace HUtil.UI.Converter
             Enum,
         }
 
-        [SerializeField] private ConditionType _conditionType;
+        [SerializeField, OnValueChaged(nameof(OnTypeChanged))] private ConditionType _conditionType;
         [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Int)] private PropertyBindingPort _int = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Int), BindingDirectionFlags.ToUI);
         [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Long)] private PropertyBindingPort _long = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Long), BindingDirectionFlags.ToUI);
         [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Float)] private PropertyBindingPort _float = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Float), BindingDirectionFlags.ToUI);
@@ -30,6 +30,15 @@ namespace HUtil.UI.Converter
         [SerializeField] private string _outputPath;
 
         private IViewModelProperty _previousProperty;
+
+        private void OnTypeChanged(){
+            _int.Reset();
+            _long.Reset();
+            _float.Reset();
+            _double.Reset();
+            _bool.Reset();
+            _enum.Reset();
+        }
 
         protected override void OnConvertProperties(Dictionary<string, IViewModelProperty> bindMap)
         {

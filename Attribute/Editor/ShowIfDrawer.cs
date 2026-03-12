@@ -13,7 +13,7 @@ namespace HUtil.Attribute.Editor
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var showIfAttribute = attribute as ShowIfAttribute;
-            if(IsVisible(property, property.serializedObject, showIfAttribute))
+            if(IsVisible(property, showIfAttribute))
             {
                 return base.GetPropertyHeight(property, label);
             }
@@ -23,26 +23,15 @@ namespace HUtil.Attribute.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var showIfAttribute = attribute as ShowIfAttribute;
-            if(IsVisible(property, property.serializedObject, showIfAttribute))
+            if(IsVisible(property, showIfAttribute))
             {
                 EditorGUI.PropertyField(position, property, label);
             }
         }
 
-        private bool IsVisible(SerializedProperty property, SerializedObject obj, ShowIfAttribute showIfAttribute)
+        private bool IsVisible(SerializedProperty property, ShowIfAttribute showIfAttribute)
         {
-            int lastDot = property.propertyPath.LastIndexOf('.');
-            string targetPath = "";
-            if(lastDot != -1)
-            {
-                string parentPath = property.propertyPath.Substring(0, lastDot);
-                targetPath = $"{parentPath}.{showIfAttribute.PropertyName}";
-            }
-            else
-            {
-                targetPath = showIfAttribute.PropertyName;
-            }
-            SerializedProperty targetProperty = obj.FindProperty(targetPath);
+            SerializedProperty targetProperty = AttributeEditortimeReflectionHelper.GetRelativeProperty(property, showIfAttribute.PropertyName);
             if(showIfAttribute.UseValue)
             {
                 return targetProperty.intValue == showIfAttribute.Value;

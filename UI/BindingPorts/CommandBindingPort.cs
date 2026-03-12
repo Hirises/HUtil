@@ -66,6 +66,11 @@ namespace HUtil.UI
             _allowDirection = allowDirection;
         }
 
+        public void Reset(){
+            _path = "";
+            _direction = BindingMode.None;
+        }
+
         /// <summary>
         /// 바인딩을 진행합니다
         /// </summary>
