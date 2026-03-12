@@ -10,7 +10,7 @@ namespace HUtil.UI.Binder
     /// <summary>
     /// On/Off 그룹 바인더
     /// </summary>
-    public class OnOffGroupBinder : MonoBinder
+    public class ActivationBinder : MonoBinder
     {
         [SerializeField] private GameObject[] _onObjects;
         [SerializeField] private GameObject[] _offObjects;

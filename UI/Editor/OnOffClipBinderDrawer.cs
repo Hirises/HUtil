@@ -13,15 +13,15 @@ using HUtil.Editor.Animation;
 
 namespace HUtil.UI.Editor
 {
-    [CustomEditor(typeof(OnOffAnimatedBinder))]
-    public class OnOffAnimatedBinderDrawer : UnityEditor.Editor
+    [CustomEditor(typeof(OnOffClipBinder))]
+    public class OnOffClipBinderDrawer : UnityEditor.Editor
     {
         private AnimationSnapshot.CaptureOption _captureOption = new AnimationSnapshot.CaptureOption(new Type[0], new Type[] { typeof(MonoBinder) }, new string[0]);
 
         public override void OnInspectorGUI(){
             serializedObject.Update();
 
-            var propertyBinder = target as OnOffAnimatedBinder;
+            var propertyBinder = target as OnOffClipBinder;
 
             var targetProp = serializedObject.FindProperty("_target");
             var onAnimationProp = serializedObject.FindProperty("_onAnimation");

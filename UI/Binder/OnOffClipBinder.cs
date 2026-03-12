@@ -12,7 +12,7 @@ namespace HUtil.UI.Binder
     /// <summary>
     /// 동적 애니메이션 클립 생성을 이용한 멀티 바인더
     /// </summary>
-    public class OnOffAnimatedBinder : MonoBinder
+    public class OnOffClipBinder : MonoBinder
     {
         [SerializeField] private GameObject _target;
         [SerializeField] private AnimationClip _onAnimation;
