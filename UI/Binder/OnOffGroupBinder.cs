@@ -16,6 +16,11 @@ namespace HUtil.UI.Binder
         [SerializeField] private GameObject[] _offObjects;
         [SerializeField] private PropertyBindingPort _isOn_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Bool), BindingDirectionFlags.ToUI);
 
+        protected void OnValidate()
+        {
+            _isOn_prop.Validate(this);
+        }
+
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             _isOn_prop.Bind<bool>(bindMap, disposable, SetIsOn);

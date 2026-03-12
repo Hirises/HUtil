@@ -27,7 +27,7 @@ namespace HUtil.UI.Binder
 
         protected void OnValidate()
         {
-            _isOn_prop.Validate();
+            _isOn_prop.Validate(this);
         }
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)

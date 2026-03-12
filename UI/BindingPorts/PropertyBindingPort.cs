@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
+using HUtil.UI.Binder;
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -46,13 +48,17 @@ namespace HUtil.UI
         /// 이 필드의 유효성을 검증합니다
         /// </summary>
         /// <returns>유효성 검증 결과. true일 경우 유효함</returns>
-        public bool Validate(){
+        public bool Validate(MonoBinder binder){
             if(!_allowDirection.CanAccept(Direction)){
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return false;
             }
             if(Direction != BindingMode.None && string.IsNullOrEmpty(Path)){
                 Debug.LogWarning($"[UIBinder] Path is empty for this property setting!");
+                return false;
+            }
+            if(!binder.GetAllBindingInfosEditor().Any(info => info.PropertyPath == Path)){
+                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in binder");
                 return false;
             }
             return true;

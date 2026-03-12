@@ -37,10 +37,10 @@ namespace HUtil.UI.Binder
 
         protected virtual void OnValidate()
         {
-            _baseText_prop.Validate();
-            _onHoverIn_prop.Validate();
-            _onHoverOut_prop.Validate();
-            _onClick_prop.Validate();
+            _baseText_prop.Validate(this);
+            _onHoverIn_prop.Validate(this);
+            _onHoverOut_prop.Validate(this);
+            _onClick_prop.Validate(this);
         }
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
