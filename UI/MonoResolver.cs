@@ -8,14 +8,18 @@ using UnityEngine;
 
 namespace HUtil.UI
 {
+    /// <summary>
+    /// ViewModel을 관리하고, 바인딩을 처리하는 컴포넌트
+    /// </summary>
     public class MonoResolver : MonoBinder
     {
-        protected override bool BlockPropagate => true;
+        protected override bool IsRootBinder => true;
 
         [SerializeField] private List<ViewModelResolver> _viewModelResolvers = new List<ViewModelResolver>();
         internal List<ViewModelResolver> ViewModelResolvers => _viewModelResolvers;
 
 
+#region Binding Methods
         protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
         {
             //상위 UIComponent에서 내려오는 요청은 본인의 DynamicBind로 처리 (내부 리로드는 실행하지 않음)
@@ -24,14 +28,14 @@ namespace HUtil.UI
                 resolver.DynamicBind(bindMap, disposable, this);
             }
         }
-
+    
         private void Awake(){
             foreach (var resolver in _viewModelResolvers)
             {
                 resolver.SubscribeStaticBind(this);
             }
         }
-
+    
         protected override void OnDestroy(){
             foreach (var resolver in _viewModelResolvers)
             {
@@ -39,7 +43,7 @@ namespace HUtil.UI
             }
             base.OnDestroy();
         }
-
+    
         /// <summary>
         /// ViewModel을 수동으로 바인딩합니다
         /// </summary>
@@ -52,7 +56,7 @@ namespace HUtil.UI
                 resolver.ManualBind(viewModel, this);
             }
         }
-
+    
         /// <summary>
         /// Resolver들의 바인딩 상태를 확인하고, 하위 Binder들에게 바인딩을 요청합니다
         /// </summary>
@@ -65,5 +69,16 @@ namespace HUtil.UI
             }
             //propagate
         }
+#endregion
+    
+       internal override List<BindingInfo> GetAllBindingInfos()
+       {
+            List<BindingInfo> output = new();
+            foreach(var resolver in _viewModelResolvers){
+                resolver.GetAllBindingInfos(output);
+            }
+            return output;
+       }
+    
     }
 }

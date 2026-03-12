@@ -140,6 +140,18 @@ namespace HUtil.UI
             return sourcePropertyPath;
         }
 
+        /// <summary>
+        /// 이 ViewModelResolver가 제공하는 모든 바인딩 정보를 가져옵니다
+        /// </summary>
+        /// <param name="output">값을 전달받을 리스트</param>
+        /// <returns>바인딩 정보 리스트</returns>
+        internal List<BindingInfo> GetAllBindingInfos(List<BindingInfo> output = null)
+        {
+            output ??= new();
+            UIRuntimeReflectionHelper.GetAllBindingInfo(Type.GetType(_viewModelType), output);
+            return output;
+        }
+
         // 딕셔너리 비주얼라이즈하기 귀찮아서 사용함
         [Serializable]
         private class ViewModelBindingItem

@@ -73,7 +73,15 @@ namespace HUtil.Editor
         /// <param name="title">표시될 드롭다운 제목</param>
         public static void DrawSearchableDropdownField(Rect rect, SerializedProperty property, DropdownOption[] options, string title = "Dropdown")
         {
-            if(GUI.Button(rect, property.stringValue, EditorStyles.popup)){
+            string displayName = property.stringValue;
+            foreach(var option in options){
+                if(option.Value == property.stringValue){
+                    displayName = option.DisplayName;
+                    break;
+                }
+            }
+
+            if(GUI.Button(rect, displayName, EditorStyles.popup)){
                 var state = new AdvancedDropdownState();
                 var dropdown = new SearchableDropdown(state, options, property, title);
                 dropdown.Show(rect);

@@ -13,7 +13,7 @@ namespace HUtil.UI.Binder
     /// </summary>
     public class ButtonBinder : MonoBinder
     {
-        protected override bool BlockPropagate => false;
+        protected override bool IsRootBinder => false;
 
         [SerializeField] private Button _target;
         [SerializeField] private CommandBindingInfo _onClick_cmd = new CommandBindingInfo(BindingDirectionFlags.ToData);

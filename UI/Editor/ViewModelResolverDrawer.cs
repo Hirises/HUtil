@@ -42,7 +42,7 @@ namespace HUtil.UI.Editor
             var options = EditortimeReflectionHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel));
             (var labelRect, var contentRect) = curLine.SliceVertical(EditorGUIUtility.labelWidth);
             EditorGUI.LabelField(labelRect, "ViewModel Type");
-            InspectorHelper.DrawSearchableDropdownField(contentRect, viewModelTypeProp, options.Select(type => new DropdownOption(type.FullName)).ToArray());
+            InspectorHelper.DrawSearchableDropdownField(contentRect, viewModelTypeProp, options.Select(type => new DropdownOption(type.FullName, type.AssemblyQualifiedName)).ToArray());
             curLine = curLine.GetNextLine();
 
             // # BindingMethod
@@ -60,10 +60,10 @@ namespace HUtil.UI.Editor
             // # BindMap
             EditorGUI.LabelField(curLine, "Binding Map");
             curLine = curLine.GetNextLine();
-            var viewModelType = EditortimeReflectionHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).FirstOrDefault(type => type.FullName == viewModelTypeProp.stringValue);
+            var viewModelType = Type.GetType(viewModelTypeProp.stringValue);
             if(viewModelType != null){
                 EditorGUI.indentLevel++;
-                var bindList = UIEditortimeReflectionHelper.GetAllBindablePropertyNames(viewModelType);
+                var bindList = UIRuntimeReflectionHelper.GetAllBindingInfo(viewModelType).Select(info => info.PropertyPath).ToList();
                 if(bindList.Count != bindMapProp.arraySize){
                     bindMapProp.ClearArray();
                     bindMapProp.arraySize = bindList.Count;

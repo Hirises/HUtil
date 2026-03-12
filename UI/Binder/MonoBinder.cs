@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using HUtil.Runtime.Observable;
 
@@ -24,9 +25,9 @@ namespace HUtil.UI.Binder
         public IReadOnlyList<MonoBinder> ChildBinders => _childBinders;
 
         /// <summary>
-        /// 하위 바이더로의 바인딩 전파를 차단할지 여부
+        /// 다른 바인더에게 바인딩 정보를 제공할지 여부
         /// </summary>
-        protected virtual bool BlockPropagate => false;
+        protected virtual bool IsRootBinder => false;
 
         /// <summary>
         /// 바인딩 과정에서 발생하는 구독을 안전하게 해제하기 위한 <see cref="CompositeDisposable"/>
@@ -77,7 +78,7 @@ namespace HUtil.UI.Binder
             output ??= new List<MonoBinder>();
             output.Clear();
 
-            if(!BlockPropagate){
+            if(!IsRootBinder){
                 return output;
             }
     
@@ -86,7 +87,7 @@ namespace HUtil.UI.Binder
                 var comp = gameObject.GetComponentAtIndex(i);
                 if(comp is MonoBinder binder){
                     output.Add(binder);
-                    if(binder.BlockPropagate){
+                    if(binder.IsRootBinder){
                         //하위로 전파하는 객체면 여기까지
                         return output;
                     }
@@ -105,7 +106,7 @@ namespace HUtil.UI.Binder
                 var comp = self.gameObject.GetComponentAtIndex(i);
                 if(comp is MonoBinder binder){
                     childBinders.Add(binder);
-                    if(binder.BlockPropagate){
+                    if(binder.IsRootBinder){
                         //하위로 전파하는 객체면 여기까지
                         return;
                     }
@@ -124,7 +125,7 @@ namespace HUtil.UI.Binder
         public MonoBinder FindParentBinder()
         {
             foreach(var binder in EnumerateParentBinders()){
-                if(binder.BlockPropagate){
+                if(binder.IsRootBinder){
                     return binder;
                 }
             }
@@ -174,7 +175,7 @@ namespace HUtil.UI.Binder
     
             Unbind();
             BindInternal(bindMap, _disposable);
-            if(BlockPropagate){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+            if(IsRootBinder){   //하위로 전파하는 객체면 하위 바인더들에게 전파
                 BeforePropagate(bindMap);
                 foreach(var childBinder in _childBinders){
                     childBinder.Bind(bindMap);
@@ -220,12 +221,12 @@ namespace HUtil.UI.Binder
         /// </summary>
         public void Unbind()
         {
-            UnbindInternal();
-            if(BlockPropagate){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+            if(IsRootBinder){   //하위로 전파하는 객체면 하위 바인더들에게 전파
                 foreach(var childBinder in _childBinders){
                     childBinder.Unbind();
                 }
             }
+            UnbindInternal();
         }
     
         /// <summary>
@@ -242,5 +243,25 @@ namespace HUtil.UI.Binder
             _disposable.Dispose();
         }
 #endregion
+    
+        /// <summary>
+        /// 이 바인더가 제공하는 모든 바인딩 정보를 가져옵니다
+        /// </summary>
+        /// <returns>바인딩 정보 리스트</returns>
+        internal virtual List<BindingInfo> GetAllBindingInfos()
+        {
+            return _parentBinder?.GetAllBindingInfos() ?? new List<BindingInfo>();
+        }
+
+        /// <summary>
+        /// 이 바인더가 제공하는 모든 프로퍼티 중 주어진 타입과 방향으로 바인딩 가능한 프로퍼티의 이름을 가져옵니다
+        /// </summary>
+        /// <param name="receivingType">받을 수 있는 타입</param>
+        /// <param name="bindingMode">동기화 하려는 방향</param>
+        /// <returns>프로퍼티 이름 리스트</returns>
+        internal List<string> GetAllBindablePropertyNames(BindingType receivingType, BindingMode bindingMode)
+        {
+            return GetAllBindingInfos().Where(info => info.CanAccept(receivingType, bindingMode)).Select(info => info.PropertyPath).ToList();
+        }
     }
 }

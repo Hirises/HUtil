@@ -11,7 +11,7 @@ namespace HUtil.UI.Binder
 {
     public class CollectionBinder : MonoBinder
     {
-        protected override bool BlockPropagate => true;
+        protected override bool IsRootBinder => true;
 
         [SerializeField] private CollectionBindingInfo _list_prop = new CollectionBindingInfo(BindingDirectionFlags.ToUI);
         [SerializeField] private MonoResolver _itemPrefab;
