@@ -1,12 +1,14 @@
 using System;
 
+using UnityEngine;
+
 namespace HUtil.UI
 {
     /// <summary>
     /// ViewModel의 바인딩 가능한 속성을 지정하는 어트리뷰트
     /// </summary>
     [AttributeUsage(validOn: AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class BindableAttribute : Attribute
+    public class BindableAttribute : PropertyAttribute
     {
         private BindingDirectionFlags _allowedDirection;
         /// <summary>

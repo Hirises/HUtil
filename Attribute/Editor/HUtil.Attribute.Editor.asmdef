@@ -1,13 +1,12 @@
 {
-    "name": "HUtil.UI",
-    "rootNamespace": "HUtil.UI",
+    "name": "HUtil.Attribute.Editor",
+    "rootNamespace": "HUtil.Attribute.Editor",
     "references": [
-        "GUID:e0081a0a5ca15c746b29e5ff55313d99",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
         "GUID:931bab70c20b4ab4e9f8ee701441c033"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
