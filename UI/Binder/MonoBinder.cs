@@ -8,7 +8,7 @@ using UnityEngine;
 namespace HUtil.UI.Binder
 {
     /// <summary>
-    /// ViewModel을 UI요소에 바인딩하는 기본 컴포넌트
+    /// BindMap을 받고, 수정하고, 전파하는 주체
     /// </summary>
     public abstract class MonoBinder : MonoBehaviour
     {
