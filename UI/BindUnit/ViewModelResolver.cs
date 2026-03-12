@@ -75,7 +75,7 @@ namespace HUtil.UI
             _subscription = null;
         }
 
-        internal void DynamicBind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, MonoResolver sender){
+        internal void DynamicBind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, MonoResolver sender){
             if(_bindingMethod != BindingMethod.DynamicBinding){
                 return;
             }
@@ -112,7 +112,7 @@ namespace HUtil.UI
         /// 뷰모델을 해석하고, 바인딩 정보를 생성합니다
         /// </summary>
         /// <param name="bindMap">바인딩 정보를 저장할 딕셔너리</param>
-        internal void GenerateBindMap(Dictionary<string, ResolvedProperty> bindMap){
+        internal void GenerateBindMap(Dictionary<string, IViewModelProperty> bindMap){
             if(!IsResolved){
                 return;
             }

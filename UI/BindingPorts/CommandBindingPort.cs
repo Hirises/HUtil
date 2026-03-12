@@ -71,7 +71,7 @@ namespace HUtil.UI
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onTrigger">UI 트리거 이벤트</param>
         /// <typeparam name="T">이벤트 파라미터 타입</typeparam>
-        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onTrigger){
+        public void Bind<T>(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onTrigger){
             if(Direction == BindingMode.None){
                 return;
             }
@@ -119,7 +119,7 @@ namespace HUtil.UI
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onTrigger">UI 트리거 이벤트</param>
-        public void Bind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent onTrigger)
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent onTrigger)
         {
             if(Direction == BindingMode.None){
                 return;

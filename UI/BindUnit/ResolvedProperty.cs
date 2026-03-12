@@ -8,7 +8,7 @@ namespace HUtil.UI
     /// <summary>
     /// UIResolver에서 해석한 뷰모델 프로퍼티 정보
     /// </summary>
-    public struct ResolvedProperty
+    public struct ResolvedProperty : IViewModelProperty
     {
         private IViewModel _viewModel;
         private string _path;

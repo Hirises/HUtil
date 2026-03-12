@@ -29,7 +29,7 @@ namespace HUtil.UI.Binder
             _onClick_cmd.Validate();
         }
 
-        protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             _onClick_cmd.Bind(bindMap, disposable, _target.onClick);
         }

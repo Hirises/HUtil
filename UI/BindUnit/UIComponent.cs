@@ -16,7 +16,7 @@ namespace HUtil.UI
     {
         protected override bool IsRootBinder => true;
 
-        protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             //pass
         }

@@ -30,7 +30,7 @@ namespace HUtil.UI.Binder
             _isOn_prop.Validate();
         }
 
-        protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             _isOn_prop.Bind<bool>(bindMap, disposable, SetBool);
         }

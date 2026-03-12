@@ -24,7 +24,7 @@ namespace HUtil.UI.Binder
             _list_prop.Validate();
         }
 
-        protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             if(_autoDestroyItem){
                 for (int i = 0; i < transform.childCount; i++)

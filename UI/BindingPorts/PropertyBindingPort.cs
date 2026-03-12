@@ -74,7 +74,7 @@ namespace HUtil.UI
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
-        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, Action<T> setter)
+        public void Bind<T>(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter)
         {
             Bind(bindMap, disposable, setter, null);
         }
@@ -86,7 +86,7 @@ namespace HUtil.UI
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange)
+        public void Bind<T>(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange)
         {
             Bind(bindMap, disposable, null, onChange);
         }
@@ -99,7 +99,7 @@ namespace HUtil.UI
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
+        public void Bind<T>(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
         {
             if(Direction == BindingMode.None){
                 return;

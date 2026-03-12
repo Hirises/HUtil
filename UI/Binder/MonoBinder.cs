@@ -167,7 +167,7 @@ namespace HUtil.UI.Binder
         /// 뷰모델을 바인딩합니다
         /// </summary>
         /// <param name="bindMap">바인딩할 뷰모델</param>
-        internal void Bind(Dictionary<string, ResolvedProperty> bindMap)
+        internal void Bind(Dictionary<string, IViewModelProperty> bindMap)
         {
             if (bindMap == null)
             {
@@ -200,13 +200,13 @@ namespace HUtil.UI.Binder
         /// </summary>
         /// <param name="bindMap">바인딩할 뷰모델</param>
         /// <param name="disposable">바인딩 과정에서 발생하는 구독을 등록하기 위한 <see cref="CompositeDisposable"/><br />이 객체에 등록된 구독은 <see cref="Unbind"/>에서 자동으로 해제됩니다</param>
-        protected abstract void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable);
+        protected abstract void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable);
 
         /// <summary>
         /// 하위로 전파하기 전에 호출됩니다
         /// </summary>
         /// <param name="bindMap">바인딩할 뷰모델</param>
-        protected virtual void BeforePropagate(Dictionary<string, ResolvedProperty> bindMap)
+        protected virtual void BeforePropagate(Dictionary<string, IViewModelProperty> bindMap)
         {
             //pass
         }
@@ -215,7 +215,7 @@ namespace HUtil.UI.Binder
         /// 하위로 전파한 후에 호출됩니다
         /// </summary>
         /// <param name="bindMap">바인딩할 뷰모델</param>
-        protected virtual void AfterPropagate(Dictionary<string, ResolvedProperty> bindMap)
+        protected virtual void AfterPropagate(Dictionary<string, IViewModelProperty> bindMap)
         {
             //pass
         }

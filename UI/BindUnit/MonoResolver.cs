@@ -21,7 +21,7 @@ namespace HUtil.UI
 
 
 #region Binding Methods
-        protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             //상위 UIComponent에서 내려오는 요청은 본인의 DynamicBind로 처리 (내부 리로드는 실행하지 않음)
             foreach (var resolver in _viewModelResolvers)
@@ -63,7 +63,7 @@ namespace HUtil.UI
         /// </summary>
         internal void UpdateBindingState(){
             Unbind();
-            Dictionary<string, ResolvedProperty> bindMap = new Dictionary<string, ResolvedProperty>();
+            Dictionary<string, IViewModelProperty> bindMap = new Dictionary<string, IViewModelProperty>();
             foreach (var resolver in _viewModelResolvers)
             {
                 resolver.GenerateBindMap(bindMap);

@@ -26,7 +26,7 @@ namespace HUtil.UI.Binder
             _baseText_prop.Validate();
         }
 
-        protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             _baseText_prop.Bind<string>(bindMap, disposable, SetText);
         }
