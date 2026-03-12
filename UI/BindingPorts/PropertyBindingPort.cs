@@ -133,7 +133,7 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
-            var observable = property.AsObservableProperty<T>() as ObservableProperty<T>;
+            var observable = property.AsObservableProperty<T>();
             if (observable == null)
             {
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
