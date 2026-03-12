@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace HUtil.UI
 {
-    public class ModiftedProperty<From, To> : IViewModelProperty
+    public struct ModiftedProperty<From, To> : IViewModelProperty
     {
         private IViewModelProperty _origin;
         private Func<From, To> _modifier;
@@ -19,7 +19,8 @@ namespace HUtil.UI
 
         public IDisposable SubscribeProperty<T>(Action<T> action)
         {
-            return _origin.SubscribeProperty<From>(value => action((T)(object)_modifier(value)));
+            var modifier = _modifier;
+            return _origin.SubscribeProperty<From>(value => action((T)(object)modifier(value)));
         }
 
         public T GetPropertyValue<T>()
