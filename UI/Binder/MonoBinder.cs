@@ -28,6 +28,10 @@ namespace HUtil.UI.Binder
         /// 다른 바인더에게 바인딩 정보를 제공할지 여부
         /// </summary>
         protected virtual bool IsRootBinder => false;
+        /// <summary>
+        /// RootBinder에 대해서만, 바인딩 정보를 하위로 전파할지 여부
+        /// </summary>
+        protected virtual bool PropagateBinding => true;
 
         /// <summary>
         /// 바인딩 과정에서 발생하는 구독을 안전하게 해제하기 위한 <see cref="CompositeDisposable"/>
@@ -175,7 +179,7 @@ namespace HUtil.UI.Binder
     
             Unbind();
             BindInternal(bindMap, _disposable);
-            if(IsRootBinder){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+            if(IsRootBinder && PropagateBinding){   //하위로 전파하는 객체면 하위 바인더들에게 전파
                 BeforePropagate(bindMap);
                 foreach(var childBinder in _childBinders){
                     childBinder.Bind(bindMap);
@@ -221,7 +225,7 @@ namespace HUtil.UI.Binder
         /// </summary>
         public void Unbind()
         {
-            if(IsRootBinder){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+            if(IsRootBinder && PropagateBinding){   //하위로 전파하는 객체면 하위 바인더들에게 전파
                 foreach(var childBinder in _childBinders){
                     childBinder.Unbind();
                 }

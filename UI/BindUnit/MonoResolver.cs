@@ -14,6 +14,7 @@ namespace HUtil.UI
     public class MonoResolver : MonoBinder
     {
         protected override bool IsRootBinder => true;
+        protected override bool PropagateBinding => false;
 
         [SerializeField] private List<ViewModelResolver> _viewModelResolvers = new List<ViewModelResolver>();
         internal List<ViewModelResolver> ViewModelResolvers => _viewModelResolvers;
@@ -68,6 +69,17 @@ namespace HUtil.UI
                 resolver.GenerateBindMap(bindMap);
             }
             //propagate
+            foreach(var childBinder in ChildBinders){
+                childBinder.Bind(bindMap);
+            }
+        }
+
+        protected override void UnbindInternal()
+        {
+            foreach(var childBinder in ChildBinders){
+                childBinder.Unbind();
+            }
+            base.UnbindInternal();
         }
 #endregion
     
