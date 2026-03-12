@@ -49,7 +49,7 @@ namespace HUtil.UI.Editor
             // # Path
             // Direction이 None이면 Path는 숨김
             if(directionProp.enumValueIndex != (int)BindingMode.None){
-                List<string> options = binder.GetAllBindablePropertyNames(BindingType.Command, direction);
+                List<string> options = binder.GetAllBindablePropertyNamesEditor(BindingType.Command, direction);
                 InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Command");
             }
         }

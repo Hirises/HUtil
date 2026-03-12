@@ -83,12 +83,12 @@ namespace HUtil.UI
         }
 #endregion
     
-        internal override List<BindingInfo> GetAllBindingInfos()
+        internal override List<BindingInfo> GetAllBindingInfosEditor()
         {
             //resolver들의 바인딩 정보를 가져옴
             List<BindingInfo> output = new();
             foreach(var resolver in _viewModelResolvers){
-                resolver.GetAllBindingInfos(output);
+                resolver.GetAllBindingInfosEditor(output);
             }
             return output;
         }

@@ -126,7 +126,7 @@ namespace HUtil.UI
         /// </summary>
         /// <param name="output">값을 전달받을 리스트</param>
         /// <returns>바인딩 정보 리스트</returns>
-        internal List<BindingInfo> GetAllBindingInfos(List<BindingInfo> output = null)
+        internal List<BindingInfo> GetAllBindingInfosEditor(List<BindingInfo> output = null)
         {
             output ??= new();
             UIRuntimeReflectionHelper.GetAllBindingInfo(Type.GetType(_viewModelType), output);
