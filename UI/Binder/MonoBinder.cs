@@ -27,7 +27,7 @@ namespace HUtil.UI.Binder
         /// <summary>
         /// 다른 바인더에게 바인딩 정보를 제공할지 여부
         /// </summary>
-        protected virtual bool IsRootBinder => false;
+        public virtual bool IsRootBinder => false;
         /// <summary>
         /// RootBinder에 대해서만, 바인딩 정보를 하위로 전파할지 여부
         /// </summary>
@@ -49,6 +49,7 @@ namespace HUtil.UI.Binder
         /// </summary>
         public void UpdateBinderList()
         {
+            Debug.Log($"UpdateBinderList: {gameObject.name}");
             UpdateParentBinderInternal();
             if(_parentBinder != null){
                 _parentBinder.UpdateChildBindersInternal();

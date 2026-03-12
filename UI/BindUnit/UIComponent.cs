@@ -14,7 +14,7 @@ namespace HUtil.UI
     /// </summary>
     public class UIComponent : MonoBinder
     {
-        protected override bool IsRootBinder => true;
+        public override bool IsRootBinder => true;
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {

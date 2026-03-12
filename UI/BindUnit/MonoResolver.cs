@@ -13,7 +13,7 @@ namespace HUtil.UI
     /// </summary>
     public class MonoResolver : MonoBinder
     {
-        protected override bool IsRootBinder => true;
+        public override bool IsRootBinder => true;
         protected override bool PropagateBinding => false;
 
         [SerializeField] private List<ViewModelResolver> _viewModelResolvers = new List<ViewModelResolver>();

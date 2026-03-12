@@ -11,8 +11,6 @@ namespace HUtil.UI.Binder
 {
     public class CollectionBinder : MonoBinder
     {
-        protected override bool IsRootBinder => true;
-
         [SerializeField] private CollectionBindingPort _list_prop = new CollectionBindingPort(BindingDirectionFlags.ToUI);
         [SerializeField] private MonoResolver _itemPrefab;
         [SerializeField] private bool _autoDestroyItem = true;
