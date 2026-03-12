@@ -19,6 +19,8 @@ namespace HUtil.UI
         [SerializeField] private List<ViewModelResolver> _viewModelResolvers = new List<ViewModelResolver>();
         internal List<ViewModelResolver> ViewModelResolvers => _viewModelResolvers;
 
+        private bool _isBinded = false;
+
 
 #region Binding Methods
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
@@ -31,6 +33,7 @@ namespace HUtil.UI
         }
     
         private void Awake(){
+            _isBinded = false;
             foreach (var resolver in _viewModelResolvers)
             {
                 resolver.SubscribeStaticBind(this);
@@ -51,7 +54,7 @@ namespace HUtil.UI
         /// <param name="viewModel">바인딩할 ViewModel</param>
         public void ManualBind(IViewModel viewModel)
         {
-            UnityEngine.Debug.Log($"ManualBind: {viewModel.GetType().FullName}");
+            BindingContext.LogDebug($"ManualBind: {viewModel.GetType().FullName}", gameObject);
             foreach (var resolver in _viewModelResolvers)
             {
                 resolver.ManualBind(viewModel, this);
@@ -62,20 +65,33 @@ namespace HUtil.UI
         /// Resolver들의 바인딩 상태를 확인하고, 하위 Binder들에게 바인딩을 요청합니다
         /// </summary>
         internal void UpdateBindingState(){
-            Unbind();
-            Dictionary<string, IViewModelProperty> bindMap = new Dictionary<string, IViewModelProperty>();
-            foreach (var resolver in _viewModelResolvers)
-            {
-                resolver.GenerateBindMap(bindMap);
+            bool allResolved = true;
+            foreach(var resolver in _viewModelResolvers){
+                if(!resolver.IsResolved){
+                    allResolved = false;
+                    break;
+                }
             }
-            //propagate
-            foreach(var childBinder in ChildBinders){
-                childBinder.Bind(bindMap);
+
+            if(!allResolved && _isBinded){
+                Unbind();
+            }else if(allResolved && !_isBinded){
+                Dictionary<string, IViewModelProperty> bindMap = new Dictionary<string, IViewModelProperty>();
+                foreach (var resolver in _viewModelResolvers)
+                {
+                    resolver.GenerateBindMap(bindMap);
+                }
+                //propagate
+                foreach(var childBinder in ChildBinders){
+                    childBinder.Bind(bindMap);
+                }
+                _isBinded = true;
             }
         }
 
         protected override void UnbindInternal()
         {
+            _isBinded = false;
             foreach(var childBinder in ChildBinders){
                 childBinder.Unbind();
             }

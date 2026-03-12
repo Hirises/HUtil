@@ -44,5 +44,15 @@ namespace HUtil.UI
         public override int GetHashCode(){
             return _baseType.GetHashCode();
         }
+
+        public override string ToString(){
+            if(!IsValid){
+                return "Invalid";
+            }
+            if(IsCollection){
+                return $"{_baseType} Collection";
+            }
+            return _baseType.ToString();
+        }
     }
 }

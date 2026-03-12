@@ -66,6 +66,7 @@ namespace HUtil.UI
             if(_bindingMethod != BindingMethod.StaticBinding){
                 return;
             }
+            BindingContext.LogDebug($"SubscribeStaticBind: {_viewModelType}", sender.gameObject);
             _subscription = BindingContext.Subscribe(_viewModelType, (viewModel) => SetViewModel(viewModel, sender));
         }
 
@@ -79,6 +80,7 @@ namespace HUtil.UI
             if(_bindingMethod != BindingMethod.DynamicBinding){
                 return;
             }
+            BindingContext.LogDebug($"DynamicBind: {_viewModelType}", sender.gameObject);
             _viewModelProp.Bind<IViewModel>(bindMap, disposable, (viewModel) => SetViewModel(viewModel, sender));
         }
 
@@ -86,7 +88,9 @@ namespace HUtil.UI
             if(_bindingMethod != BindingMethod.ManualBinding){
                 return;
             }
-            ManualUnbind(sender);
+            if(IsResolved){
+                return;
+            }
             SetViewModel(viewModel, sender);
         }
 
@@ -98,11 +102,7 @@ namespace HUtil.UI
         }
 
         private void SetViewModel(IViewModel viewModel, MonoResolver sender){
-            // if(viewModel != null && viewModel.GetType().FullName != _viewModelType){
-            //     //타입이 불일치하면 return
-            //     return;
-            // }
-            UnityEngine.Debug.Log($"SetViewModel: {viewModel?.GetType().FullName}");
+            BindingContext.LogDebug($"SetViewModel: {viewModel?.GetType().FullName}", sender.gameObject);
             _viewModel = viewModel;
             sender?.UpdateBindingState();
         }
