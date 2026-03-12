@@ -8,29 +8,46 @@ namespace HUtil.UI
     public interface IViewModelProperty
     {
         /// <summary>
-        /// 프로퍼티를 ObservableProperty<T>로 변환합니다
+        /// 프로퍼티 값 변경 이벤트 구독
         /// </summary>
-        /// <typeparam name="T">변환할 타입</typeparam>
-        /// <returns>ObservableProperty<T></returns>
-        public ObservableProperty<T> AsObservableProperty<T>();
+        /// <typeparam name="T">프로퍼티 타입</typeparam>
+        /// <param name="action">변경 이벤트 핸들러</param>
+        /// <returns>구독 해지 토큰</returns>
+        public IDisposable SubscribeProperty<T>(Action<T> action);
 
         /// <summary>
-        /// 프로퍼티를 ObservableTrigger로 변환합니다
+        /// 프로퍼티 값 가져오기
         /// </summary>
-        /// <returns>ObservableTrigger</returns>
-        public ObservableTrigger AsObservableTrigger();
+        /// <typeparam name="T">프로퍼티 타입</typeparam>
+        /// <returns>프로퍼티 값</returns>
+        public T GetPropertyValue<T>();
 
         /// <summary>
-        /// 프로퍼티를 CommandBase로 변환합니다
+        /// 프로퍼티 값 설정
         /// </summary>
-        /// <returns>CommandBase</returns>
-        public CommandBase AsCommand();
+        /// <typeparam name="T">프로퍼티 타입</typeparam>
+        /// <param name="value"></param>
+        public void SetPropertyValue<T>(T value);
 
         /// <summary>
-        /// 프로퍼티를 ObservableList<T>로 변환합니다
+        /// 명령 실행
         /// </summary>
-        /// <typeparam name="T">변환할 타입</typeparam>
-        /// <returns>ObservableList<T></returns>
-        public ObservableList<T> AsObservableList<T>();
+        /// <param name="value">명령 파라미터</param>
+        public void ExecuteCommand(object value);
+
+        /// <summary>
+        /// 리스트 변경 이벤트 구독
+        /// </summary>
+        /// <typeparam name="T">리스트 타입</typeparam>
+        /// <param name="action">변경 이벤트 핸들러</param>
+        /// <returns>구독 해지 토큰</returns>
+        public IDisposable SubscribeList<T>(Action<ListChangeEvent<T>> action);
+
+        /// <summary>
+        /// 리스트 변경 이벤트 적용
+        /// </summary>
+        /// <typeparam name="T">리스트 타입</typeparam>
+        /// <param name="event">적용할 리스트 변경 이벤트</param>
+        public void ApplyListChange<T>(ListChangeEvent<T> @event);
     }
 }

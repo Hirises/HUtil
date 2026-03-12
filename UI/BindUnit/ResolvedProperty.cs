@@ -56,5 +56,30 @@ namespace HUtil.UI
         public ObservableList<T> AsObservableList<T>(){
             return UIRuntimeReflectionHelper.GetObservableList<T>(_viewModel, _path);
         }
+
+        public IDisposable SubscribeProperty<T>(Action<T> action){
+            return AsObservableProperty<T>().Subscribe(action);
+        }
+
+        public T GetPropertyValue<T>(){
+            return AsObservableProperty<T>().Value;
+        }
+
+        public void SetPropertyValue<T>(T value)
+        {
+            AsObservableProperty<T>().Value = value;
+        }
+
+        public void ExecuteCommand(object value){
+            AsCommand().Execute(value);
+        }
+
+        public IDisposable SubscribeList<T>(Action<ListChangeEvent<T>> action){
+            return AsObservableList<T>().Subscribe(action);
+        }
+
+        public void ApplyListChange<T>(ListChangeEvent<T> @event){
+            AsObservableList<T>().ApplyChange(@event);
+        }
     }
 }

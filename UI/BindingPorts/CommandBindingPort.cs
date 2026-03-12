@@ -85,12 +85,6 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
-            var command = property.AsCommand();
-            if (command == null)
-            {
-                Debug.LogWarning($"[UIBinder] Property {Path} is not a command!");
-                return;
-            }
 
             switch (Direction)
             {
@@ -102,11 +96,10 @@ namespace HUtil.UI
                 }
                 case BindingMode.ToData:
                 {
-                    if(command == null) throw new ArgumentNullException(nameof(command));
                     if(onTrigger == null) throw new ArgumentNullException(nameof(onTrigger));
 
                     void listener(T value) {
-                        command.Execute(value);
+                        property.ExecuteCommand(value);
                     };
                     onTrigger.AddListener(listener);
                     new ScriptableDisposable(() => onTrigger.RemoveListener(listener)).AddTo(disposable);
@@ -134,12 +127,6 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
-            var command = property.AsCommand();
-            if (command == null)
-            {
-                Debug.LogWarning($"[UIBinder] Property {Path} is not a command!");
-                return;
-            }
 
             switch (Direction)
             {
@@ -151,11 +138,10 @@ namespace HUtil.UI
                 }
                 case BindingMode.ToData:
                 {
-                    if(command == null) throw new ArgumentNullException(nameof(command));
                     if(onTrigger == null) throw new ArgumentNullException(nameof(onTrigger));
 
                     void listener() {
-                        command.Execute(null);
+                        property.ExecuteCommand(null);
                     };
                     onTrigger.AddListener(listener);
                     new ScriptableDisposable(() => onTrigger.RemoveListener(listener)).AddTo(disposable);

@@ -100,12 +100,6 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
-            var observable = property.AsObservableList<IViewModel>();
-            if (observable == null)
-            {
-                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
-                return;
-            }
 
             switch (Direction)
             {
@@ -113,14 +107,14 @@ namespace HUtil.UI
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
-                    observable.Subscribe(setter).Dispose();
+                    property.SubscribeList(setter).Dispose();
                     break;
                 }
                 case BindingMode.ToUI:
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
-                    observable.Subscribe(setter).AddTo(disposable);
+                    property.SubscribeList(setter).AddTo(disposable);
                     break;
                 }
                 case BindingMode.ToData:
@@ -128,7 +122,7 @@ namespace HUtil.UI
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));
 
                     void listener(ListChangeEvent<IViewModel> @event) {
-                        ApplyChange(@event, observable);
+                        property.ApplyListChange(@event);
                     };
                     onChange.AddListener(listener);
                     new ScriptableDisposable(() => onChange.RemoveListener(listener)).AddTo(disposable);
@@ -140,19 +134,14 @@ namespace HUtil.UI
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));
 
                     void listener(ListChangeEvent<IViewModel> @event) {
-                        ApplyChange(@event, observable);
+                        property.ApplyListChange(@event);
                     };
                     onChange.AddListener(listener);
                     new ScriptableDisposable(() => onChange.RemoveListener(listener)).AddTo(disposable);
-                    observable.Subscribe(setter).AddTo(disposable);
+                    property.SubscribeList(setter).AddTo(disposable);
                     break;
                 }
             }
-        }
-
-        private void ApplyChange(ListChangeEvent<IViewModel> @event, ObservableList<IViewModel> observable)
-        {
-            observable.ApplyChange(@event);
         }
     }
 }

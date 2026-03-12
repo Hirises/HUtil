@@ -114,12 +114,6 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
-            var observable = property.AsObservableProperty<T>();
-            if (observable == null)
-            {
-                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
-                return;
-            }
 
             switch (Direction)
             {
@@ -127,14 +121,14 @@ namespace HUtil.UI
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
-                    setter(observable.Value);
+                    setter(property.GetPropertyValue<T>());
                     break;
                 }
                 case BindingMode.ToUI:
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
-                    observable.Subscribe(setter).AddTo(disposable);
+                    property.SubscribeProperty(setter).AddTo(disposable);
                     break;
                 }
                 case BindingMode.ToData:
@@ -142,7 +136,7 @@ namespace HUtil.UI
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));
 
                     void listener(T value) {
-                        observable.Value = value;
+                        property.SetPropertyValue(value);
                     };
                     onChange.AddListener(listener);
                     new ScriptableDisposable(() => onChange.RemoveListener(listener)).AddTo(disposable);
@@ -154,11 +148,11 @@ namespace HUtil.UI
                     if(onChange == null) throw new ArgumentNullException(nameof(setter));
 
                     void listener(T value) {
-                        observable.Value = value;
+                        property.SetPropertyValue(value);
                     };
                     onChange.AddListener(listener);
                     new ScriptableDisposable(() => onChange.RemoveListener(listener)).AddTo(disposable);
-                    observable.Subscribe(setter).AddTo(disposable);
+                    property.SubscribeProperty(setter).AddTo(disposable);
                     break;
                 }
             }
