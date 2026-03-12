@@ -180,11 +180,11 @@ namespace HUtil.UI.Binder
             Unbind();
             BindInternal(bindMap, _disposable);
             if(IsRootBinder && PropagateBinding){   //하위로 전파하는 객체면 하위 바인더들에게 전파
-                BeforePropagate(bindMap);
+                BeforePropagate(bindMap, _disposable);
                 foreach(var childBinder in _childBinders){
                     childBinder.Bind(bindMap);
                 }
-                AfterPropagate(bindMap);
+                AfterPropagate(bindMap, _disposable);
             }
         }
     
@@ -206,7 +206,7 @@ namespace HUtil.UI.Binder
         /// 하위로 전파하기 전에 호출됩니다
         /// </summary>
         /// <param name="bindMap">바인딩할 뷰모델</param>
-        protected virtual void BeforePropagate(Dictionary<string, IViewModelProperty> bindMap)
+        protected virtual void BeforePropagate(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             //pass
         }
@@ -215,7 +215,7 @@ namespace HUtil.UI.Binder
         /// 하위로 전파한 후에 호출됩니다
         /// </summary>
         /// <param name="bindMap">바인딩할 뷰모델</param>
-        protected virtual void AfterPropagate(Dictionary<string, IViewModelProperty> bindMap)
+        protected virtual void AfterPropagate(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             //pass
         }

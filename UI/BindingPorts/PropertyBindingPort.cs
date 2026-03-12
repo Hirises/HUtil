@@ -67,6 +67,27 @@ namespace HUtil.UI
             _allowDirection = allowDirection;
         }
 
+        public ObservableProperty<T> GetProperty<T>(Dictionary<string, IViewModelProperty> bindMap){
+            if(Direction == BindingMode.None){
+                return null;
+            }
+            if(!_allowDirection.CanAccept(Direction)){
+                Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
+                return null;
+            }
+            if(!bindMap.TryGetValue(Path, out var property)){
+                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
+                return null;
+            }
+            var observable = property.AsObservableProperty<T>() as ObservableProperty<T>;
+            if (observable == null)
+            {
+                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
+                return null;
+            }
+            return observable;
+        }
+
         /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
@@ -112,7 +133,7 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
-            var observable = property.AsObservableProperty<T>();
+            var observable = property.AsObservableProperty<T>() as ObservableProperty<T>;
             if (observable == null)
             {
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");

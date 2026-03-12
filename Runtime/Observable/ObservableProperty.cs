@@ -74,6 +74,17 @@ namespace HUtil.Runtime.Observable
         }
 
         /// <summary>
+        /// 다른 관찰 가능 속성의 값을 이 속성에 반영합니다 (단방향 동기화)
+        /// </summary>
+        /// <param name="other">연결할 관찰 가능 속성</param>
+        /// <returns>구독을 취소할 수 있는 <see cref="IDisposable"/></returns>
+        public IDisposable FollowWithExpression<U>(IReadOnlyObservableProperty<U> other, Func<U, T> expression)
+        {
+            Value = expression(other.Value);
+            return new ScriptableDisposable(() => other.Subscribe((v) => Value = expression(v)));
+        }
+
+        /// <summary>
         /// 다른 관찰 가능 속성과 이 속성을 동기화합니다 (양방향 동기화)
         /// </summary>
         /// <param name="other">동기화할 관찰 가능 속성</param>

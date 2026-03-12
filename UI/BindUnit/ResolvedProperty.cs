@@ -28,7 +28,7 @@ namespace HUtil.UI
         /// </summary>
         /// <typeparam name="T">변환할 타입</typeparam>
         /// <returns>ObservableProperty<T></returns>
-        public ObservableProperty<T> AsObservableProperty<T>(){
+        public object AsObservableProperty<T>(){
             return UIRuntimeReflectionHelper.GetObservableProperty<T>(_viewModel, _path);
         }
 
@@ -53,7 +53,7 @@ namespace HUtil.UI
         /// </summary>
         /// <typeparam name="T">변환할 타입</typeparam>
         /// <returns>ObservableList<T></returns>
-        public ObservableList<T> AsObservableList<T>(){
+        public object AsObservableList<T>(){
             return UIRuntimeReflectionHelper.GetObservableList<T>(_viewModel, _path);
         }
     }
