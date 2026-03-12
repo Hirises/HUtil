@@ -36,7 +36,7 @@ namespace HUtil.UI
         }
         [SerializeField] private string _viewModelType;
         [SerializeField] private BindingMethod _bindingMethod = BindingMethod.ManualBinding;
-        [SerializeField] private PropertyBindingPort _viewModelProp = new PropertyBindingPort(BindingType.ViewModel, BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort _viewModelProp = new PropertyBindingPort(BindingBaseType.ViewModel, BindingDirectionFlags.ToUI);
         [SerializeField] private ViewModelBindingItem[] _bindMap;
 
         private IViewModel _viewModel;
@@ -53,7 +53,7 @@ namespace HUtil.UI
 
         public ViewModelResolver(){
             _bindingMethod = BindingMethod.ManualBinding;
-            _viewModelProp = new PropertyBindingPort(BindingType.ViewModel, BindingDirectionFlags.ToUI);
+            _viewModelProp = new PropertyBindingPort(BindingBaseType.ViewModel, BindingDirectionFlags.ToUI);
             _viewModelType = string.Empty;
             _bindMap = new ViewModelBindingItem[0];
             _viewModel = null;

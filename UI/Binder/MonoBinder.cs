@@ -263,7 +263,7 @@ namespace HUtil.UI.Binder
         /// <param name="receivingType">받을 수 있는 타입</param>
         /// <param name="bindingMode">동기화 하려는 방향</param>
         /// <returns>프로퍼티 이름 리스트</returns>
-        internal List<string> GetAllBindablePropertyNamesEditor(BindingType receivingType, BindingMode bindingMode)
+        internal List<string> GetAllBindablePropertyNamesEditor(BindingBaseType receivingType, BindingMode bindingMode)
         {
             return GetAllBindingInfosEditor().Where(info => info.CanAccept(receivingType, bindingMode)).Select(info => info.PropertyPath).ToList();
         }

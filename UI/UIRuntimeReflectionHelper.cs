@@ -146,19 +146,19 @@ namespace HUtil.UI
             }
             else if(typeof(CommandBase).IsAssignableFrom(field.FieldType))    //CommandBase
             {
-                return new BindingInfo(field.Name, BindingType.Command, BindingDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
+                return new BindingInfo(field.Name, BindingBaseType.Command, BindingDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
             }
             else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType))    //ObservableTrigger
             {
-                return new BindingInfo(field.Name, BindingType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
+                return new BindingInfo(field.Name, BindingBaseType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
             }
             else if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableList<>)))    //ObservableList<T>
             {
-                return new BindingInfo(field.Name, BindingType.List, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
+                return new BindingInfo(field.Name, BindingBaseType.List, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
             }
 
             //지원하지 않는 타입
-            return new BindingInfo(field.Name, BindingType.None, BindingDirectionFlags.None);
+            return new BindingInfo(field.Name, BindingBaseType.None, BindingDirectionFlags.None);
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 namespace HUtil.UI.Binder {
     public class InputFieldBinder : MonoBinder {
         [SerializeField] private TMP_InputField _target;
-        [SerializeField] private PropertyBindingPort _text_prop = new PropertyBindingPort(BindingType.String, BindingDirectionFlags.Both);
+        [SerializeField] private PropertyBindingPort _text_prop = new PropertyBindingPort(BindingBaseType.String, BindingDirectionFlags.Both);
 
         protected override void Reset()
         {
