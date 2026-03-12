@@ -35,6 +35,7 @@ namespace HUtil.UI
             { typeof(Color32), BindingBaseType.Color32 },
             { typeof(GameObject), BindingBaseType.GameObject },
             { typeof(Transform), BindingBaseType.Transform },
+            { typeof(Sprite), BindingBaseType.Sprite },
         };
 
         // 역방향 매핑은 정적 생성자에서 자동으로 빌드

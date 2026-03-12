@@ -44,19 +44,15 @@ namespace HUtil.UI
         /// <returns>유효성 검증 결과. true일 경우 유효함</returns>
         public bool Validate(MonoBinder binder){
             if(!_allowDirection.CanAccept(Direction)){
-                Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
+                BindingContext.LogWarning($"Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction", binder.gameObject);
                 return false;
             }
             if(Direction == BindingMode.OnceToUI){
-                Debug.LogWarning($"[UIBinder] OnceToUI direction is not allowed for command binding!");
+                BindingContext.LogWarning($"OnceToUI direction is not allowed for command binding!", binder.gameObject);
                 return false;
             }
-            if(Direction != BindingMode.None && string.IsNullOrEmpty(Path)){
-                Debug.LogWarning($"[UIBinder] Path is empty for this property setting!");
-                return false;
-            }
-            if(!binder.GetAllBindingInfosEditor().Any(info => info.PropertyPath == Path)){
-                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in binder");
+            if(Direction != BindingMode.None && !string.IsNullOrEmpty(Path) && !binder.GetAllBindingInfosEditor().Any(info => info.PropertyPath == Path)){
+                BindingContext.LogWarning($"Cannot find property {Path} in binder", binder.gameObject);
                 return false;
             }
             return true;

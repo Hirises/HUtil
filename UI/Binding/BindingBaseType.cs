@@ -26,6 +26,7 @@ namespace HUtil.UI
         Color = 34,
         Color32 = 35,
         DateTime = 36,
+        Sprite = 37,
 
         //유니티 타입
         GameObject = 50,

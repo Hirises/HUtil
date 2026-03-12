@@ -80,12 +80,10 @@ namespace HUtil.UI
             }
         }
 
-        [Conditional("HUI_DEBUG")]
         public static void LogDebug(string message, GameObject context){
             UnityEngine.Debug.Log($"[HUI] {context.name} - {message}", context);
         }
 
-        [Conditional("HUI_DEBUG")]
         public static void LogWarning(string message, GameObject context){
             UnityEngine.Debug.LogWarning($"[HUI] {context.name} - {message}", context);
         }
