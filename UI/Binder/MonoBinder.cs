@@ -49,7 +49,6 @@ namespace HUtil.UI.Binder
         /// </summary>
         public void UpdateBinderList()
         {
-            Debug.Log($"UpdateBinderList: {gameObject.name}");
             UpdateParentBinderInternal();
             if(_parentBinder != null){
                 _parentBinder.UpdateChildBindersInternal();

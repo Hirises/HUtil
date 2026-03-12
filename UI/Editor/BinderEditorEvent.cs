@@ -25,6 +25,12 @@ namespace HUtil.UI.Editor
 
                 switch(type)
                 {
+                    case ObjectChangeKind.ChangeGameObjectOrComponentProperties:    //컴포넌트 추가 & 제거 & 위치 이동
+                    {
+                        stream.GetChangeGameObjectOrComponentPropertiesEvent(i, out var changeEvent);
+                        UpdateInfluencedBinderList(changeEvent.instanceId);
+                        break;
+                    }
                     case ObjectChangeKind.ChangeGameObjectStructure:    //컴포넌트 추가 & 제거 & 위치 이동
                     {
                         stream.GetChangeGameObjectStructureEvent(i, out var changeEvent);
