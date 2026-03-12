@@ -13,6 +13,8 @@ namespace HUtil.UI.Binder
     /// </summary>
     public class ButtonBinder : MonoBinder
     {
+        protected override bool IsPropagateBindMap => false;
+
         [SerializeField] private Button _target;
         [SerializeField] private CommandBindingInfo _onClick_cmd = new CommandBindingInfo(BindingDirectionFlags.ToData);
 

@@ -10,6 +10,8 @@ namespace HUtil.UI.Binder
 {
     public class CollectionBinder : MonoBinder
     {
+        protected override bool IsPropagateBindMap => true;
+
         [SerializeField] private Transform _root;
         [SerializeField] private CollectionBindingInfo _list_prop = new CollectionBindingInfo(BindingDirectionFlags.ToUI);
         [SerializeField] private UIComponent _itemPrefab;

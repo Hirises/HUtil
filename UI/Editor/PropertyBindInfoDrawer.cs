@@ -31,7 +31,7 @@ namespace HUtil.UI.Editor
                 EditorGUI.HelpBox(position, $"Internal error: {instance} {binder} {fieldInfo}", MessageType.Error);
                 return;
             }
-            var uiComponent = binder.FindUIComponent();
+            UIComponent uiComponent = null; // binder.FindUIComponent();
             if(uiComponent == null){
                 EditorGUI.HelpBox(position, "UIComponent not found", MessageType.Error);
                 return;
