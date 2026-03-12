@@ -253,9 +253,9 @@ namespace HUtil.UI.Binder
         /// 이 바인더가 제공하는 모든 바인딩 정보를 가져옵니다
         /// </summary>
         /// <returns>바인딩 정보 리스트</returns>
-        internal virtual List<BindingInfo> GetAllBindingInfosEditor()
+        internal virtual Dictionary<string, BindingInfo> GetAllBindingInfosEditor()
         {
-            return _parentBinder?.GetAllBindingInfosEditor() ?? new List<BindingInfo>();
+            return _parentBinder?.GetAllBindingInfosEditor() ?? new Dictionary<string, BindingInfo>();
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace HUtil.UI.Binder
         /// <returns>프로퍼티 이름 리스트</returns>
         internal List<string> GetAllBindablePropertyNamesEditor(BindingType receivingType, BindingMode bindingMode)
         {
-            return GetAllBindingInfosEditor().Where(info => info.CanAccept(receivingType, bindingMode)).Select(info => info.PropertyPath).ToList();
+            return GetAllBindingInfosEditor().Where(info => info.Value.CanAccept(receivingType, bindingMode)).Select(info => info.Key).ToList();
         }
     }
 }

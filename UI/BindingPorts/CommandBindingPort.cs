@@ -51,7 +51,7 @@ namespace HUtil.UI
                 BindingContext.LogWarning($"OnceToUI direction is not allowed for command binding!", binder.gameObject);
                 return false;
             }
-            if(Direction != BindingMode.None && !string.IsNullOrEmpty(Path) && !binder.GetAllBindingInfosEditor().Any(info => info.PropertyPath == Path)){
+            if(Direction != BindingMode.None && !string.IsNullOrEmpty(Path) && !binder.GetAllBindingInfosEditor().Any(info => info.Key == Path)){
                 BindingContext.LogWarning($"Cannot find property {Path} in binder", binder.gameObject);
                 return false;
             }

@@ -43,7 +43,7 @@ namespace HUtil.UI
                 BindingContext.LogWarning($"Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction", binder.gameObject);
                 return false;
             }
-            if(Direction != BindingMode.None && !string.IsNullOrEmpty(Path) && !binder.GetAllBindingInfosEditor().Any(info => info.PropertyPath == Path)){
+            if(Direction != BindingMode.None && !string.IsNullOrEmpty(Path) && !binder.GetAllBindingInfosEditor().Any(info => info.Key == Path)){
                 BindingContext.LogWarning($"Cannot find property {Path} in binder", binder.gameObject);
                 return false;
             }
