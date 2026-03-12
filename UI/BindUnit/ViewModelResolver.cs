@@ -36,7 +36,7 @@ namespace HUtil.UI
         }
         [SerializeField] private string _viewModelType;
         [SerializeField] private BindingMethod _bindingMethod = BindingMethod.ManualBinding;
-        [SerializeField] private PropertyBindingInfo _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort _viewModelProp = new PropertyBindingPort(BindingType.ViewModel, BindingDirectionFlags.ToUI);
         [SerializeField] private ViewModelBindingItem[] _bindMap;
 
         private IViewModel _viewModel;
@@ -52,9 +52,8 @@ namespace HUtil.UI
         public string ViewModelType => _viewModelType;
 
         public ViewModelResolver(){
-            Debug.Log("ViewModelResolver Constructor");
             _bindingMethod = BindingMethod.ManualBinding;
-            _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindingDirectionFlags.ToUI);
+            _viewModelProp = new PropertyBindingPort(BindingType.ViewModel, BindingDirectionFlags.ToUI);
             _viewModelType = string.Empty;
             _bindMap = new ViewModelBindingItem[0];
             _viewModel = null;

@@ -16,7 +16,7 @@ namespace HUtil.UI.Binder
         protected override bool IsRootBinder => false;
 
         [SerializeField] private Button _target;
-        [SerializeField] private CommandBindingInfo _onClick_cmd = new CommandBindingInfo(BindingDirectionFlags.ToData);
+        [SerializeField] private CommandBindingPort _onClick_cmd = new CommandBindingPort(BindingDirectionFlags.ToData);
 
         protected override void Reset()
         {

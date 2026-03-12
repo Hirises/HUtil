@@ -1,7 +1,10 @@
+using System.Runtime.CompilerServices;
+
 using HUtil.UI;
 
 using Unity.Properties;
 
+[assembly: InternalsVisibleTo("HUtil.UI.Editor")]
 namespace HUtil.UI
 {
     /// <summary>

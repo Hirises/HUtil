@@ -12,8 +12,8 @@ using System.Collections.Generic;
 
 namespace HUtil.UI.Editor
 {
-    [CustomPropertyDrawer(typeof(CommandBindingInfo))]
-    public class CommandBindInfoDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(CommandBindingPort))]
+    public class CommandBindPortDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -23,7 +23,7 @@ namespace HUtil.UI.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             //필요한 변수들 캐싱
-            var instance = property.GetActualObject() as CommandBindingInfo;
+            var instance = property.GetActualObject() as CommandBindingPort;
             var binder = property.serializedObject.targetObject as MonoBinder;
             if(instance == null || binder == null){
                 EditorGUI.HelpBox(position, $"Internal error: {instance} {binder}", MessageType.Error);
@@ -34,7 +34,6 @@ namespace HUtil.UI.Editor
             var directionProp = property.FindPropertyRelative("_direction");
             var direction = (BindingMode)directionProp.enumValueIndex;
             var pathProp = property.FindPropertyRelative("_path");
-
 
             // # Label
             (var labelRect, var contentRect) = position.SliceVertical(EditorGUIUtility.labelWidth);
@@ -51,7 +50,7 @@ namespace HUtil.UI.Editor
             // Direction이 None이면 Path는 숨김
             if(directionProp.enumValueIndex != (int)BindingMode.None){
                 List<string> options = binder.GetAllBindablePropertyNames(BindingType.Command, direction);
-                InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
+                InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Command");
             }
         }
     }

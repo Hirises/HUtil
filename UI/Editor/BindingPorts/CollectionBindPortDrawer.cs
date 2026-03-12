@@ -9,12 +9,11 @@ using UnityEngine;
 using HUtil.UI.Binder;
 using System.Linq;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace HUtil.UI.Editor
 {
-    [CustomPropertyDrawer(typeof(PropertyBindingInfo))]
-    public class PropertyBindInfoDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(CollectionBindingPort))]
+    public class CollectionBindPortDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -24,11 +23,10 @@ namespace HUtil.UI.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             //필요한 변수들 캐싱
-            var instance = property.GetActualObject() as PropertyBindingInfo;
+            var instance = property.GetActualObject() as CollectionBindingPort;
             var binder = property.serializedObject.targetObject as MonoBinder;
-            var fieldInfo = property.GetFieldInfo();
-            if(instance == null || binder == null || fieldInfo == null){
-                EditorGUI.HelpBox(position, $"Internal error: {instance} {binder} {fieldInfo}", MessageType.Error);
+            if(instance == null || binder == null){
+                EditorGUI.HelpBox(position, $"Internal error: {instance} {binder}", MessageType.Error);
                 return;
             }
 
@@ -36,7 +34,6 @@ namespace HUtil.UI.Editor
             var directionProp = property.FindPropertyRelative("_direction");
             var direction = (BindingMode)directionProp.enumValueIndex;
             var pathProp = property.FindPropertyRelative("_path");
-
 
             // # Label
             (var labelRect, var contentRect) = position.SliceVertical(EditorGUIUtility.labelWidth);
@@ -52,8 +49,8 @@ namespace HUtil.UI.Editor
             // # Path
             // Direction이 None이면 Path는 숨김
             if(directionProp.enumValueIndex != (int)BindingMode.None){
-                List<string> options = binder.GetAllBindablePropertyNames(instance.ReceivingType, direction);
-                InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
+                List<string> options = binder.GetAllBindablePropertyNames(BindingType.List, direction);
+                InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "List");
             }
         }
     }

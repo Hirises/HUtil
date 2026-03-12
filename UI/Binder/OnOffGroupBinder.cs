@@ -14,7 +14,7 @@ namespace HUtil.UI.Binder
     {
         [SerializeField] private GameObject[] _onObjects;
         [SerializeField] private GameObject[] _offObjects;
-        [SerializeField] private PropertyBindingInfo _isOn_prop = new PropertyBindingInfo(BindingType.Bool, BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort _isOn_prop = new PropertyBindingPort(BindingType.Bool, BindingDirectionFlags.ToUI);
 
         protected override void BindInternal(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable)
         {

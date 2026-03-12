@@ -14,7 +14,7 @@ namespace HUtil.UI
     /// 커맨드 바인딩 인스펙터 속성
     /// </summary>
     [Serializable]
-    public class CommandBindingInfo
+    public class CommandBindingPort
     {
         [SerializeField]
         private string _path;
@@ -60,7 +60,7 @@ namespace HUtil.UI
         /// 인스펙터용 바인딩 속성을 생성합니다
         /// </summary>
         /// <param name="allowDirection">허용가능한 바인딩 방향</param>
-        public CommandBindingInfo(BindingDirectionFlags allowDirection){
+        public CommandBindingPort(BindingDirectionFlags allowDirection){
             _allowDirection = allowDirection;
         }
 

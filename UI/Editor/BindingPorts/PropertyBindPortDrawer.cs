@@ -9,11 +9,12 @@ using UnityEngine;
 using HUtil.UI.Binder;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace HUtil.UI.Editor
 {
-    [CustomPropertyDrawer(typeof(CollectionBindingInfo))]
-    public class CollectionBindInfoDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(PropertyBindingPort))]
+    public class PropertyBindPortDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -23,10 +24,11 @@ namespace HUtil.UI.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             //필요한 변수들 캐싱
-            var instance = property.GetActualObject() as CollectionBindingInfo;
+            var instance = property.GetActualObject() as PropertyBindingPort;
             var binder = property.serializedObject.targetObject as MonoBinder;
-            if(instance == null || binder == null){
-                EditorGUI.HelpBox(position, $"Internal error: {instance} {binder}", MessageType.Error);
+            var fieldInfo = property.GetFieldInfo();
+            if(instance == null || binder == null || fieldInfo == null){
+                EditorGUI.HelpBox(position, $"Internal error: {instance} {binder} {fieldInfo}", MessageType.Error);
                 return;
             }
 
@@ -50,8 +52,9 @@ namespace HUtil.UI.Editor
             // # Path
             // Direction이 None이면 Path는 숨김
             if(directionProp.enumValueIndex != (int)BindingMode.None){
-                List<string> options = binder.GetAllBindablePropertyNames(BindingType.List, direction);
-                InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp, options.Select(o => new DropdownOption(o)).ToArray(), "Property");
+                List<string> options = binder.GetAllBindablePropertyNames(instance.ReceivingType, direction);
+                InspectorHelper.DrawSearchableDropdownField(contentRect.SliceRightRatio(0.5f), pathProp,
+                     options.Select(o => new DropdownOption(o)).ToArray(), instance.ReceivingType.ToString());
             }
         }
     }

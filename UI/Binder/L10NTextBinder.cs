@@ -16,7 +16,7 @@ namespace HUtil.UI.Binder
     public class L10NTextBinder : MonoBinder
     {
         [SerializeField] private TMP_Text _target;
-        [SerializeField] private PropertyBindingInfo _baseText_prop = new PropertyBindingInfo(BindingType.String, BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort _baseText_prop = new PropertyBindingPort(BindingType.String, BindingDirectionFlags.ToUI);
 
         protected override void Reset()
         {
