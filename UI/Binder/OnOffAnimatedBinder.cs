@@ -17,7 +17,7 @@ namespace HUtil.UI.Binder
         [SerializeField] private GameObject _target;
         [SerializeField] private AnimationClip _onAnimation;
         [SerializeField] private AnimationClip _offAnimation;
-        [SerializeField] private PropertyBindingPort _isOn_prop = new PropertyBindingPort(BindingBaseType.Bool, BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort _isOn_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Bool), BindingDirectionFlags.ToUI);
 
         protected override void Reset()
         {

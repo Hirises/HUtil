@@ -138,27 +138,9 @@ namespace HUtil.UI
         /// <returns>(바인딩 타입, 허용된 방향)</returns>
         public static BindingInfo GetBindingInfo(FieldInfo field)
         {
-            //필드는 ObservableProperty<T>, ObservableTrigger, 또는 CommandBase를 상속하는 타입이어야 합니다.
-            if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableProperty<>)))    //ObservableProperty<T>
-            {
-                var underlyingType = field.FieldType.GetGenericArgumentsOfType(typeof(ObservableProperty<>))[0];  //제네릭 안쪽에 들어간 타입을 꺼내옴
-                return new BindingInfo(field.Name, underlyingType.ToBindingType(), field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
-            }
-            else if(typeof(CommandBase).IsAssignableFrom(field.FieldType))    //CommandBase
-            {
-                return new BindingInfo(field.Name, BindingBaseType.Command, BindingDirectionFlags.ToData);    //Command는 데이터로만 동기화 가능
-            }
-            else if(typeof(ObservableTrigger).IsAssignableFrom(field.FieldType))    //ObservableTrigger
-            {
-                return new BindingInfo(field.Name, BindingBaseType.Trigger, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
-            }
-            else if(field.FieldType.IsSubclassOfGeneric(typeof(ObservableList<>)))    //ObservableList<T>
-            {
-                return new BindingInfo(field.Name, BindingBaseType.List, field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None);
-            }
-
-            //지원하지 않는 타입
-            return new BindingInfo(field.Name, BindingBaseType.None, BindingDirectionFlags.None);
+            var bindingType = field.FieldType.ToBindingType();
+            var allowedDirection = field.GetCustomAttribute<BindableAttribute>()?.AllowedDirection ?? BindingDirectionFlags.None;
+            return new BindingInfo(field.Name, bindingType, allowedDirection);
         }
 
         /// <summary>

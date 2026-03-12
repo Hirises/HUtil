@@ -34,7 +34,6 @@ namespace HUtil.UI
         //특수 타입
         Command = 70,
         Trigger = 71,
-        List = 72,
-        ViewModel = 73,
+        ViewModel = 72,
     }
 }

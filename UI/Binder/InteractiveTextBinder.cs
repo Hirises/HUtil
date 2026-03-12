@@ -17,7 +17,7 @@ namespace HUtil.UI.Binder
     public class InteractiveTextBinder : MonoBinder, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
     {
         [SerializeField] private TMP_Text _target;
-        [SerializeField] private PropertyBindingPort _baseText_prop = new PropertyBindingPort(BindingBaseType.String, BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort _baseText_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
         [SerializeField] private TextMeshProUGUI _targetMesh;
         [SerializeField] private CommandBindingPort _onHoverIn_prop = new CommandBindingPort(BindingDirectionFlags.ToData);
         [SerializeField] private CommandBindingPort _onHoverOut_prop = new CommandBindingPort(BindingDirectionFlags.ToData);

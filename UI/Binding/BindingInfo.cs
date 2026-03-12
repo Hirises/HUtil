@@ -1,5 +1,7 @@
 using System;
 
+using HUtil.UI;
+
 namespace HUtil.UI
 {
     /// <summary>
@@ -8,7 +10,7 @@ namespace HUtil.UI
     public struct BindingInfo
     {
         private string _propertyPath;
-        private BindingBaseType _type;
+        private BindingType _type;
         private BindingDirectionFlags _allowedDirection;
 
         /// <summary>
@@ -18,7 +20,7 @@ namespace HUtil.UI
         /// <summary>
         /// 해당 필드의 타입
         /// </summary>
-        public BindingBaseType Type => _type;
+        public BindingType Type => _type;
         /// <summary>
         /// 해당 필드에 허용된 바인딩 방향
         /// </summary>
@@ -27,9 +29,9 @@ namespace HUtil.UI
         /// <summary>
         /// 유효한 필드인지 여부
         /// </summary>
-        public bool IsValid => Type != BindingBaseType.None && AllowedDirection != BindingDirectionFlags.None;
+        public bool IsValid => Type.IsValid && AllowedDirection != BindingDirectionFlags.None;
 
-        public BindingInfo(string sourcePropertyPath, BindingBaseType sourceType, BindingDirectionFlags sourceDirection){
+        public BindingInfo(string sourcePropertyPath, BindingType sourceType, BindingDirectionFlags sourceDirection){
             _propertyPath = sourcePropertyPath;
             _type = sourceType;
             _allowedDirection = sourceDirection;
@@ -41,7 +43,7 @@ namespace HUtil.UI
         /// <param name="destinationType">받을 수 있는 타입</param>
         /// <param name="bindingMode">동기화 하려는 방향</param>
         /// <returns>바인딩 가능한지 여부</returns>
-        public bool CanAccept(BindingBaseType destinationType, BindingMode bindingMode){
+        public bool CanAccept(BindingType destinationType, BindingMode bindingMode){
             return Type.CanAccept(destinationType) && AllowedDirection.CanAccept(bindingMode);
         }
     }

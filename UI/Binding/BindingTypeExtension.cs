@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 using HUtil.Runtime.Command;
+using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
+
+using NUnit.Framework.Constraints;
 
 using UnityEngine;
 
@@ -43,7 +46,7 @@ namespace HUtil.UI
         /// </summary>
         /// <param name="type">변환할 타입</param>
         /// <returns>변환된 바인딩 타입</returns>
-        public static BindingBaseType ToBindingType(this Type type)
+        public static BindingBaseType ToBindingBaseType(this Type type)
         {
             if (type == null) return BindingBaseType.None;
 
@@ -55,26 +58,39 @@ namespace HUtil.UI
             if (typeof(CommandBase).IsAssignableFrom(type)) return BindingBaseType.Command;
             if (typeof(ObservableTrigger).IsAssignableFrom(type)) return BindingBaseType.Trigger;
             if (typeof(IViewModel).IsAssignableFrom(type)) return BindingBaseType.ViewModel;
-            if (typeof(ObservableList<>).IsAssignableFrom(type)) return BindingBaseType.List;
 
             return BindingBaseType.None;
         }
 
         /// <summary>
-        /// 주어진 바인딩 타입을 실제 타입으로 변환합니다
+        /// 주어진 타입을 바인딩 타입 열거형으로 변환합니다
         /// </summary>
-        /// <param name="bindingType">변환할 바인딩 타입</param>
-        /// <returns>변환된 실제 타입</returns>
-        public static Type ToType(this BindingBaseType bindingType)
+        /// <param name="type">변환할 타입</param>
+        /// <returns>변환된 바인딩 타입</returns>
+        public static BindingType ToBindingType(this Type type)
         {
-            if (bindingType == BindingBaseType.Enum) return typeof(Enum);
-            // 인터페이스나 추상 클래스는 기본 대표 타입으로 반환
-            if (bindingType == BindingBaseType.Command) return typeof(CommandBase);
-            if (bindingType == BindingBaseType.ViewModel) return typeof(IViewModel);
-            if (bindingType == BindingBaseType.Trigger) return typeof(ObservableTrigger);
-            if (bindingType == BindingBaseType.List) return typeof(ObservableList<>);
-            
-            return _bindingToTypeMap.TryGetValue(bindingType, out var type) ? type : typeof(void);
+            //필드는 ObservableProperty<T>, ObservableTrigger, 또는 CommandBase를 상속하는 타입이어야 합니다.
+            if(type.IsSubclassOfGeneric(typeof(ObservableProperty<>)))    //ObservableProperty<T>
+            {
+                var underlyingType = type.GetGenericArgumentsOfType(typeof(ObservableProperty<>))[0];  //제네릭 안쪽에 들어간 타입을 꺼내옴
+                return BindingType.OfType(underlyingType.ToBindingBaseType());
+            }
+            else if(typeof(CommandBase).IsAssignableFrom(type))    //CommandBase
+            {
+                return BindingType.Command;    //Command는 데이터로만 동기화 가능
+            }
+            else if(typeof(ObservableTrigger).IsAssignableFrom(type))    //ObservableTrigger
+            {
+                return BindingType.Trigger;
+            }
+            else if(type.IsSubclassOfGeneric(typeof(ObservableList<>)))    //ObservableList<T>
+            {
+                var underlyingType = type.GetGenericArgumentsOfType(typeof(ObservableList<>))[0];  //제네릭 안쪽에 들어간 타입을 꺼내옴
+                return BindingType.OfCollection(underlyingType.ToBindingBaseType());
+            }
+
+            //지원하지 않는 타입
+            return BindingType.Invalid;
         }
 
         /// <summary>
