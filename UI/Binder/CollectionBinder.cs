@@ -11,13 +11,13 @@ namespace HUtil.UI.Binder
 {
     public class CollectionBinder : MonoBinder
     {
-        protected override bool IsPropagateBindMap => true;
+        protected override bool BlockPropagate => true;
 
         [SerializeField] private CollectionBindingInfo _list_prop = new CollectionBindingInfo(BindingDirectionFlags.ToUI);
-        [SerializeField] private UIComponent _itemPrefab;
+        [SerializeField] private MonoResolver _itemPrefab;
         [SerializeField] private bool _autoDestroyItem = true;
 
-        private List<UIComponent> _items = new List<UIComponent>();
+        private List<MonoResolver> _items = new List<MonoResolver>();
 
         protected void OnValidate()
         {

@@ -24,9 +24,9 @@ namespace HUtil.UI.Binder
         public IReadOnlyList<MonoBinder> ChildBinders => _childBinders;
 
         /// <summary>
-        /// 바인딩 과정에서 발생하는 구독을 전파할지 여부
+        /// 하위 바이더로의 바인딩 전파를 차단할지 여부
         /// </summary>
-        protected virtual bool IsPropagateBindMap => false;
+        protected virtual bool BlockPropagate => false;
 
         /// <summary>
         /// 바인딩 과정에서 발생하는 구독을 안전하게 해제하기 위한 <see cref="CompositeDisposable"/>
@@ -77,7 +77,7 @@ namespace HUtil.UI.Binder
             output ??= new List<MonoBinder>();
             output.Clear();
 
-            if(!IsPropagateBindMap){
+            if(!BlockPropagate){
                 return output;
             }
     
@@ -86,7 +86,7 @@ namespace HUtil.UI.Binder
                 var comp = gameObject.GetComponentAtIndex(i);
                 if(comp is MonoBinder binder){
                     output.Add(binder);
-                    if(binder.IsPropagateBindMap){
+                    if(binder.BlockPropagate){
                         //하위로 전파하는 객체면 여기까지
                         return output;
                     }
@@ -105,7 +105,7 @@ namespace HUtil.UI.Binder
                 var comp = self.gameObject.GetComponentAtIndex(i);
                 if(comp is MonoBinder binder){
                     childBinders.Add(binder);
-                    if(binder.IsPropagateBindMap){
+                    if(binder.BlockPropagate){
                         //하위로 전파하는 객체면 여기까지
                         return;
                     }
@@ -124,7 +124,7 @@ namespace HUtil.UI.Binder
         public MonoBinder FindParentBinder()
         {
             foreach(var binder in EnumerateParentBinders()){
-                if(binder.IsPropagateBindMap){
+                if(binder.BlockPropagate){
                     return binder;
                 }
             }
@@ -174,7 +174,7 @@ namespace HUtil.UI.Binder
     
             Unbind();
             BindInternal(bindMap, _disposable);
-            if(IsPropagateBindMap){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+            if(BlockPropagate){   //하위로 전파하는 객체면 하위 바인더들에게 전파
                 BeforePropagate(bindMap);
                 foreach(var childBinder in _childBinders){
                     childBinder.Bind(bindMap);
@@ -221,7 +221,7 @@ namespace HUtil.UI.Binder
         public void Unbind()
         {
             UnbindInternal();
-            if(IsPropagateBindMap){   //하위로 전파하는 객체면 하위 바인더들에게 전파
+            if(BlockPropagate){   //하위로 전파하는 객체면 하위 바인더들에게 전파
                 foreach(var childBinder in _childBinders){
                     childBinder.Unbind();
                 }

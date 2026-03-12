@@ -38,7 +38,6 @@ namespace HUtil.UI
         [SerializeField] private BindingMethod _bindingMethod;
         [SerializeField] private PropertyBindingInfo _viewModelProp;
         [SerializeField] private ViewModelBindingItem[] _bindMap;
-        [SerializeField, HideInInspector] private UIComponent _parent;
 
         private IViewModel _viewModel;
         private IDisposable _subscription;
@@ -56,64 +55,60 @@ namespace HUtil.UI
         /// 생성자
         /// </summary>
         /// <param name="parent">부모 UIComponent</param>
-        public ViewModelResolver(UIComponent parent){
+        public ViewModelResolver(){
             _bindingMethod = BindingMethod.ManualBinding;
             _viewModelProp = new PropertyBindingInfo(BindingType.ViewModel, BindingDirectionFlags.ToUI);
             _viewModelType = string.Empty;
             _bindMap = new ViewModelBindingItem[0];
             _viewModel = null;
             _subscription = null;
-            _parent = parent;
         }
 
         #region Bind ViewModel
-        internal void OnEnable(){
+        internal void SubscribeStaticBind(MonoResolver sender){
             //StaticBinding을 위한 구독처리
             if(_bindingMethod != BindingMethod.StaticBinding){
                 return;
             }
-            _subscription = BindingContext.Subscribe(_viewModelType, SetViewModel);
+            _subscription = BindingContext.Subscribe(_viewModelType, (viewModel) => SetViewModel(viewModel, sender));
         }
 
-        internal void OnDisable(){
+        internal void UnsubscribeStaticBind(){
             //구독 해제
             _subscription?.Dispose();
             _subscription = null;
         }
 
-        internal void DynamicBind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable){
+        internal void DynamicBind(Dictionary<string, ResolvedProperty> bindMap, CompositeDisposable disposable, MonoResolver sender){
             if(_bindingMethod != BindingMethod.DynamicBinding){
                 return;
             }
-            if(IsResolved){
-                return;
-            }
-            _viewModelProp.Bind<IViewModel>(bindMap, disposable, SetViewModel);
+            _viewModelProp.Bind<IViewModel>(bindMap, disposable, (viewModel) => SetViewModel(viewModel, sender));
         }
 
-        internal void ManualBind(IViewModel viewModel){
+        internal void ManualBind(IViewModel viewModel, MonoResolver sender){
             if(_bindingMethod != BindingMethod.ManualBinding){
                 return;
             }
-            ManualUnbind();
-            SetViewModel(viewModel);
+            ManualUnbind(sender);
+            SetViewModel(viewModel, sender);
         }
 
-        internal void ManualUnbind(){
+        internal void ManualUnbind(MonoResolver sender){
             if(_bindingMethod != BindingMethod.ManualBinding){
                 return;
             }
-            SetViewModel(null);
+            SetViewModel(null, sender);
         }
 
-        private void SetViewModel(IViewModel viewModel){
+        private void SetViewModel(IViewModel viewModel, MonoResolver sender){
             // if(viewModel != null && viewModel.GetType().FullName != _viewModelType){
             //     //타입이 불일치하면 return
             //     return;
             // }
             UnityEngine.Debug.Log($"SetViewModel: {viewModel?.GetType().FullName}");
             _viewModel = viewModel;
-            _parent?.UpdateBindingState();
+            sender?.UpdateBindingState();
         }
         #endregion
 

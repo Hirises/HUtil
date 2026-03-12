@@ -115,24 +115,24 @@ namespace HUtil.UI.Editor
         }
 
         /// <summary>
-        /// 주어진 UIComponent에 등록된 모든 ViewModel 타입을 가져옵니다
+        /// 주어진 MonoResolver에 등록된 모든 ViewModel 타입을 가져옵니다
         /// </summary>
-        /// <param name="uiComponent">UIComponent</param>
+        /// <param name="resolver">UIComponent</param>
         /// <returns>ViewModel 타입 리스트</returns>
-        public static List<Type> GetAllViewModelTypes(UIComponent uiComponent)
+        public static List<Type> GetAllViewModelTypes(MonoResolver resolver)
         {
-            var typeNameSet = uiComponent.ViewModelResolvers.Select(vmr => vmr.ViewModelType).ToHashSet();
+            var typeNameSet = resolver.ViewModelResolvers.Select(vmr => vmr.ViewModelType).ToHashSet();
             return EditortimeReflectionHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).Where(typeStr => typeNameSet.Contains(typeStr.FullName)).ToList();
         }
 
         /// <summary>
-        /// 주어진 UIComponent에 등록된 모든 바인딩 가능한 프로퍼티의 이름을 가져옵니다
+        /// 주어진 MonoResolver에 등록된 모든 바인딩 가능한 프로퍼티의 이름을 가져옵니다
         /// </summary>
-        /// <param name="uiComponent">UIComponent</param>
+        /// <param name="resolver">MonoResolver</param>
         /// <param name="receivingType">받는 타입</param>
         /// <param name="bindingMode">바인딩 모드</param>
         /// <returns>프로퍼티 이름 리스트</returns>
-        public static List<string> GetAllBindablePropertyNames(UIComponent uiComponent, BindingType receivingType, BindingMode bindingMode)
+        public static List<string> GetAllBindablePropertyNames(MonoResolver uiComponent, BindingType receivingType, BindingMode bindingMode)
         {
             List<BindingInfo> output = new();
             foreach(var viewModelResolver in uiComponent.ViewModelResolvers){
