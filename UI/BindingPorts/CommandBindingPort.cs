@@ -20,7 +20,7 @@ namespace HUtil.UI
     [Serializable, InlineProperty]
     public class CommandBindingPort
     {
-        [SerializeField, HorizontalGroup, HideLabel, ValueDropdown(nameof(GetPossibleBindingModes)), OnValueChanged(nameof(OnDirectionChanged))]
+        [SerializeField, HorizontalGroup(Width = 80), HideLabel, ValueDropdown(nameof(GetPossibleBindingModes)), OnValueChanged(nameof(OnDirectionChanged))]
         private BindingMode _direction;
         private List<BindingMode> GetPossibleBindingModes() => Enum.GetValues(typeof(BindingMode)).Cast<BindingMode>().Where(mode => _allowDirection.CanAccept(mode)).ToList();
         private void OnDirectionChanged(){
