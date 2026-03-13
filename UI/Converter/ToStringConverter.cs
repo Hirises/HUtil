@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 
-using HUtil.Attribute;
 using HUtil.Runtime.Observable;
+
+using Sirenix.OdinInspector;
 
 using UnityEngine;
 
 namespace HUtil.UI.Converter
 {
-    public class ConditionConverter : MonoConverter
+    public class ToStringConverter : MonoConverter
     {
         private enum ConditionType
         {
@@ -20,13 +21,13 @@ namespace HUtil.UI.Converter
             Enum,
         }
 
-        [SerializeField, OnValueChaged(nameof(OnTypeChanged))] private ConditionType _conditionType;
-        [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Int)] private PropertyBindingPort _int = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Int), BindingDirectionFlags.ToUI);
-        [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Long)] private PropertyBindingPort _long = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Long), BindingDirectionFlags.ToUI);
-        [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Float)] private PropertyBindingPort _float = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Float), BindingDirectionFlags.ToUI);
-        [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Double)] private PropertyBindingPort _double = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Double), BindingDirectionFlags.ToUI);
-        [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Bool)] private PropertyBindingPort _bool = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Bool), BindingDirectionFlags.ToUI);
-        [SerializeField, ShowIf(nameof(_conditionType), (int)ConditionType.Enum)] private PropertyBindingPort _enum = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Enum), BindingDirectionFlags.ToUI);
+        [SerializeField, OnValueChanged(nameof(OnTypeChanged))] private ConditionType _conditionType;
+        [SerializeField, ShowIf(nameof(_conditionType), ConditionType.Int)] private PropertyBindingPort _int = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Int), BindingDirectionFlags.ToUI);
+        [SerializeField, ShowIf(nameof(_conditionType), ConditionType.Long)] private PropertyBindingPort _long = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Long), BindingDirectionFlags.ToUI);
+        [SerializeField, ShowIf(nameof(_conditionType), ConditionType.Float)] private PropertyBindingPort _float = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Float), BindingDirectionFlags.ToUI);
+        [SerializeField, ShowIf(nameof(_conditionType), ConditionType.Double)] private PropertyBindingPort _double = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Double), BindingDirectionFlags.ToUI);
+        [SerializeField, ShowIf(nameof(_conditionType), ConditionType.Bool)] private PropertyBindingPort _bool = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Bool), BindingDirectionFlags.ToUI);
+        [SerializeField, ShowIf(nameof(_conditionType), ConditionType.Enum)] private PropertyBindingPort _enum = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Enum), BindingDirectionFlags.ToUI);
         [SerializeField] private string _outputPath;
 
         private IViewModelProperty _previousProperty;

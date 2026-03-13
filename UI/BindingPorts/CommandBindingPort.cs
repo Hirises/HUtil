@@ -7,6 +7,8 @@ using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
 using HUtil.UI.Binder;
 
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -15,14 +17,20 @@ namespace HUtil.UI
     /// <summary>
     /// 커맨드 바인딩 인스펙터 속성
     /// </summary>
-    [Serializable]
+    [Serializable, InlineProperty]
     public class CommandBindingPort
     {
-        [SerializeField]
-        private string _path;
-        [SerializeField]
+        [SerializeField, HorizontalGroup, HideLabel, ValueDropdown(nameof(GetPossibleBindingModes)), OnValueChanged(nameof(OnDirectionChanged))]
         private BindingMode _direction;
-        [SerializeField]
+        private List<BindingMode> GetPossibleBindingModes() => Enum.GetValues(typeof(BindingMode)).Cast<BindingMode>().Where(mode => _allowDirection.CanAccept(mode)).ToList();
+        private void OnDirectionChanged(){
+            if(_direction == BindingMode.None){
+                _path = "";
+            }
+        }
+        [SerializeField, DisableIf(nameof(Direction), BindingMode.None), HorizontalGroup, HideLabel]
+        private string _path;
+        [SerializeField, HideInInspector]
         private BindingDirectionFlags _allowDirection;
 
         /// <summary>
