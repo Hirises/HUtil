@@ -40,9 +40,9 @@ namespace HUtil.UI.Converter
         /// <param name="bindMap">바인딩 맵</param>
         protected abstract void OnRestoreProperties(Dictionary<string, IViewModelProperty> bindMap);
 
-        internal override Dictionary<string, BindingInfo> GetAllBindingInfosEditor()
+        internal override Dictionary<string, BindingInfo> GetAllProvidingBindingInfosEditor()
         {
-            var bindingInfos = base.GetAllBindingInfosEditor();
+            var bindingInfos = base.GetAllProvidingBindingInfosEditor();
             OnConvertBindingInfos(bindingInfos);
             return bindingInfos;
         }

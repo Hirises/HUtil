@@ -252,20 +252,21 @@ namespace HUtil.UI.Binder
         /// 이 바인더가 제공하는 모든 바인딩 정보를 가져옵니다
         /// </summary>
         /// <returns>바인딩 정보 리스트</returns>
-        internal virtual Dictionary<string, BindingInfo> GetAllBindingInfosEditor()
+        internal virtual Dictionary<string, BindingInfo> GetAllProvidingBindingInfosEditor()
         {
-            return _parentBinder?.GetAllBindingInfosEditor() ?? new Dictionary<string, BindingInfo>();
+            return _parentBinder?.GetAllProvidingBindingInfosEditor() ?? new Dictionary<string, BindingInfo>();
         }
 
         /// <summary>
-        /// 이 바인더가 제공하는 모든 프로퍼티 중 주어진 타입과 방향으로 바인딩 가능한 프로퍼티의 이름을 가져옵니다
+        /// 이 바인더에서 사용할 수 있는 모든 프로퍼티 중 주어진 타입과 방향으로 바인딩 가능한 프로퍼티의 이름을 가져옵니다
         /// </summary>
         /// <param name="receivingType">받을 수 있는 타입</param>
         /// <param name="bindingMode">동기화 하려는 방향</param>
         /// <returns>프로퍼티 이름 리스트</returns>
         internal List<string> GetAllBindablePropertyNamesEditor(BindingType receivingType, BindingMode bindingMode)
         {
-            return GetAllBindingInfosEditor().Where(info => info.Value.CanAccept(receivingType, bindingMode)).Select(info => info.Key).ToList();
+            var parentInfos = _parentBinder?.GetAllProvidingBindingInfosEditor() ?? new Dictionary<string, BindingInfo>();
+            return parentInfos.Where(info => info.Value.CanAccept(receivingType, bindingMode)).Select(info => info.Key).ToList();
         }
     }
 }

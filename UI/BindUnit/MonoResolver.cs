@@ -99,7 +99,7 @@ namespace HUtil.UI
         }
 #endregion
     
-        internal override Dictionary<string, BindingInfo> GetAllBindingInfosEditor()
+        internal override Dictionary<string, BindingInfo> GetAllProvidingBindingInfosEditor()
         {
             //resolver들의 바인딩 정보를 가져옴
             Dictionary<string, BindingInfo> output = new();
