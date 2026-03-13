@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using UnityEditor;
+using HUtil.Runtime.Extension;
 
 using UnityEngine;
 
-namespace HUtil.Editor.Animation
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+namespace HUtil.Runtime.Animation
 {
     /// <summary>
     /// 필드 변경사항을 애니메이션 스냅샷으로 캡처하는 클래스
@@ -16,7 +20,9 @@ namespace HUtil.Editor.Animation
     {
         private struct PoseData{
             public Type componentType;
+            #if UNITY_EDITOR
             public SerializedPropertyType propertyType;
+            #endif
             public string propertyPath;
             public object value;
         }
@@ -38,7 +44,7 @@ namespace HUtil.Editor.Animation
                 List<Type> excludeComponentTypes = new List<Type>();
                 excludeComponentTypes.AddRange(ignoreComponentTypes);
                 foreach(var type in includeComponentTypesDerivedFrom){
-                    excludeComponentTypes.AddRange(EditortimeReflectionHelper.GetAllConcreteTypesDerivedFrom(type));
+                    excludeComponentTypes.AddRange(RuntimeReflectionHelper.GetAllConcreteTypesDerivedFrom(type));
                 }
                 this.ignoreComponentTypes = excludeComponentTypes.ToArray();
                 this.ignorePropertyPaths = ignorePropertyPaths;
@@ -122,6 +128,7 @@ namespace HUtil.Editor.Animation
         #region [Internal] Capture Logics
         private void CapturePose(Dictionary<string, PoseData> poseDict, CaptureOption? captureOption = null)
         {
+            #if UNITY_EDITOR
             if (targetObject == null) return;
             poseDict.Clear();
 
@@ -159,8 +166,10 @@ namespace HUtil.Editor.Animation
                     Debug.Log($"Skipped: {prop.propertyPath} {prop.propertyType}");
                 }
             }
+            #endif
         }
 
+        #if UNITY_EDITOR
         private bool IsSupportedType(SerializedProperty prop)
         {
             switch (prop.propertyType)
@@ -200,6 +209,7 @@ namespace HUtil.Editor.Animation
                 default: return 0f;
             }
         }
+        #endif
         #endregion
 
         #region Create Animation Clip
@@ -261,6 +271,7 @@ namespace HUtil.Editor.Animation
 
         private bool IsPoseEquals(PoseData poseA, PoseData poseB)
         {
+            #if UNITY_EDITOR
             if(poseA.propertyType != poseB.propertyType) return false;
             switch(poseA.propertyType){
                 case SerializedPropertyType.Float:
@@ -273,13 +284,14 @@ namespace HUtil.Editor.Animation
                     return (int)poseA.value == (int)poseB.value;
                 case SerializedPropertyType.ObjectReference:
                     return poseA.value == poseB.value;
-                default:
-                    return false;
             }
+            #endif
+            return false;
         }
 
         private AnimationClip CreateAnimationClip(Dictionary<string, PoseData> poseDict, string clipName, string assetPath = "Assets/CapturedAnimations/")
         {
+            #if UNITY_EDITOR
             AnimationClip clip = new AnimationClip();
             int curvesAdded = 0;
 
@@ -325,13 +337,17 @@ namespace HUtil.Editor.Animation
                 AssetDatabase.SaveAssets();
                 Debug.Log($"{curvesAdded}개의 필드 변화를 포함한 클립 생성 성공!");
                 return clip;
-            }else{
-                Debug.Log("클립 생성 실패! 변경된 필드가 없습니다.");
-                return null;
             }
+            Debug.Log("클립 생성 실패! 변경된 필드가 없습니다.");
+            return null;
+            #else
+            Debug.Log("AnimationSnapshot is not supported in runtime.");
+            return null;
+            #endif
         }
 
         private void CreateSubDirectoryRecursive(string assetPath){
+            #if UNITY_EDITOR
             var folders = assetPath.Split('/');
             var currentPath = "";
             foreach(var folder in folders){
@@ -345,6 +361,7 @@ namespace HUtil.Editor.Animation
                 }
                 currentPath = $"{currentPath}/{folder}";
             }
+            #endif
         }
         #endregion
     }
