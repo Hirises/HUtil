@@ -40,7 +40,7 @@ namespace HUtil.UI.Editor
 
             // # Label
             (var labelRect, var contentRect) = position.SliceVertical(EditorGUIUtility.labelWidth);
-            EditorGUI.LabelField(labelRect, label);
+            EditorGUI.LabelField(labelRect, property.displayName);
 
             // # Direction
             var directionRect = contentRect;
