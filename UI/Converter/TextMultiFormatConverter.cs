@@ -13,18 +13,30 @@ namespace HUtil.UI.Converter
 {
     public class TextMultiFormatConverter : MonoConverter
     {
-        [SerializeField] private bool _useDynamicFormat = false;
-        [SerializeField, ShowIf(nameof(_useDynamicFormat))] private PropertyBindingPort _formatText = new PropertyBindingPort(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
-        [SerializeField, HideIf(nameof(_useDynamicFormat))] private string _format;
-        [SerializeField] private List<PropertyBindingPort> _formatArgs = new List<PropertyBindingPort>();
+        [SerializeField] 
+        private ConstantOrPropertyPort<string> _formatText = new ConstantOrPropertyPort<string>(new PropertyBindingPort(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI));
+        [SerializeField] 
+        [ListDrawerSettings(CustomAddFunction = nameof(CreateFormatArg))]
+        private List<ConstantOrPropertyPort<string>> _formatArgs = new List<ConstantOrPropertyPort<string>>();
+
         [SerializeField] private string _outputPath;
 
         private IViewModelProperty _previousProperty;
 
-        private void OnValidate()
+        private ConstantOrPropertyPort<string> CreateFormatArg()
         {
+            return new ConstantOrPropertyPort<string>(new PropertyBindingPort(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI));
+        }
+
+        private void OnChange(string str){
+
+        }
+
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
+        {
+            _formatText.Bind(bindMap, disposable);
             foreach(var arg in _formatArgs){
-                arg.Initialize(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
+                arg.Bind(bindMap, disposable);
             }
         }
 
@@ -38,25 +50,13 @@ namespace HUtil.UI.Converter
         }
 
         protected override void OnConvertProperties(Dictionary<string, IViewModelProperty> bindMap)
-        {   
-            IViewModelProperty fromProperty = null;
-            if(_useDynamicFormat && !bindMap.TryGetValue(_formatText.Path, out fromProperty)){
-                BindingContext.LogWarning($"{_formatText.Path} is not found", gameObject);
-                return;
-            }
-            List<IViewModelProperty> formatArgs = new();
-            foreach(var arg in _formatArgs){
-                if(!bindMap.TryGetValue(arg.Path, out var argProperty)){
-                    BindingContext.LogWarning($"{arg.Path} is not found", gameObject);
-                    return;
-                }
-                formatArgs.Add(argProperty);
-            }
+        {
+            string formatText = _formatText.GetValue();
             _previousProperty = null;
             if(bindMap.TryGetValue(_outputPath, out var toProperty)){
                 _previousProperty = toProperty;
             }
-            bindMap[_outputPath] = new FormattedStringProperty(fromProperty, _format, formatArgs);
+            //bindMap[_outputPath] = new FormattedStringProperty(fromProperty, _format, formatArgs);
         }
 
         protected override void OnRestoreProperties(Dictionary<string, IViewModelProperty> bindMap)
@@ -70,39 +70,22 @@ namespace HUtil.UI.Converter
 
         public class FormattedStringProperty : IViewModelProperty
         {
-            private IViewModelProperty _baseString;
-            private string _staticFormat;
-            private List<IViewModelProperty> _formatArgs;
-            private CompositeDisposable _disposables;
-            private Action<string> _setter;
 
-            public FormattedStringProperty(IViewModelProperty baseString, string staticFormat, List<IViewModelProperty> formatArgs)
+
+            public FormattedStringProperty()
             {
-                _baseString = baseString;
-                _staticFormat = staticFormat ?? throw new ArgumentNullException(nameof(staticFormat));
-                _formatArgs = formatArgs ?? throw new ArgumentNullException(nameof(formatArgs));
-                _disposables = new CompositeDisposable();
+
             }
 
             public IDisposable SubscribeProperty<T>(Action<T> action)
             {
-                _setter = (string value) => action((T)(object)value);
-                _baseString?.SubscribeProperty<string>(value => UpdateString()).AddTo(_disposables);
-                foreach(var arg in _formatArgs){
-                    arg.SubscribeProperty<string>(value => UpdateString()).AddTo(_disposables);
-                }
-                return _disposables;
-            }
-
-            public void UpdateString(){
-                string baseString = _baseString?.GetPropertyValue<string>() ?? _staticFormat;
-                string formattedString = string.Format(baseString, _formatArgs.Select(arg => arg.GetPropertyValue<string>()).ToArray());
-                _setter?.Invoke(formattedString);
+                action(GetPropertyValue<T>());
+                return EmptyDisposable.Instance;
             }
 
             public T GetPropertyValue<T>()
             {
-                return (T)(object)_baseString.GetPropertyValue<T>();
+                return default(T);
             }
 
             public void SetPropertyValue<T>(T value)
