@@ -15,14 +15,16 @@ namespace HUtil.UI.Converter
         [SerializeField] private bool _useDynamicFormat = false;
         [SerializeField, ShowIf(nameof(_useDynamicFormat))] private PropertyBindingPort _formatText = new PropertyBindingPort(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
         [SerializeField, HideIf(nameof(_useDynamicFormat))] private string _format;
-        [SerializeField, ScriptableList(nameof(AddNewFormatArg))] private List<PropertyBindingPort> _formatArgs = new List<PropertyBindingPort>();
+        [SerializeField] private List<PropertyBindingPort> _formatArgs = new List<PropertyBindingPort>();
         [SerializeField] private string _outputPath;
 
         private IViewModelProperty _previousProperty;
 
-        private void AddNewFormatArg(PropertyBindingPort instance)
+        private void OnValidate()
         {
-            instance.Initialize(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
+            foreach(var arg in _formatArgs){
+                arg.Initialize(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
+            }
         }
 
         protected override void OnConvertBindingInfos(Dictionary<string, BindingInfo> bindingInfos)
