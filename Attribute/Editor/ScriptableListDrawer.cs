@@ -46,7 +46,7 @@ namespace HUtil.Attribute.Editor
             if(!_isInitialized){
                 Initialize(property);
             }
-            EditorGUI.PropertyField(position, property, label, true);
+            base.OnGUI(position, property, label);
         }
     }
 }

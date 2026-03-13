@@ -21,7 +21,7 @@ namespace HUtil.UI.Editor
         {
             Rect curLine = position.GetStartLine();
             (var labelRect, var contentRect) = curLine.SliceVertical(EditorGUIUtility.labelWidth);
-            EditorGUI.LabelField(labelRect, label);
+            EditorGUI.LabelField(labelRect, property.displayName);
             var propertyPathProp = property.FindPropertyRelative("_propertyPath");
             propertyPathProp.stringValue = EditorGUI.TextField(contentRect, propertyPathProp.stringValue);
             curLine = position.GetNextLine();
