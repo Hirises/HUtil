@@ -13,6 +13,7 @@ namespace HUtil.UI.Binder
         [SerializeField] private Image _target;
         [SerializeField] private PropertyBindingPort _image_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Sprite), BindingDirectionFlags.ToUI);
         [SerializeField] private PropertyBindingPort _color_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Color), BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort _fill_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Float), BindingDirectionFlags.ToUI);
 
         protected override void Reset()
         {
@@ -24,12 +25,14 @@ namespace HUtil.UI.Binder
         {
             _image_prop.Validate(this);
             _color_prop.Validate(this);
+            _fill_prop.Validate(this);
         }
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             _image_prop.Bind<Sprite>(bindMap, disposable, SetSprite);
             _color_prop.Bind<Color>(bindMap, disposable, SetColor);
+            _fill_prop.Bind<float>(bindMap, disposable, SetFill);
         }
 
         private void SetSprite(Sprite value)
@@ -40,6 +43,11 @@ namespace HUtil.UI.Binder
         private void SetColor(Color value)
         {
             _target.color = value;
+        }
+
+        private void SetFill(float value)
+        {
+            _target.fillAmount = value;
         }
     }
 }
