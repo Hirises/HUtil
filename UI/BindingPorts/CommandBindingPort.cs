@@ -28,8 +28,9 @@ namespace HUtil.UI
                 _path = "";
             }
         }
-        [SerializeField, DisableIf(nameof(Direction), BindingMode.None), HorizontalGroup, HideLabel]
+        [SerializeField, DisableIf(nameof(Direction), BindingMode.None), HorizontalGroup, HideLabel, ValueDropdown(nameof(GetPossiblePaths))]
         private string _path;
+        private List<string> GetPossiblePaths(MonoBinder binder) => binder.GetAllBindablePropertyNamesEditor(BindingType.Command, _direction).ToList();
         [SerializeField, HideInInspector]
         private BindingDirectionFlags _allowDirection;
 

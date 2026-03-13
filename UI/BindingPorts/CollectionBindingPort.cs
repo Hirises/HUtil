@@ -24,8 +24,11 @@ namespace HUtil.UI
                 _path = "";
             }
         }
-        [SerializeField, DisableIf(nameof(Direction), BindingMode.None), HorizontalGroup, HideLabel]
+        [SerializeField, DisableIf(nameof(Direction), BindingMode.None), HorizontalGroup, HideLabel, ValueDropdown(nameof(GetPossiblePaths))]
         private string _path;
+        [SerializeField, HideInInspector]
+        private BindingBaseType _baseType;
+        private List<string> GetPossiblePaths(MonoBinder binder) => binder.GetAllBindablePropertyNamesEditor(BindingType.OfCollection(_baseType), _direction).ToList();
         [SerializeField, HideInInspector]
         private BindingDirectionFlags _allowDirection;
 
@@ -62,7 +65,8 @@ namespace HUtil.UI
         /// 인스펙터용 바인딩 속성을 생성합니다
         /// </summary>
         /// <param name="allowDirection">허용가능한 바인딩 방향</param>
-        public CollectionBindingPort(BindingDirectionFlags allowDirection){
+        public CollectionBindingPort(BindingBaseType baseType, BindingDirectionFlags allowDirection){
+            _baseType = baseType;
             _allowDirection = allowDirection;
         }
 
