@@ -15,7 +15,7 @@ namespace HUtil.Attribute.Editor
             var showIfAttribute = attribute as ShowIfAttribute;
             if(IsVisible(property, showIfAttribute))
             {
-                return base.GetPropertyHeight(property, label);
+                return EditorGUI.GetPropertyHeight(property, label);
             }
             return -EditorGUIUtility.standardVerticalSpacing;
         }

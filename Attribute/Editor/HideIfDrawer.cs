@@ -17,7 +17,7 @@ namespace HUtil.Attribute.Editor
             {
                 return -EditorGUIUtility.standardVerticalSpacing;
             }
-            return base.GetPropertyHeight(property, label);
+            return EditorGUI.GetPropertyHeight(property, label);
         }
         
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
