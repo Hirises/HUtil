@@ -69,6 +69,11 @@ namespace HUtil.UI
             _allowDirection = allowDirection;
         }
 
+        internal void Initialize(BindingType receivingType, BindingDirectionFlags allowDirection){
+            _receivingType = receivingType;
+            _allowDirection = allowDirection;
+        }
+
         public void Reset(){
             _path = "";
             _direction = BindingMode.None;
