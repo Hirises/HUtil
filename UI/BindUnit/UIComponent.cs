@@ -16,9 +16,21 @@ namespace HUtil.UI
     {
         public override bool IsRootBinder => true;
 
+        public List<BindingInfo> bindingInfos = new List<BindingInfo>();
+
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             //pass
+        }
+
+        internal override Dictionary<string, BindingInfo> GetAllProvidingBindingInfosEditor()
+        {
+            var infos = base.GetAllProvidingBindingInfosEditor();
+            foreach(var info in bindingInfos)
+            {
+                infos[info.PropertyPath] = info;
+            }
+            return infos;
         }
     }
 }

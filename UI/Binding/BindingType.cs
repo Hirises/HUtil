@@ -14,7 +14,7 @@ namespace HUtil.UI
 
         [SerializeField] private BindingBaseType _baseType;
         public BindingBaseType BaseType => _baseType;
-        public bool IsCollection;
+        [SerializeField] public bool IsCollection;
         public bool IsValid => BaseType != BindingBaseType.None;
 
         private BindingType(BindingBaseType baseType, bool isCollection){

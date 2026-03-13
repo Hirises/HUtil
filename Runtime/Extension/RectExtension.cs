@@ -31,7 +31,7 @@ namespace HUtil.Runtime.Extension
 
         public static Rect SliceRightRatio(this Rect rect, float ratio)
         {
-            return new Rect(rect.x + rect.width * ratio, rect.y, rect.width * (1 - ratio), rect.height);
+            return new Rect(rect.x + rect.width * (1 - ratio), rect.y, rect.width * (ratio), rect.height);
         }
     }
 }

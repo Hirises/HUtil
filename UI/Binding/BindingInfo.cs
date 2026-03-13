@@ -2,16 +2,19 @@ using System;
 
 using HUtil.UI;
 
+using UnityEngine;
+
 namespace HUtil.UI
 {
     /// <summary>
     /// ViewModel의 필드에 대한 바인딩 정보
     /// </summary>
+    [Serializable]
     public struct BindingInfo
     {
-        private string _propertyPath;
-        private BindingType _type;
-        private BindingDirectionFlags _allowedDirection;
+        [SerializeField] private string _propertyPath;
+        [SerializeField] private BindingType _type;
+        [SerializeField] private BindingDirectionFlags _allowedDirection;
 
         /// <summary>
         /// 해당 필드의 이름
