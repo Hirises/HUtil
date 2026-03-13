@@ -38,7 +38,7 @@ namespace HUtil.Attribute.Editor
             if(!_isInitialized){
                 Initialize(property);
             }
-            return base.GetPropertyHeight(property, label);
+            return EditorGUI.GetPropertyHeight(property, label);
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -46,7 +46,7 @@ namespace HUtil.Attribute.Editor
             if(!_isInitialized){
                 Initialize(property);
             }
-            base.OnGUI(position, property, label);
+            EditorGUI.PropertyField(position, property, label, true);
         }
     }
 }
