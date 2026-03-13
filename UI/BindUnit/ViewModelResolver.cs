@@ -5,6 +5,8 @@ using System.Linq;
 using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
 
+using Sirenix.OdinInspector;
+
 using Unity.Properties;
 
 using UnityEngine;
@@ -34,11 +36,23 @@ namespace HUtil.UI
             /// </summary>
             DynamicBinding,
         }
-        [SerializeField] private string _viewModelType;
+        [SerializeField, ValueDropdown(nameof(GetPossibleViewModelTypes)), OnValueChanged(nameof(OnViewModelTypeChanged))] private string _viewModelType;
+        private List<string> GetPossibleViewModelTypes() => RuntimeReflectionHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).Select(type => type.AssemblyQualifiedName).ToList();
         [SerializeField] private BindingMethod _bindingMethod = BindingMethod.ManualBinding;
-        [SerializeField] private PropertyBindingPort _viewModelProp = new PropertyBindingPort(BindingType.OfType(BindingBaseType.ViewModel), BindingDirectionFlags.ToUI);
-        [SerializeField] private ViewModelBindingItem[] _bindMap;
-
+        [SerializeField, ShowIf(nameof(_bindingMethod), BindingMethod.DynamicBinding)] 
+        private PropertyBindingPort _viewModelProp = new PropertyBindingPort(BindingType.OfType(BindingBaseType.ViewModel), BindingDirectionFlags.ToUI);
+        [SerializeField]
+        //[TableList(AlwaysExpanded = true, HideToolbar = true, NumberOfItemsPerPage = 10, ShowPaging = true, ShowIndexLabels = false)]
+        [ListDrawerSettings(DefaultExpandedState = true, ShowFoldout = false, ShowPaging = true, DraggableItems = false, HideAddButton = true, HideRemoveButton = true)]
+         private ViewModelBindingItem[] _bindMap;
+        private void OnViewModelTypeChanged(){
+            var viewModelType = Type.GetType(_viewModelType);
+            if(viewModelType == null){
+                _bindMap = new ViewModelBindingItem[0];
+                return;
+            }
+            _bindMap = UIRuntimeReflectionHelper.GetAllBindingInfo(viewModelType).Select(info => new ViewModelBindingItem(info.PropertyPath, info.PropertyPath)).ToArray();
+        }
         private IViewModel _viewModel;
         private IDisposable _subscription;
 
@@ -133,19 +147,18 @@ namespace HUtil.UI
             return output;
         }
 
-        // 딕셔너리 비주얼라이즈하기 귀찮아서 사용함
         [Serializable]
         private class ViewModelBindingItem
         {
-            [SerializeField] private string _sourcePropertyPath;
-            [SerializeField] private string _destinationPropertyPath;
+            [SerializeField, DisplayAsString, HorizontalGroup, HideLabel] private string _sourcePath;
+            [SerializeField, HorizontalGroup, HideLabel] private string _destinationPath;
 
-            public string SourcePropertyPath => _sourcePropertyPath;
-            public string DestinationPropertyPath => _destinationPropertyPath;
+            public string SourcePropertyPath => _sourcePath;
+            public string DestinationPropertyPath => _destinationPath;
 
-            public ViewModelBindingItem(string sourcePropertyPath, string destinationPropertyPath){
-                _sourcePropertyPath = sourcePropertyPath;
-                _destinationPropertyPath = destinationPropertyPath;
+            public ViewModelBindingItem(string sourcePath, string destinationPath){
+                _sourcePath = sourcePath;
+                _destinationPath = destinationPath;
             }
         }
     }

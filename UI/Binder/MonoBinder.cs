@@ -4,6 +4,8 @@ using System.Linq;
 
 using HUtil.Runtime.Observable;
 
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 
 namespace HUtil.UI.Binder
@@ -13,8 +15,8 @@ namespace HUtil.UI.Binder
     /// </summary>
     public abstract class MonoBinder : MonoBehaviour
     {
-        [SerializeField] private MonoBinder _parentBinder = null;
-        [SerializeField] private List<MonoBinder> _childBinders = new List<MonoBinder>();
+        [SerializeField, FoldoutGroup("Binder Hierarchy", expanded: false)] private MonoBinder _parentBinder = null;
+        [SerializeField, FoldoutGroup("Binder Hierarchy", expanded: false)] private List<MonoBinder> _childBinders = new List<MonoBinder>();
         /// <summary>
         /// 이 바인더의 상위 바인더
         /// </summary>

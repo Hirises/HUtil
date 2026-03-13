@@ -1,5 +1,7 @@
 using System;
 
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 
 namespace HUtil.UI
@@ -12,9 +14,9 @@ namespace HUtil.UI
         public static readonly BindingType Trigger = new BindingType(BindingBaseType.Trigger, false);
         public static readonly BindingType ViewModel = new BindingType(BindingBaseType.ViewModel, false);
 
-        [SerializeField] private BindingBaseType _baseType;
+        [SerializeField, HorizontalGroup("Binding Type", width: 40), LabelText("List"), LabelWidth(25)] public bool IsCollection;
+        [SerializeField, HorizontalGroup("Binding Type", MaxWidth = 80), HideLabel] private BindingBaseType _baseType;
         public BindingBaseType BaseType => _baseType;
-        [SerializeField] public bool IsCollection;
         public bool IsValid => BaseType != BindingBaseType.None;
 
         private BindingType(BindingBaseType baseType, bool isCollection){

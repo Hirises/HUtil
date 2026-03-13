@@ -6,6 +6,7 @@ using Unity.Collections;
 using System;
 using HUtil.Runtime.Observable;
 using System.Runtime.CompilerServices;
+using Sirenix.OdinInspector;
 
 namespace HUtil.UI
 {
@@ -16,7 +17,11 @@ namespace HUtil.UI
     {
         public override bool IsRootBinder => true;
 
+        [SerializeField, ListDrawerSettings(ShowItemCount = true, CustomAddFunction = nameof(AddBindingInfo))]
         public List<BindingInfo> bindingInfos = new List<BindingInfo>();
+        private BindingInfo AddBindingInfo(){
+            return new BindingInfo(string.Empty, BindingType.Invalid, BindingDirectionFlags.Both);;
+        }
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {

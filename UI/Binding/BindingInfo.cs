@@ -2,6 +2,8 @@ using System;
 
 using HUtil.UI;
 
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 
 namespace HUtil.UI
@@ -12,9 +14,9 @@ namespace HUtil.UI
     [Serializable]
     public struct BindingInfo
     {
-        [SerializeField] private string _propertyPath;
-        [SerializeField] private BindingType _type;
-        [SerializeField] private BindingDirectionFlags _allowedDirection;
+        [SerializeField, HorizontalGroup("Binding Info", MaxWidth = 160, Width = 0.3f, MinWidth = 120), HideLabel] private BindingType _type;
+        [SerializeField, HorizontalGroup("Binding Info"), HideLabel] private string _propertyPath;
+        [SerializeField, HorizontalGroup("Binding Info", width: 0.2f, MaxWidth = 80), HideLabel] private BindingDirectionFlags _allowedDirection;
 
         /// <summary>
         /// 해당 필드의 이름
