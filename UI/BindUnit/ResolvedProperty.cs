@@ -10,17 +10,15 @@ namespace HUtil.UI
     /// </summary>
     public struct ResolvedProperty : IViewModelProperty
     {
-        private IViewModel _viewModel;
-        private string _path;
+        //실제 프로퍼티 값 참조
+        private object _value;
 
         /// <summary>
         /// 생성자
         /// </summary>
-        /// <param name="viewModel">뷰모델 객체</param>
-        /// <param name="path">프로퍼티 경로</param>
-        public ResolvedProperty(IViewModel viewModel, string path){
-            _viewModel = viewModel;
-            _path = path;
+        /// <param name="value">프로퍼티 값</param>
+        public ResolvedProperty(object value){
+            _value = value;
         }
 
         /// <summary>
@@ -29,7 +27,7 @@ namespace HUtil.UI
         /// <typeparam name="T">변환할 타입</typeparam>
         /// <returns>ObservableProperty<T></returns>
         public ObservableProperty<T> AsObservableProperty<T>(){
-            return UIRuntimeReflectionHelper.GetObservableProperty<T>(_viewModel, _path);
+            return _value as ObservableProperty<T>;
         }
 
         /// <summary>
@@ -37,7 +35,7 @@ namespace HUtil.UI
         /// </summary>
         /// <returns>ObservableTrigger</returns>
         public ObservableTrigger AsObservableTrigger(){
-            return UIRuntimeReflectionHelper.GetObservableTrigger(_viewModel, _path);
+            return _value as ObservableTrigger;
         }
 
         /// <summary>
@@ -45,7 +43,7 @@ namespace HUtil.UI
         /// </summary>
         /// <returns>CommandBase</returns>
         public CommandBase AsCommand(){
-            return UIRuntimeReflectionHelper.GetCommand(_viewModel, _path);
+            return _value as CommandBase;
         }
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace HUtil.UI
         /// <typeparam name="T">변환할 타입</typeparam>
         /// <returns>ObservableList<T></returns>
         public ObservableList<T> AsObservableList<T>(){
-            return UIRuntimeReflectionHelper.GetObservableList<T>(_viewModel, _path);
+            return _value as ObservableList<T>;
         }
 
         public IDisposable SubscribeProperty<T>(Action<T> action){

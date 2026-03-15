@@ -24,17 +24,7 @@ namespace HUtil.UI
             { typeof(float), BindingBaseType.Float },
             { typeof(string), BindingBaseType.String },
             { typeof(bool), BindingBaseType.Bool },
-            { typeof(long), BindingBaseType.Long },
-            { typeof(double), BindingBaseType.Double },
-            { typeof(DateTime), BindingBaseType.DateTime },
-            { typeof(Vector2), BindingBaseType.Vector2 },
-            { typeof(Vector3), BindingBaseType.Vector3 },
-            { typeof(Vector4), BindingBaseType.Vector4 },
-            { typeof(Quaternion), BindingBaseType.Quaternion },
             { typeof(Color), BindingBaseType.Color },
-            { typeof(Color32), BindingBaseType.Color32 },
-            { typeof(GameObject), BindingBaseType.GameObject },
-            { typeof(Transform), BindingBaseType.Transform },
             { typeof(Sprite), BindingBaseType.Sprite },
         };
 
@@ -57,7 +47,6 @@ namespace HUtil.UI
             // 특수 조건(상속/인터페이스) 확인
             if (type.IsEnum) return BindingBaseType.Enum;
             if (typeof(CommandBase).IsAssignableFrom(type)) return BindingBaseType.Command;
-            if (typeof(ObservableTrigger).IsAssignableFrom(type)) return BindingBaseType.Trigger;
             if (typeof(IViewModel).IsAssignableFrom(type)) return BindingBaseType.ViewModel;
 
             return BindingBaseType.None;
@@ -79,10 +68,6 @@ namespace HUtil.UI
             else if(typeof(CommandBase).IsAssignableFrom(type))    //CommandBase
             {
                 return BindingType.Command;    //Command는 데이터로만 동기화 가능
-            }
-            else if(typeof(ObservableTrigger).IsAssignableFrom(type))    //ObservableTrigger
-            {
-                return BindingType.Trigger;
             }
             else if(type.IsSubclassOfGeneric(typeof(ObservableList<>)))    //ObservableList<T>
             {
@@ -114,6 +99,56 @@ namespace HUtil.UI
             
             //이 외에는 불가능
             return false;
+        }
+
+        public static object GetField(this BindingType type, string path, object vm){
+            if(type.IsCollection){
+                switch(type.BaseType){
+                    case BindingBaseType.Int:
+                        return UIRuntimeReflectionHelper.GetObservableList<int>(vm, path);
+                    case BindingBaseType.Float:
+                        return UIRuntimeReflectionHelper.GetObservableList<float>(vm, path);
+                    case BindingBaseType.String:
+                        return UIRuntimeReflectionHelper.GetObservableList<string>(vm, path);
+                    case BindingBaseType.Bool:
+                        return UIRuntimeReflectionHelper.GetObservableList<bool>(vm, path);
+                    case BindingBaseType.Enum:
+                        return UIRuntimeReflectionHelper.GetObservableList<Enum>(vm, path);
+                    case BindingBaseType.Color:
+                        return UIRuntimeReflectionHelper.GetObservableList<Color>(vm, path);
+                    case BindingBaseType.Sprite:
+                        return UIRuntimeReflectionHelper.GetObservableList<Sprite>(vm, path);
+                    case BindingBaseType.Command:
+                        return UIRuntimeReflectionHelper.GetObservableList<CommandBase>(vm, path);
+                    case BindingBaseType.ViewModel:
+                        return UIRuntimeReflectionHelper.GetObservableList<IViewModel>(vm, path);
+                    default:
+                        return null;
+                }
+            }else{
+                switch(type.BaseType){
+                    case BindingBaseType.Int:
+                        return UIRuntimeReflectionHelper.GetObservableProperty<int>(vm, path);
+                    case BindingBaseType.Float:
+                        return UIRuntimeReflectionHelper.GetObservableProperty<float>(vm, path);
+                    case BindingBaseType.String:
+                        return UIRuntimeReflectionHelper.GetObservableProperty<string>(vm, path);
+                    case BindingBaseType.Bool:
+                        return UIRuntimeReflectionHelper.GetObservableProperty<bool>(vm, path);
+                    case BindingBaseType.Enum:
+                        return UIRuntimeReflectionHelper.GetObservableProperty<Enum>(vm, path);
+                    case BindingBaseType.Color:
+                        return UIRuntimeReflectionHelper.GetObservableProperty<Color>(vm, path);
+                    case BindingBaseType.Sprite:
+                        return UIRuntimeReflectionHelper.GetObservableProperty<Sprite>(vm, path);
+                    case BindingBaseType.Command:
+                        return UIRuntimeReflectionHelper.GetCommand(vm, path);
+                    case BindingBaseType.ViewModel:
+                        return UIRuntimeReflectionHelper.GetObservableProperty<IViewModel>(vm, path);
+                    default:
+                        return null;
+                }
+            }
         }
     }
 }

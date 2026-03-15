@@ -170,5 +170,9 @@ namespace HUtil.UI
 
             return output;
         }
+
+        public static object GetField(BindingType type, string path, object vm){
+            return type.GetField(path, vm);
+        }
     }
 }

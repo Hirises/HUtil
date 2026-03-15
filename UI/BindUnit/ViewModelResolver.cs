@@ -51,7 +51,7 @@ namespace HUtil.UI
                 _bindMap = new ViewModelBindingItem[0];
                 return;
             }
-            _bindMap = UIRuntimeReflectionHelper.GetAllBindingInfo(viewModelType).Select(info => new ViewModelBindingItem(info.PropertyPath, info.PropertyPath)).ToArray();
+            _bindMap = UIRuntimeReflectionHelper.GetAllBindingInfo(viewModelType).Select(info => new ViewModelBindingItem(info.PropertyPath, info.Type, info.PropertyPath)).ToArray();
         }
         private IViewModel _viewModel;
         private IDisposable _subscription;
@@ -131,7 +131,8 @@ namespace HUtil.UI
                 return;
             }
             foreach(var bindInfo in _bindMap){
-                bindMap.Add(bindInfo.DestinationPropertyPath, new ResolvedProperty(_viewModel, bindInfo.SourcePropertyPath));
+                var field = UIRuntimeReflectionHelper.GetField(bindInfo.SourceType, bindInfo.SourcePropertyPath, _viewModel);
+                bindMap.Add(bindInfo.DestinationPropertyPath, new ResolvedProperty(field));
             }
         }
 
@@ -151,14 +152,16 @@ namespace HUtil.UI
         private class ViewModelBindingItem
         {
             [SerializeField, DisplayAsString, HorizontalGroup, HideLabel] private string _sourcePath;
+            [SerializeField, HorizontalGroup, HideLabel, ReadOnly] private BindingType _sourceType;
             [SerializeField, HorizontalGroup, HideLabel] private string _destinationPath;
 
             public string SourcePropertyPath => _sourcePath;
             public string DestinationPropertyPath => _destinationPath;
-
-            public ViewModelBindingItem(string sourcePath, string destinationPath){
+            public BindingType SourceType => _sourceType;
+            public ViewModelBindingItem(string sourcePath, BindingType sourceType, string destinationPath) {
                 _sourcePath = sourcePath;
                 _destinationPath = destinationPath;
+                _sourceType = sourceType;
             }
         }
     }
