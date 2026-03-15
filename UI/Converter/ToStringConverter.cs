@@ -12,7 +12,7 @@ namespace HUtil.UI.Converter
         [SerializeField, OnValueChanged(nameof(AssignInputPort)), InlineProperty] private BindingType _inputType;
         [SerializeReference, HideReferenceObjectPicker, EnableIf(nameof(_inputPortAssigned))] private IBindingPort _inputPort;
         private bool _inputPortAssigned => _inputPort != null;
-        [SerializeField] private string outputPath = "ToSTringValue";
+        [SerializeField] private string _outputPath = "ToSTringValue";
 
         private IViewModelProperty previousProperty;
 
@@ -40,13 +40,13 @@ namespace HUtil.UI.Converter
             }
                 switch(_inputType.BaseType){
                 case BindingBaseType.Int:
-                    ConvertProperty<int, string>(bindMap, _inputPort.Path, outputPath, value => value.ToString(), ref previousProperty);
+                    ConvertProperty<int, string>(bindMap, _inputPort.Path, _outputPath, value => value.ToString(), ref previousProperty);
                     break;
                 case BindingBaseType.Float:
-                    ConvertProperty<float, string>(bindMap, _inputPort.Path, outputPath, value => value.ToString(), ref previousProperty);
+                    ConvertProperty<float, string>(bindMap, _inputPort.Path, _outputPath, value => value.ToString(), ref previousProperty);
                     break;
                 case BindingBaseType.Bool:
-                    ConvertProperty<bool, string>(bindMap, _inputPort.Path, outputPath, value => value.ToString(), ref previousProperty);
+                    ConvertProperty<bool, string>(bindMap, _inputPort.Path, _outputPath, value => value.ToString(), ref previousProperty);
                     break;
                 default:
                     _inputPort = null;
@@ -56,15 +56,15 @@ namespace HUtil.UI.Converter
 
         protected override void OnRestoreProperties(Dictionary<string, IViewModelProperty> bindMap)
         {
-            RestoreProperty(bindMap, outputPath, ref previousProperty);
+            RestoreProperty(bindMap, _outputPath, ref previousProperty);
         }
 
         protected override void OnConvertBindingInfos(Dictionary<string, BindingInfo> bindingInfos){
             if(_inputPort == null){
                 return;
             }
-            bindingInfos[outputPath] = new BindingInfo(
-                outputPath,
+            bindingInfos[_outputPath] = new BindingInfo(
+                _outputPath,
                 BindingType.String,
                 BindingDirectionFlags.ToUI
             );
