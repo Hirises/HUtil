@@ -3,31 +3,35 @@ using System.Collections.Generic;
 
 using HUtil.Runtime.Observable;
 
+using UnityEngine.Events;
+
 namespace HUtil.UI
 {
-    public struct AutoPropertyBindingPort<T>
+    public class AutoPropertyBindingPort<T>
     {
-        private PropertyBindingPort _propertyBindingPort;
-        private T _bindConstant;
-        private Action<T> _onValueChanged;
+        private PropertyBindingPort<T> _propertyBindingPort;
+        private IViewModelProperty<T> _property;
 
-        public AutoPropertyBindingPort(PropertyBindingPort propertyBindingPort, Action<T> onValueChanged){
+        public AutoPropertyBindingPort(PropertyBindingPort<T> propertyBindingPort){
             _propertyBindingPort = propertyBindingPort;
-            _bindConstant = default(T);
-            _onValueChanged = onValueChanged;
-        }
-
-        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable){
-            _propertyBindingPort.Bind<T>(bindMap, disposable, SetValue);
-        }
-
-        private void SetValue(T value){
-            _bindConstant = value;
-            _onValueChanged?.Invoke(value);
+            _property = null;
         }
 
         public T GetValue(){
-            return _bindConstant;
+            return _property.GetPropertyValue();
+        }
+
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter){
+            Bind(bindMap, disposable, setter, null);
+        }
+
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange){
+            Bind(bindMap, disposable, null, onChange);
+        }
+
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange){
+            this._property = _propertyBindingPort.Bind(bindMap, disposable, setter, onChange);
+            disposable.Add(new ScriptableDisposable(() => _property = null));
         }
     }
 }

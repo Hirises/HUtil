@@ -14,7 +14,7 @@ namespace HUtil.UI.Binder
     {
         [SerializeField] private GameObject[] _onObjects;
         [SerializeField] private GameObject[] _offObjects;
-        [SerializeField] private PropertyBindingPort _isOn_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Bool), BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort<bool> _isOn_prop = new PropertyBindingPort<bool>(BindingType.OfType(BindingBaseType.Bool), BindingDirectionFlags.ToUI);
 
         protected void OnValidate()
         {
@@ -23,7 +23,7 @@ namespace HUtil.UI.Binder
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
-            _isOn_prop.Bind<bool>(bindMap, disposable, SetIsOn);
+            _isOn_prop.Bind(bindMap, disposable, SetIsOn);
         }
 
         private void SetIsOn(bool isOn)

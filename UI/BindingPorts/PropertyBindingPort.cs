@@ -17,7 +17,7 @@ namespace HUtil.UI
     /// 프로퍼티 바인딩 인스펙터 속성
     /// </summary>
     [Serializable, InlineProperty]
-    public class PropertyBindingPort
+    public class PropertyBindingPort<T>
     {
         [SerializeField, HorizontalGroup(Width = 80), HideLabel, ValueDropdown(nameof(GetPossibleBindingModes)), OnValueChanged(nameof(OnDirectionChanged))]
         private BindingMode _direction;
@@ -33,7 +33,7 @@ namespace HUtil.UI
         [SerializeField, HideInInspector]
         private BindingType _receivingType;
         [SerializeField, HideInInspector]
-         private BindingDirectionFlags _allowDirection;
+        private BindingDirectionFlags _allowDirection;
 
         /// <summary>
         /// 바인딩할 프로퍼티의 이름입니다
@@ -82,19 +82,13 @@ namespace HUtil.UI
             _allowDirection = allowDirection;
         }
 
-        public void Reset(){
-            _path = "";
-            _direction = BindingMode.None;
-        }
-
         /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
-        /// <typeparam name="T">대상 타입</typeparam>
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
-        public void Bind<T>(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter)
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter)
         {
             Bind(bindMap, disposable, setter, null);
         }
@@ -102,11 +96,10 @@ namespace HUtil.UI
         /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
-        /// <typeparam name="T">대상 타입</typeparam>
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange)
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange)
         {
             Bind(bindMap, disposable, null, onChange);
         }
@@ -114,24 +107,25 @@ namespace HUtil.UI
         /// <summary>
         /// 현재 설정에 맞춰서 바인딩을 진행합니다
         /// </summary>
-        /// <typeparam name="T">대상 타입</typeparam>
         /// <param name="bindMap">바인딩 맵</param>
         /// <param name="disposable">구독 관리용 disposable</param>
         /// <param name="setter">UI 값 setter</param>
         /// <param name="onChange">UI 값 변경 이벤트</param>
-        public void Bind<T>(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
+        public IViewModelProperty<T> Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange)
         {
             if(Direction == BindingMode.None){
-                return;
+                return null;
             }
             if(!_allowDirection.CanAccept(Direction)){
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
-                return;
+                return null;
             }
-            if(!bindMap.TryGetValue(Path, out var property)){
+            if(!bindMap.TryGetValue(Path, out var rawProperty)){
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
-                return;
+                return null;
             }
+
+            var property = rawProperty as IViewModelProperty<T>;
 
             switch (Direction)
             {
@@ -139,7 +133,7 @@ namespace HUtil.UI
                 {
                     if(setter == null) throw new ArgumentNullException(nameof(setter));
 
-                    setter(property.GetPropertyValue<T>());
+                    setter(property.GetPropertyValue());
                     break;
                 }
                 case BindingMode.ToUI:
@@ -174,6 +168,7 @@ namespace HUtil.UI
                     break;
                 }
             }
+            return property;
         }
     }
 }

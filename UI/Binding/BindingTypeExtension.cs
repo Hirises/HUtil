@@ -150,5 +150,37 @@ namespace HUtil.UI
                 }
             }
         }
+
+        public static IViewModelProperty GetProperty(this BindingType type, string path, object vm){
+            return GetProperty(type, UIRuntimeReflectionHelper.GetField(type, path, vm));
+        }
+
+        public static IViewModelProperty GetProperty(this BindingType type, object field){
+            if(type.IsCollection){
+                return null;
+            }else{
+                switch(type.BaseType){
+                    case BindingBaseType.Int:
+                        return new ResolvedProperty<int>(field);
+                    case BindingBaseType.Float:
+                        return new ResolvedProperty<float>(field);
+                    case BindingBaseType.String:
+                        return new ResolvedProperty<string>(field);
+                    case BindingBaseType.Bool:
+                        return new ResolvedProperty<bool>(field);
+                    case BindingBaseType.Enum:
+                        return new ResolvedProperty<Enum>(field);
+                    case BindingBaseType.Color:
+                        return new ResolvedProperty<Color>(field);
+                    case BindingBaseType.Sprite:
+                        return new ResolvedProperty<Sprite>(field);;
+                    case BindingBaseType.ViewModel:
+                        return new ResolvedProperty<IViewModel>(field);
+                    case BindingBaseType.Command:
+                    default:
+                        return null;
+                }
+            }
+        }
     }
 }

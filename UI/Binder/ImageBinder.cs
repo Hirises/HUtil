@@ -11,9 +11,9 @@ namespace HUtil.UI.Binder
     public class ImageBinder : MonoBinder
     {
         [SerializeField] private Image _target;
-        [SerializeField] private PropertyBindingPort _image_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Sprite), BindingDirectionFlags.ToUI);
-        [SerializeField] private PropertyBindingPort _color_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Color), BindingDirectionFlags.ToUI);
-        [SerializeField] private PropertyBindingPort _fill_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Float), BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort<Sprite> _image_prop = new PropertyBindingPort<Sprite>(BindingType.OfType(BindingBaseType.Sprite), BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort<Color> _color_prop = new PropertyBindingPort<Color>(BindingType.OfType(BindingBaseType.Color), BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort<float> _fill_prop = new PropertyBindingPort<float>(BindingType.OfType(BindingBaseType.Float), BindingDirectionFlags.ToUI);
 
         protected override void Reset()
         {
@@ -30,9 +30,9 @@ namespace HUtil.UI.Binder
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
-            _image_prop.Bind<Sprite>(bindMap, disposable, SetSprite);
-            _color_prop.Bind<Color>(bindMap, disposable, SetColor);
-            _fill_prop.Bind<float>(bindMap, disposable, SetFill);
+            _image_prop.Bind(bindMap, disposable, SetSprite);
+            _color_prop.Bind(bindMap, disposable, SetColor);
+            _fill_prop.Bind(bindMap, disposable, SetFill);
         }
 
         private void SetSprite(Sprite value)

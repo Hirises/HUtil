@@ -40,7 +40,7 @@ namespace HUtil.UI
         private List<string> GetPossibleViewModelTypes() => RuntimeReflectionHelper.GetAllConcreteTypesDerivedFrom(typeof(IViewModel)).Select(type => type.AssemblyQualifiedName).ToList();
         [SerializeField] private BindingMethod _bindingMethod = BindingMethod.ManualBinding;
         [SerializeField, ShowIf(nameof(_bindingMethod), BindingMethod.DynamicBinding)] 
-        private PropertyBindingPort _viewModelProp = new PropertyBindingPort(BindingType.OfType(BindingBaseType.ViewModel), BindingDirectionFlags.ToUI);
+        private PropertyBindingPort<IViewModel> _viewModelProp = new PropertyBindingPort<IViewModel>(BindingType.OfType(BindingBaseType.ViewModel), BindingDirectionFlags.ToUI);
         [SerializeField]
         //[TableList(AlwaysExpanded = true, HideToolbar = true, NumberOfItemsPerPage = 10, ShowPaging = true, ShowIndexLabels = false)]
         [ListDrawerSettings(DefaultExpandedState = true, ShowFoldout = false, ShowPaging = true, DraggableItems = false, HideAddButton = true, HideRemoveButton = true)]
@@ -67,7 +67,7 @@ namespace HUtil.UI
 
         public ViewModelResolver(){
             _bindingMethod = BindingMethod.ManualBinding;
-            _viewModelProp = new PropertyBindingPort(BindingType.OfType(BindingBaseType.ViewModel), BindingDirectionFlags.ToUI);
+            _viewModelProp = new PropertyBindingPort<IViewModel>(BindingType.OfType(BindingBaseType.ViewModel), BindingDirectionFlags.ToUI);
             _viewModelType = string.Empty;
             _bindMap = new ViewModelBindingItem[0];
             _viewModel = null;
@@ -95,7 +95,7 @@ namespace HUtil.UI
                 return;
             }
             BindingContext.LogDebug($"DynamicBind: {_viewModelType}", sender.gameObject);
-            _viewModelProp.Bind<IViewModel>(bindMap, disposable, (viewModel) => SetViewModel(viewModel, sender));
+            _viewModelProp.Bind(bindMap, disposable, (viewModel) => SetViewModel(viewModel, sender));
         }
 
         internal void ManualBind(IViewModel viewModel, MonoResolver sender){
@@ -132,7 +132,7 @@ namespace HUtil.UI
             }
             foreach(var bindInfo in _bindMap){
                 var field = UIRuntimeReflectionHelper.GetField(bindInfo.SourceType, bindInfo.SourcePropertyPath, _viewModel);
-                bindMap.Add(bindInfo.DestinationPropertyPath, new ResolvedProperty(field));
+                bindMap.Add(bindInfo.DestinationPropertyPath, bindInfo.SourceType.GetProperty(field));
             }
         }
 
@@ -148,6 +148,7 @@ namespace HUtil.UI
             return output;
         }
 
+        //인스펙터 상에서 string-to-string 바인딩 정보를 관리하기 위한 클래스
         [Serializable]
         private class ViewModelBindingItem
         {

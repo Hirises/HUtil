@@ -3,26 +3,38 @@ using System.Collections.Generic;
 
 using HUtil.Runtime.Observable;
 
+using UnityEngine;
+using UnityEngine.Events;
+
 namespace HUtil.UI
 {
+    [Serializable]
     public struct ConstantOrPropertyPort<T>
     {
-        private bool _useConstant;
-        private AutoPropertyBindingPort<T> _autoPropertyBindingPort;
-        private T _constant;
+        [SerializeField] private bool _useConstant;
+        [SerializeField] private AutoPropertyBindingPort<T> _autoPropertyBindingPort;
+        [SerializeField] private T _constant;
 
-        public ConstantOrPropertyPort(PropertyBindingPort propertyBindingPort, Action<T> onValueChanged = null){
-            _autoPropertyBindingPort = new AutoPropertyBindingPort<T>(propertyBindingPort, onValueChanged);
+        public ConstantOrPropertyPort(PropertyBindingPort<T> propertyBindingPort, Action<T> onValueChanged = null){
+            _autoPropertyBindingPort = new AutoPropertyBindingPort<T>(propertyBindingPort);
             _constant = default(T);
             _useConstant = true;
         }
 
-        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable){
-            _autoPropertyBindingPort.Bind(bindMap, disposable);
-        }
-
         public T GetValue(){
             return _useConstant ? _constant : _autoPropertyBindingPort.GetValue();
+        }
+
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter){
+            _autoPropertyBindingPort.Bind(bindMap, disposable, setter);
+        }
+
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange){
+            _autoPropertyBindingPort.Bind(bindMap, disposable, onChange);
+        }
+
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange){
+            _autoPropertyBindingPort.Bind(bindMap, disposable, setter, onChange);
         }
     }
 }

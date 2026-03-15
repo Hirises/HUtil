@@ -21,7 +21,7 @@ namespace HUtil.UI.Binder
         [SerializeField, PropertyOrder(110), HorizontalGroup("OnAnimation")] private AnimationClip _onClip;
         [SerializeField, PropertyOrder(120), HorizontalGroup("OffAnimation")] private AnimationClip _offClip;
         [SerializeField, PropertyOrder(140), PropertySpace(SpaceAfter = 0, SpaceBefore = 10)] 
-        private PropertyBindingPort _isOn_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.Bool), BindingDirectionFlags.ToUI);
+        private PropertyBindingPort<bool> _isOn_prop = new PropertyBindingPort<bool>(BindingType.OfType(BindingBaseType.Bool), BindingDirectionFlags.ToUI);
 
         protected override void Reset()
         {
@@ -66,7 +66,7 @@ namespace HUtil.UI.Binder
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
-            _isOn_prop.Bind<bool>(bindMap, disposable, SetBool);
+            _isOn_prop.Bind(bindMap, disposable, SetBool);
         }
 
         private void SetBool(bool value)

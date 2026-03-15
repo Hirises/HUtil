@@ -6,46 +6,49 @@ using UnityEngine;
 
 namespace HUtil.UI
 {
-    public struct ModiftedProperty<From, To> : IViewModelProperty
+    public struct ModiftedProperty<From, To> : IViewModelProperty<To>
     {
-        private IViewModelProperty _origin;
+        private IViewModelProperty<From> _origin;
         private Func<From, To> _modifier;
 
-        public ModiftedProperty(IViewModelProperty origin, Func<From, To> modifier)
+        public ModiftedProperty(IViewModelProperty<From> origin, Func<From, To> modifier)
         {
             _origin = origin ?? throw new ArgumentNullException(nameof(origin));
             _modifier = modifier ?? throw new ArgumentNullException(nameof(modifier));
         }
 
-        public IDisposable SubscribeProperty<T>(Action<T> action)
+        public IDisposable SubscribeProperty(Action<To> action)
         {
             var modifier = _modifier;
-            return _origin.SubscribeProperty<From>(value => action((T)(object)modifier(value)));
+            return _origin.SubscribeProperty(value => action(modifier(value)));
         }
 
-        public T GetPropertyValue<T>()
+        public To GetPropertyValue()
         {
-            return (T)(object)_modifier(_origin.GetPropertyValue<From>());
+            return _modifier(_origin.GetPropertyValue());
         }
 
-        public void SetPropertyValue<T>(T value)
+        public void SetPropertyValue(To value)
         {
             Debug.LogWarning($"[UIBinder] You cannot write to a modified property! {typeof(From).Name} -> {typeof(To).Name}");
         }
 
         public void ExecuteCommand(object value)
         {
-            _origin.ExecuteCommand(value);
+            Debug.LogWarning($"[UIBinder] You cannot execute a command on a modified property! {typeof(From).Name} -> {typeof(To).Name}");
+            return;
         }
 
-        public IDisposable SubscribeList<T>(Action<ListChangeEvent<T>> action)
+        public IDisposable SubscribeList(Action<ListChangeEvent<To>> action)
         {
-            return _origin.SubscribeList<T>(action);
+            Debug.LogWarning($"[UIBinder] You cannot subscribe to a list on a modified property! {typeof(From).Name} -> {typeof(To).Name}");
+            return EmptyDisposable.Instance;
         }
 
-        public void ApplyListChange<T>(ListChangeEvent<T> @event)
+        public void ApplyListChange(ListChangeEvent<To> @event)
         {
-            _origin.ApplyListChange(@event);
+            Debug.LogWarning($"[UIBinder] You cannot apply a list change on a modified property! {typeof(From).Name} -> {typeof(To).Name}");
+            return;
         }
     }
 }

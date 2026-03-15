@@ -64,7 +64,7 @@ namespace HUtil.UI.Converter
         /// <param name="converter">변환 함수</param>
         /// <param name="previousProperty">이전 속성</param>
         protected void ConvertProperty<From, To>(Dictionary<string, IViewModelProperty> bindMap, string fromPath, string toPath, Func<From, To> converter, ref IViewModelProperty previousProperty){
-            if(!bindMap.TryGetValue(fromPath, out var fromProperty)){
+            if(!bindMap.TryGetValue(fromPath, out var fromProperty) || !(fromProperty is IViewModelProperty<From> typedFromProperty)){
                 BindingContext.LogWarning($"{fromPath} is not found", gameObject);
                 return;
             }
@@ -72,7 +72,7 @@ namespace HUtil.UI.Converter
             if(bindMap.TryGetValue(toPath, out var toProperty)){
                 previousProperty = toProperty;
             }
-            bindMap[toPath] = new ModiftedProperty<From, To>(fromProperty, converter);
+            bindMap[toPath] = new ModiftedProperty<From, To>(typedFromProperty, converter);
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace HUtil.UI.Binder
     {
         [SerializeField] private TMP_Text _target;
         [SerializeField] private TextMeshProUGUI _targetMesh;
-        [SerializeField] private PropertyBindingPort _baseText_prop = new PropertyBindingPort(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort<string> _baseText_prop = new PropertyBindingPort<string>(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
         [SerializeField] private CommandBindingPort _onHoverIn_prop = new CommandBindingPort(BindingDirectionFlags.ToData);
         [SerializeField] private CommandBindingPort _onHoverOut_prop = new CommandBindingPort(BindingDirectionFlags.ToData);
         [SerializeField] private CommandBindingPort _onClick_prop = new CommandBindingPort(BindingDirectionFlags.ToData);
@@ -45,7 +45,7 @@ namespace HUtil.UI.Binder
 
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
-            _baseText_prop.Bind<string>(bindMap, disposable, SetText);
+            _baseText_prop.Bind(bindMap, disposable, SetText);
             _onHoverIn_prop.Bind(bindMap, disposable, _onHoverIn);
             _onHoverOut_prop.Bind(bindMap, disposable, _onHoverOut);
             _onClick_prop.Bind(bindMap, disposable, _onClick);

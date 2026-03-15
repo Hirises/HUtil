@@ -113,10 +113,11 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_allowDirection} direction");
                 return;
             }
-            if(!bindMap.TryGetValue(Path, out var property)){
+            if(!bindMap.TryGetValue(Path, out var rawProperty)){
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return;
             }
+            var property = rawProperty as IViewModelProperty<IViewModel>;
 
             switch (Direction)
             {
