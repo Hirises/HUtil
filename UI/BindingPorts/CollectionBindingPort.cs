@@ -14,7 +14,7 @@ using UnityEngine.Events;
 namespace HUtil.UI
 {
     [Serializable, InlineProperty]
-    public class CollectionBindingPort
+    public class CollectionBindingPort : IBindingPort
     {       
         [SerializeField, HorizontalGroup(Width = 80), HideLabel, ValueDropdown(nameof(GetPossibleBindingModes)), OnValueChanged(nameof(OnDirectionChanged))]
         private BindingMode _direction;

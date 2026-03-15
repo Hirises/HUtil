@@ -12,6 +12,10 @@ namespace HUtil.UI
         public static readonly BindingType Invalid = new BindingType(BindingBaseType.None, false);
         public static readonly BindingType Command = new BindingType(BindingBaseType.Command, false);
         public static readonly BindingType ViewModel = new BindingType(BindingBaseType.ViewModel, false);
+        public static readonly BindingType String = new BindingType(BindingBaseType.String, false);
+        public static readonly BindingType Int = new BindingType(BindingBaseType.Int, false);
+        public static readonly BindingType Float = new BindingType(BindingBaseType.Float, false);
+        public static readonly BindingType Bool = new BindingType(BindingBaseType.Bool, false);
 
         [SerializeField, HorizontalGroup("Binding Type", width: 40), LabelText("List"), LabelWidth(25)] public bool IsCollection;
         [SerializeField, HorizontalGroup("Binding Type", MaxWidth = 80), HideLabel] private BindingBaseType _baseType;

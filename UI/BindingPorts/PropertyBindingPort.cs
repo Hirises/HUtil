@@ -17,7 +17,7 @@ namespace HUtil.UI
     /// 프로퍼티 바인딩 인스펙터 속성
     /// </summary>
     [Serializable, InlineProperty]
-    public class PropertyBindingPort<T>
+    public class PropertyBindingPort<T> : IBindingPort
     {
         [SerializeField, HorizontalGroup(Width = 80), HideLabel, ValueDropdown(nameof(GetPossibleBindingModes)), OnValueChanged(nameof(OnDirectionChanged))]
         private BindingMode _direction;

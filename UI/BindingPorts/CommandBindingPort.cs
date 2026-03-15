@@ -18,7 +18,7 @@ namespace HUtil.UI
     /// 커맨드 바인딩 인스펙터 속성
     /// </summary>
     [Serializable, InlineProperty]
-    public class CommandBindingPort
+    public class CommandBindingPort : IBindingPort
     {
         [SerializeField, HorizontalGroup(Width = 80), HideLabel, ValueDropdown(nameof(GetPossibleBindingModes)), OnValueChanged(nameof(OnDirectionChanged))]
         private BindingMode _direction;

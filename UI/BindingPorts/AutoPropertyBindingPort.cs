@@ -7,10 +7,13 @@ using UnityEngine.Events;
 
 namespace HUtil.UI
 {
-    public class AutoPropertyBindingPort<T>
+    public class AutoPropertyBindingPort<T> : IBindingPort
     {
         private PropertyBindingPort<T> _propertyBindingPort;
         private IViewModelProperty<T> _property;
+
+        public string Path => _propertyBindingPort.Path;
+        public BindingMode Direction => _propertyBindingPort.Direction;
 
         public AutoPropertyBindingPort(PropertyBindingPort<T> propertyBindingPort){
             _propertyBindingPort = propertyBindingPort;

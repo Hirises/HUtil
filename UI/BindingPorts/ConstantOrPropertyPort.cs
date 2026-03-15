@@ -9,11 +9,14 @@ using UnityEngine.Events;
 namespace HUtil.UI
 {
     [Serializable]
-    public struct ConstantOrPropertyPort<T>
+    public struct ConstantOrPropertyPort<T> : IBindingPort
     {
         [SerializeField] private bool _useConstant;
         [SerializeField] private AutoPropertyBindingPort<T> _autoPropertyBindingPort;
         [SerializeField] private T _constant;
+
+        public string Path => _autoPropertyBindingPort.Path;
+        public BindingMode Direction => _autoPropertyBindingPort.Direction;
 
         public ConstantOrPropertyPort(PropertyBindingPort<T> propertyBindingPort, Action<T> onValueChanged = null){
             _autoPropertyBindingPort = new AutoPropertyBindingPort<T>(propertyBindingPort);
