@@ -3,17 +3,19 @@ using System.Collections.Generic;
 
 using HUtil.Runtime.Observable;
 
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace HUtil.UI
 {
     [Serializable]
-    public struct ConstantOrPropertyPort<T> : IBindingPort
+    public class ConstantOrPropertyPort<T> : IBindingPort
     {
         [SerializeField] private bool _useConstant;
-        [SerializeField] private AutoPropertyBindingPort<T> _autoPropertyBindingPort;
-        [SerializeField] private T _constant;
+        [SerializeField, HideIf(nameof(_useConstant))] private AutoPropertyBindingPort<T> _autoPropertyBindingPort;
+        [SerializeField, ShowIf(nameof(_useConstant))] private T _constant;
 
         public string Path => _autoPropertyBindingPort.Path;
         public BindingMode Direction => _autoPropertyBindingPort.Direction;

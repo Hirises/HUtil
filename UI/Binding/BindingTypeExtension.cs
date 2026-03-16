@@ -182,5 +182,55 @@ namespace HUtil.UI
                 }
             }
         }
+
+        public static IBindingPort GetBindingPort(this BindingType type, BindingDirectionFlags direction = BindingDirectionFlags.ToUI){
+            switch(type.BaseType){
+                case BindingBaseType.Int:
+                    return new PropertyBindingPort<int>(type, direction);
+                case BindingBaseType.Float:
+                    return new PropertyBindingPort<float>(type, direction);
+                case BindingBaseType.Bool:
+                    return new PropertyBindingPort<bool>(type, direction);
+                case BindingBaseType.String:
+                    return new PropertyBindingPort<string>(type, direction);
+                case BindingBaseType.Enum:
+                    return new PropertyBindingPort<Enum>(type, direction);
+                case BindingBaseType.Color:
+                    return new PropertyBindingPort<Color>(type, direction);
+                case BindingBaseType.Sprite:
+                    return new PropertyBindingPort<Sprite>(type, direction);
+                case BindingBaseType.Command:
+                    return new CommandBindingPort(direction);
+                case BindingBaseType.ViewModel:
+                    return new PropertyBindingPort<IViewModel>(type, direction);
+                default:
+                    return null;
+            }
+        }
+
+        public static IBindingPort GetConstantOrPropertyPort(this BindingType type, BindingDirectionFlags direction = BindingDirectionFlags.ToUI){
+            switch(type.BaseType){
+                case BindingBaseType.Int:
+                    return new ConstantOrPropertyPort<int>(new PropertyBindingPort<int>(type, direction));
+                case BindingBaseType.Float:
+                    return new ConstantOrPropertyPort<float>(new PropertyBindingPort<float>(type, direction));
+                case BindingBaseType.Bool:
+                    return new ConstantOrPropertyPort<bool>(new PropertyBindingPort<bool>(type, direction));
+                case BindingBaseType.String:
+                    return new ConstantOrPropertyPort<string>(new PropertyBindingPort<string>(type, direction));
+                case BindingBaseType.Enum:
+                    return new ConstantOrPropertyPort<Enum>(new PropertyBindingPort<Enum>(type, direction));
+                case BindingBaseType.Color:
+                    return new ConstantOrPropertyPort<Color>(new PropertyBindingPort<Color>(type, direction));
+                case BindingBaseType.Sprite:
+                    return new ConstantOrPropertyPort<Sprite>(new PropertyBindingPort<Sprite>(type, direction));
+                case BindingBaseType.Command:
+                    return new CommandBindingPort(direction);
+                case BindingBaseType.ViewModel:
+                    return new ConstantOrPropertyPort<IViewModel>(new PropertyBindingPort<IViewModel>(type, direction));
+                default:
+                    return null;
+            }
+        }
     }
 }

@@ -3,13 +3,17 @@ using System.Collections.Generic;
 
 using HUtil.Runtime.Observable;
 
+using Sirenix.OdinInspector;
+
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace HUtil.UI
 {
+    [Serializable, InlineProperty]
     public class AutoPropertyBindingPort<T> : IBindingPort
     {
-        private PropertyBindingPort<T> _propertyBindingPort;
+        [SerializeField, InlineProperty, HideLabel] private PropertyBindingPort<T> _propertyBindingPort;
         private IViewModelProperty<T> _property;
 
         public string Path => _propertyBindingPort.Path;

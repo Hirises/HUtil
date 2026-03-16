@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using HUtil.Runtime;
+
 using Sirenix.OdinInspector;
 
 using UnityEngine;
@@ -14,6 +16,9 @@ namespace HUtil.UI.Converter
         private bool _inputPortAssigned => _inputPort != null;
         
         [SerializeField, OnValueChanged(nameof(AssignOutputPort)), InlineProperty] private BindingType _outputType;
+        private bool _outputTypeAssigned => _outputType.IsValid;
+        [SerializeField, ListDrawerSettings(CustomAddFunction = nameof(AddConditionalBindingPort)), SerializeReference, EnableIf(nameof(_outputTypeAssigned)), HideReferenceObjectPicker] 
+        private List<IConditionalBindingPort> _conditionalBindingPorts = new List<IConditionalBindingPort>();
         [SerializeField] private string _outputPath = "ConditionalValue";
 
         private IViewModelProperty previousProperty;
@@ -42,19 +47,44 @@ namespace HUtil.UI.Converter
         }
 
         private void AssignOutputPort(BindingType outputType){
-            switch(outputType.BaseType){
+            _conditionalBindingPorts.Clear();
+            if(outputType.BaseType == BindingBaseType.Command){
+                _outputType = BindingType.Invalid;
+            }
+        }
+
+        private IConditionalBindingPort AddConditionalBindingPort(){
+            IConditionalBindingPort conditionalBindingPort = null;
+            switch(_conditionType.BaseType){
+                case BindingBaseType.Int:
+                    conditionalBindingPort = new IntConditionalBindingPort();
+                    break;
+                case BindingBaseType.Float:
+                    conditionalBindingPort = new FloatConditionalBindingPort();
+                    break;
+                case BindingBaseType.Bool:
+                    conditionalBindingPort = new BoolConditionalBindingPort();
+                    break;
                 case BindingBaseType.String:
-                    _outputPort = new PropertyBindingPort<string>(outputType, BindingDirectionFlags.ToUI);
+                    conditionalBindingPort = new StringConditionalBindingPort();
                     break;
                 default:
-                    _outputPort = null;
-                    break;
+                    return null;
             }
+            conditionalBindingPort.TrueValue = _outputType.GetConstantOrPropertyPort();
+            return conditionalBindingPort;
         }
 
         protected override void OnConvertProperties(Dictionary<string, IViewModelProperty> bindMap)
         {
-            throw new NotImplementedException();
+            // switch(_outputType.BaseType){
+            //     case BindingBaseType.Int:
+            //         _conditionalBindingPorts[0].TrueValue.Bind(bindMap, disposable, (int value) => _output.SetValue(value));
+            //         break;
+            //     case BindingBaseType.Float:
+            //         _conditionalBindingPorts[0].TrueValue.Bind(bindMap, disposable, (float value) => _output.SetValue(value));
+            //         break;
+            // }
         }
 
         protected override void OnRestoreProperties(Dictionary<string, IViewModelProperty> bindMap)
@@ -72,6 +102,43 @@ namespace HUtil.UI.Converter
                 _outputType,
                 BindingDirectionFlags.ToUI
             );
+        }
+
+        private interface IConditionalBindingPort{
+            public IBindingPort TrueValue { get; set; }
+        }
+
+        [Serializable, InlineProperty]
+        private class IntConditionalBindingPort : IConditionalBindingPort
+        {
+            [SerializeField, InlineProperty] public ConstantOrPropertyPort<int> Value = new ConstantOrPropertyPort<int>(new PropertyBindingPort<int>(BindingType.Int, BindingDirectionFlags.ToUI));
+            [SerializeField] public ComparisonOperator Operator;
+            [SerializeField, SerializeReference, HideReferenceObjectPicker, InlineProperty] private IBindingPort _trueValue;
+            public IBindingPort TrueValue { get => _trueValue; set => _trueValue = value; }
+        }
+        [Serializable, InlineProperty]
+        private class FloatConditionalBindingPort : IConditionalBindingPort
+        {
+            [SerializeField, InlineProperty] public ConstantOrPropertyPort<float> Value = new ConstantOrPropertyPort<float>(new PropertyBindingPort<float>(BindingType.Float, BindingDirectionFlags.ToUI));
+            [SerializeField] public ComparisonOperator Operator;
+            [SerializeField, SerializeReference, HideReferenceObjectPicker, InlineProperty] private IBindingPort _trueValue;
+            public IBindingPort TrueValue { get => _trueValue; set => _trueValue = value; }
+        }
+        [Serializable, InlineProperty]
+        private class BoolConditionalBindingPort : IConditionalBindingPort
+        {
+            [SerializeField, InlineProperty] public ConstantOrPropertyPort<bool> Value = new ConstantOrPropertyPort<bool>(new PropertyBindingPort<bool>(BindingType.Bool, BindingDirectionFlags.ToUI));
+            [SerializeField] public bool WhenEquals;
+            [SerializeField, SerializeReference, HideReferenceObjectPicker, InlineProperty] private IBindingPort _trueValue;
+            public IBindingPort TrueValue { get => _trueValue; set => _trueValue = value; }
+        }
+        [Serializable, InlineProperty]
+        private class StringConditionalBindingPort : IConditionalBindingPort
+        {
+            [SerializeField, InlineProperty] public ConstantOrPropertyPort<string> Value = new ConstantOrPropertyPort<string>(new PropertyBindingPort<string>(BindingType.String, BindingDirectionFlags.ToUI));
+            [SerializeField] public bool WhenEquals;
+            [SerializeField, SerializeReference, HideReferenceObjectPicker, InlineProperty] private IBindingPort _trueValue;
+            public IBindingPort TrueValue { get => _trueValue; set => _trueValue = value; }
         }
     }
 }
