@@ -155,6 +155,54 @@ namespace HUtil.UI
             return GetProperty(type, UIRuntimeReflectionHelper.GetField(type, path, vm));
         }
 
+        public static object GetObservableProperty(this BindingType type){
+            if(type.IsCollection){
+                switch(type.BaseType){
+                    case BindingBaseType.Int:
+                        return new ObservableList<int>();
+                    case BindingBaseType.Float:
+                        return new ObservableList<float>();
+                    case BindingBaseType.String:
+                        return new ObservableList<string>();
+                    case BindingBaseType.Bool:
+                        return new ObservableList<bool>();
+                    case BindingBaseType.Enum:
+                        return new ObservableList<Enum>();
+                    case BindingBaseType.Color:
+                        return new ObservableList<Color>();
+                    case BindingBaseType.Sprite:
+                        return new ObservableList<Sprite>();
+                    case BindingBaseType.ViewModel:
+                        return new ObservableList<IViewModel>();
+                    case BindingBaseType.Command:
+                    default:
+                        return null;
+                }
+            }else{
+                switch(type.BaseType){
+                    case BindingBaseType.Int:
+                        return new ObservableProperty<int>();
+                    case BindingBaseType.Float:
+                        return new ObservableProperty<float>();
+                    case BindingBaseType.String:
+                        return new ObservableProperty<string>();
+                    case BindingBaseType.Bool:
+                        return new ObservableProperty<bool>();
+                    case BindingBaseType.Enum:
+                        return new ObservableProperty<Enum>();
+                    case BindingBaseType.Color:
+                        return new ObservableProperty<Color>();
+                    case BindingBaseType.Sprite:
+                        return new ObservableProperty<Sprite>();
+                    case BindingBaseType.ViewModel:
+                        return new ObservableProperty<IViewModel>();
+                    case BindingBaseType.Command:
+                    default:
+                        return null;
+                }
+            }
+        }
+
         public static IViewModelProperty GetProperty(this BindingType type, object field){
             if(type.IsCollection){
                 return null;
@@ -177,6 +225,7 @@ namespace HUtil.UI
                     case BindingBaseType.ViewModel:
                         return new ResolvedProperty<IViewModel>(field);
                     case BindingBaseType.Command:
+                        return new ResolvedProperty<CommandBase>(field);
                     default:
                         return null;
                 }

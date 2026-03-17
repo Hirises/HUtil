@@ -10,8 +10,13 @@ using UnityEngine.Events;
 
 namespace HUtil.UI
 {
+    public interface IConstantOrPropertyPort{
+        public bool UseConstant { get; }
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable);
+    }
+
     [Serializable]
-    public class ConstantOrPropertyPort<T> : IBindingPort
+    public class ConstantOrPropertyPort<T> : IBindingPort, IConstantOrPropertyPort
     {
         [SerializeField] private bool _useConstant;
         [SerializeField, HideIf(nameof(_useConstant))] private AutoPropertyBindingPort<T> _autoPropertyBindingPort;

@@ -75,7 +75,7 @@ namespace HUtil.UI.Converter
             bindMap[toPath] = new ModifiedProperty<From, To>(typedFromProperty, converter);
         }
 
-                /// <summary>
+        /// <summary>
         /// 속성을 변환합니다
         /// </summary>
         /// <typeparam name="From">변환할 속성의 타입</typeparam>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using HUtil.Runtime;
 using HUtil.Runtime.Extension;
+using HUtil.Runtime.Observable;
 
 using Sirenix.OdinInspector;
 
@@ -219,6 +220,33 @@ namespace HUtil.UI.Converter
                 _outputType,
                 BindingDirectionFlags.ToUI
             );
+        }
+
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
+        {
+            base.BindInternal(bindMap, disposable);
+            foreach(var conditionalBindingPort in _conditionalBindingPorts){
+                if(conditionalBindingPort is IntConditionalBindingPort intPort){
+                    intPort.ConditionalValue.Bind(bindMap, disposable);
+                }
+                else if(conditionalBindingPort is FloatConditionalBindingPort floatPort){
+                    floatPort.ConditionalValue.Bind(bindMap, disposable);
+                }
+                else if(conditionalBindingPort is BoolConditionalBindingPort boolPort){
+                    boolPort.ConditionalValue.Bind(bindMap, disposable);
+                }
+                else if(conditionalBindingPort is StringConditionalBindingPort stringPort){
+                    stringPort.ConditionalValue.Bind(bindMap, disposable);
+                }
+
+                if(conditionalBindingPort.TrueValue is IConstantOrPropertyPort constantOrPropertyPort){
+                    constantOrPropertyPort.Bind(bindMap, disposable);
+                }
+            }
+            
+            if(_inputPort is IConstantOrPropertyPort inputPort){
+                inputPort.Bind(bindMap, disposable);
+            }
         }
 
         private interface IConditionalBindingPort{

@@ -10,8 +10,12 @@ using UnityEngine.Events;
 
 namespace HUtil.UI
 {
+    public interface IAutoPropertyBindingPort : IBindingPort{
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable);
+    }
+
     [Serializable, InlineProperty]
-    public class AutoPropertyBindingPort<T> : IBindingPort
+    public class AutoPropertyBindingPort<T> : IBindingPort, IAutoPropertyBindingPort
     {
         [SerializeField, InlineProperty, HideLabel] private PropertyBindingPort<T> _propertyBindingPort;
         private IViewModelProperty<T> _property;
@@ -28,8 +32,24 @@ namespace HUtil.UI
             return _property.GetPropertyValue();
         }
 
+        public void SetValue(T value){
+            _property.SetPropertyValue(value);
+        }
+
         public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable){
-            this._property = _propertyBindingPort.Bind(bindMap, disposable, (T value) => {}, null);
+            if(Direction == BindingMode.None){
+                return;
+            }
+            if(!_propertyBindingPort.AllowDirection.CanAccept(Direction)){
+                Debug.LogWarning($"[UIBinder] Requested syncronize direction \"{Direction}\" is not allowed! this property only accpects {_propertyBindingPort.AllowDirection} direction");
+                return;
+            }
+            if(!bindMap.TryGetValue(Path, out var rawProperty)){
+                Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
+                return;
+            }
+
+            _property = rawProperty as IViewModelProperty<T>;
             disposable.Add(new ScriptableDisposable(() => _property = null));
         }
     }
