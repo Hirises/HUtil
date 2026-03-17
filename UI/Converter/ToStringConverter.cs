@@ -12,7 +12,7 @@ namespace HUtil.UI.Converter
         [SerializeField, OnValueChanged(nameof(AssignInputPort)), InlineProperty] private BindingType _inputType;
         [SerializeReference, HideReferenceObjectPicker, EnableIf(nameof(_inputPortAssigned))] private IBindingPort _inputPort;
         private bool _inputPortAssigned => _inputPort != null;
-        [SerializeField] private string _outputPath = "ToSTringValue";
+        [SerializeField] private string _outputPath = "ToStringValue";
 
         private IViewModelProperty previousProperty;
 
