@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using HUtil.Runtime;
+using HUtil.Runtime.Extension;
 
 using Sirenix.OdinInspector;
 
@@ -75,21 +76,137 @@ namespace HUtil.UI.Converter
             return conditionalBindingPort;
         }
 
+        private T EvaluateConditional<T>(int conditionValue){
+            foreach(var conditionalBindingPort in _conditionalBindingPorts){
+                if(conditionalBindingPort is IntConditionalBindingPort intPort){
+                    if(intPort.Operator.Compare(conditionValue, intPort.ConditionalValue.GetValue())){
+                        var port = conditionalBindingPort.TrueValue as ConstantOrPropertyPort<T>;
+                        return port != null ? port.GetValue() : default(T);
+                    }
+                }
+            }
+            return default(T);
+        }
+
+        private T EvaluateConditional<T>(float conditionValue){
+            foreach(var conditionalBindingPort in _conditionalBindingPorts){
+                if(conditionalBindingPort is FloatConditionalBindingPort floatPort){
+                    if(floatPort.Operator.Compare(conditionValue, floatPort.ConditionalValue.GetValue())){
+                        var port = conditionalBindingPort.TrueValue as ConstantOrPropertyPort<T>;
+                        return port != null ? port.GetValue() : default(T);
+                    }
+                }
+            }
+            return default(T);
+        }
+
+        private T EvaluateConditional<T>(bool conditionValue){
+            foreach(var conditionalBindingPort in _conditionalBindingPorts){
+                if(conditionalBindingPort is BoolConditionalBindingPort boolPort){
+                    if(boolPort.WhenEquals ^ (conditionValue != boolPort.ConditionalValue.GetValue())){
+                        var port = conditionalBindingPort.TrueValue as ConstantOrPropertyPort<T>;
+                        return port != null ? port.GetValue() : default(T);
+                    }
+                }
+            }
+            return default(T);
+        }
+
+        private T EvaluateConditional<T>(string conditionValue){
+            foreach(var conditionalBindingPort in _conditionalBindingPorts){
+                if(conditionalBindingPort is StringConditionalBindingPort stringPort){
+                    if(stringPort.WhenEquals ^ (!conditionValue.Equals(stringPort.ConditionalValue.GetValue()))){
+                        var port = conditionalBindingPort.TrueValue as ConstantOrPropertyPort<T>;
+                        return port != null ? port.GetValue() : default(T);
+                    }
+                }
+            }
+            return default(T);
+        }
+
         protected override void OnConvertProperties(Dictionary<string, IViewModelProperty> bindMap)
         {
-            // switch(_outputType.BaseType){
-            //     case BindingBaseType.Int:
-            //         _conditionalBindingPorts[0].TrueValue.Bind(bindMap, disposable, (int value) => _output.SetValue(value));
-            //         break;
-            //     case BindingBaseType.Float:
-            //         _conditionalBindingPorts[0].TrueValue.Bind(bindMap, disposable, (float value) => _output.SetValue(value));
-            //         break;
-            // }
+            switch(_conditionType.BaseType){
+                case BindingBaseType.Int:
+                    switch(_outputType.BaseType){
+                        case BindingBaseType.Int:
+                            ConvertProperty<int, int>(bindMap, _inputPort.Path, _outputPath, (int value) => EvaluateConditional<int>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.Float:
+                            ConvertProperty<int, float>(bindMap, _inputPort.Path, _outputPath, (int value) => EvaluateConditional<float>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.Bool:
+                            ConvertProperty<int, bool>(bindMap, _inputPort.Path, _outputPath, (int value) => EvaluateConditional<bool>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.String:
+                            ConvertProperty<int, string>(bindMap, _inputPort.Path, _outputPath, (int value) => EvaluateConditional<string>(value), ref previousProperty);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case BindingBaseType.Float:
+                    switch(_outputType.BaseType){
+                        case BindingBaseType.Int:
+                            ConvertProperty<float, int>(bindMap, _inputPort.Path, _outputPath, (float value) => EvaluateConditional<int>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.Float:
+                            ConvertProperty<float, float>(bindMap, _inputPort.Path, _outputPath, (float value) => EvaluateConditional<float>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.Bool:
+                            ConvertProperty<float, bool>(bindMap, _inputPort.Path, _outputPath, (float value) => EvaluateConditional<bool>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.String:
+                            ConvertProperty<float, string>(bindMap, _inputPort.Path, _outputPath, (float value) => EvaluateConditional<string>(value), ref previousProperty);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case BindingBaseType.Bool:
+                    switch(_outputType.BaseType){
+                        case BindingBaseType.Int:
+                            ConvertProperty<bool, int>(bindMap, _inputPort.Path, _outputPath, (bool value) => EvaluateConditional<int>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.Float:
+                            ConvertProperty<bool, float>(bindMap, _inputPort.Path, _outputPath, (bool value) => EvaluateConditional<float>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.Bool:
+                            ConvertProperty<bool, bool>(bindMap, _inputPort.Path, _outputPath, (bool value) => EvaluateConditional<bool>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.String:
+                            ConvertProperty<bool, string>(bindMap, _inputPort.Path, _outputPath, (bool value) => EvaluateConditional<string>(value), ref previousProperty);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case BindingBaseType.String:
+                    switch(_outputType.BaseType){
+                        case BindingBaseType.Int:
+                            ConvertProperty<string, int>(bindMap, _inputPort.Path, _outputPath, (string value) => EvaluateConditional<int>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.Float:
+                            ConvertProperty<string, float>(bindMap, _inputPort.Path, _outputPath, (string value) => EvaluateConditional<float>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.Bool:
+                            ConvertProperty<string, bool>(bindMap, _inputPort.Path, _outputPath, (string value) => EvaluateConditional<bool>(value), ref previousProperty);
+                            break;
+                        case BindingBaseType.String:
+                            ConvertProperty<string, string>(bindMap, _inputPort.Path, _outputPath, (string value) => EvaluateConditional<string>(value), ref previousProperty);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case BindingBaseType.Enum:
+                    break;
+            }
         }
 
         protected override void OnRestoreProperties(Dictionary<string, IViewModelProperty> bindMap)
         {
-            throw new NotImplementedException();
+            RestoreProperty(bindMap, _outputPath, ref previousProperty);
         }
 
         protected override void OnConvertBindingInfos(Dictionary<string, BindingInfo> bindingInfos)
@@ -110,33 +227,33 @@ namespace HUtil.UI.Converter
 
         [Serializable, InlineProperty]
         private class IntConditionalBindingPort : IConditionalBindingPort
-        {
-            [SerializeField, InlineProperty] public ConstantOrPropertyPort<int> Value = new ConstantOrPropertyPort<int>(new PropertyBindingPort<int>(BindingType.Int, BindingDirectionFlags.ToUI));
+        {            
             [SerializeField] public ComparisonOperator Operator;
+            [SerializeField, InlineProperty] public ConstantOrPropertyPort<int> ConditionalValue = new ConstantOrPropertyPort<int>(new PropertyBindingPort<int>(BindingType.Int, BindingDirectionFlags.ToUI));
             [SerializeField, SerializeReference, HideReferenceObjectPicker, InlineProperty] private IBindingPort _trueValue;
             public IBindingPort TrueValue { get => _trueValue; set => _trueValue = value; }
         }
         [Serializable, InlineProperty]
         private class FloatConditionalBindingPort : IConditionalBindingPort
         {
-            [SerializeField, InlineProperty] public ConstantOrPropertyPort<float> Value = new ConstantOrPropertyPort<float>(new PropertyBindingPort<float>(BindingType.Float, BindingDirectionFlags.ToUI));
             [SerializeField] public ComparisonOperator Operator;
+            [SerializeField, InlineProperty] public ConstantOrPropertyPort<float> ConditionalValue = new ConstantOrPropertyPort<float>(new PropertyBindingPort<float>(BindingType.Float, BindingDirectionFlags.ToUI));
             [SerializeField, SerializeReference, HideReferenceObjectPicker, InlineProperty] private IBindingPort _trueValue;
             public IBindingPort TrueValue { get => _trueValue; set => _trueValue = value; }
         }
         [Serializable, InlineProperty]
         private class BoolConditionalBindingPort : IConditionalBindingPort
         {
-            [SerializeField, InlineProperty] public ConstantOrPropertyPort<bool> Value = new ConstantOrPropertyPort<bool>(new PropertyBindingPort<bool>(BindingType.Bool, BindingDirectionFlags.ToUI));
-            [SerializeField] public bool WhenEquals;
+            [SerializeField] public bool WhenEquals = true;
+            [SerializeField, InlineProperty] public ConstantOrPropertyPort<bool> ConditionalValue = new ConstantOrPropertyPort<bool>(new PropertyBindingPort<bool>(BindingType.Bool, BindingDirectionFlags.ToUI));
             [SerializeField, SerializeReference, HideReferenceObjectPicker, InlineProperty] private IBindingPort _trueValue;
             public IBindingPort TrueValue { get => _trueValue; set => _trueValue = value; }
         }
         [Serializable, InlineProperty]
         private class StringConditionalBindingPort : IConditionalBindingPort
         {
-            [SerializeField, InlineProperty] public ConstantOrPropertyPort<string> Value = new ConstantOrPropertyPort<string>(new PropertyBindingPort<string>(BindingType.String, BindingDirectionFlags.ToUI));
-            [SerializeField] public bool WhenEquals;
+            [SerializeField] public bool WhenEquals = true;
+            [SerializeField, InlineProperty] public ConstantOrPropertyPort<string> ConditionalValue = new ConstantOrPropertyPort<string>(new PropertyBindingPort<string>(BindingType.String, BindingDirectionFlags.ToUI));
             [SerializeField, SerializeReference, HideReferenceObjectPicker, InlineProperty] private IBindingPort _trueValue;
             public IBindingPort TrueValue { get => _trueValue; set => _trueValue = value; }
         }
