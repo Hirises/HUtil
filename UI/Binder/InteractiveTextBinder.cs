@@ -19,6 +19,8 @@ namespace HUtil.UI.Binder
         [SerializeField] private TMP_Text _target;
         [SerializeField] private TextMeshProUGUI _targetMesh;
         [SerializeField] private PropertyBindingPort<string> _baseText_prop = new PropertyBindingPort<string>(BindingType.OfType(BindingBaseType.String), BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort<Color> _color_prop = new PropertyBindingPort<Color>(BindingType.OfType(BindingBaseType.Color), BindingDirectionFlags.ToUI);
+        [SerializeField] private PropertyBindingPort<float> _fontSize_prop = new PropertyBindingPort<float>(BindingType.OfType(BindingBaseType.Float), BindingDirectionFlags.ToUI);
         [SerializeField] private CommandBindingPort _onHoverIn_prop = new CommandBindingPort(BindingDirectionFlags.ToData);
         [SerializeField] private CommandBindingPort _onHoverOut_prop = new CommandBindingPort(BindingDirectionFlags.ToData);
         [SerializeField] private CommandBindingPort _onClick_prop = new CommandBindingPort(BindingDirectionFlags.ToData);
@@ -38,6 +40,8 @@ namespace HUtil.UI.Binder
         protected virtual void OnValidate()
         {
             _baseText_prop.Validate(this);
+            _color_prop.Validate(this);
+            _fontSize_prop.Validate(this);
             _onHoverIn_prop.Validate(this);
             _onHoverOut_prop.Validate(this);
             _onClick_prop.Validate(this);
@@ -46,6 +50,8 @@ namespace HUtil.UI.Binder
         protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
         {
             _baseText_prop.Bind(bindMap, disposable, SetText);
+            _color_prop.Bind(bindMap, disposable, SetColor);
+            _fontSize_prop.Bind(bindMap, disposable, SetFontSize);
             _onHoverIn_prop.Bind(bindMap, disposable, _onHoverIn);
             _onHoverOut_prop.Bind(bindMap, disposable, _onHoverOut);
             _onClick_prop.Bind(bindMap, disposable, _onClick);
@@ -54,6 +60,16 @@ namespace HUtil.UI.Binder
         protected virtual void SetText(string value)
         {
             _target.text = value;
+        }
+
+        private void SetColor(Color value)
+        {
+            _target.color = value;
+        }
+
+        private void SetFontSize(float value)
+        {
+            _target.fontSize = value;
         }
 
         public void OnPointerClick(PointerEventData eventData)
