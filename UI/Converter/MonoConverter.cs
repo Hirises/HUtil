@@ -72,7 +72,33 @@ namespace HUtil.UI.Converter
             if(bindMap.TryGetValue(toPath, out var toProperty)){
                 previousProperty = toProperty;
             }
-            bindMap[toPath] = new ModiftedProperty<From, To>(typedFromProperty, converter);
+            bindMap[toPath] = new ModifiedProperty<From, To>(typedFromProperty, converter);
+        }
+
+                /// <summary>
+        /// 속성을 변환합니다
+        /// </summary>
+        /// <typeparam name="From">변환할 속성의 타입</typeparam>
+        /// <typeparam name="To">변환된 속성의 타입</typeparam>
+        /// <param name="bindMap">바인딩 맵</param>
+        /// <param name="fromPath">변환할 속성의 경로</param>
+        /// <param name="toPath">변환된 속성의 경로</param>
+        /// <param name="converter">변환 함수</param>
+        /// <param name="previousProperty">이전 속성</param>
+        protected void ConvertMultiProperty<From, To>(Dictionary<string, IViewModelProperty> bindMap, List<string> fromPath, string toPath, Func<To> converter, ref IViewModelProperty previousProperty){
+            List<IViewModelProperty<From>> fromProperties = new List<IViewModelProperty<From>>();
+            foreach(var path in fromPath){
+                if(!bindMap.TryGetValue(path, out var fromProperty) || !(fromProperty is IViewModelProperty<From> typedFromProperty)){
+                    BindingContext.LogWarning($"{path} is not found", gameObject);
+                    return;
+                }
+                fromProperties.Add(typedFromProperty);
+            }
+            previousProperty = null;
+            if(bindMap.TryGetValue(toPath, out var toProperty)){
+                previousProperty = toProperty;
+            }
+            bindMap[toPath] = new MultiReferenceModifiedProperty<From, To>(fromProperties, converter);
         }
 
         /// <summary>

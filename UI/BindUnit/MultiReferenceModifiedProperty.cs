@@ -1,31 +1,37 @@
 using System;
+using System.Collections.Generic;
 
+using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
 
 using UnityEngine;
 
 namespace HUtil.UI
 {
-    public struct ModiftedProperty<From, To> : IViewModelProperty<To>
+    public struct MultiReferenceModifiedProperty<From, To> : IViewModelProperty<To>
     {
-        private IViewModelProperty<From> _origin;
-        private Func<From, To> _modifier;
+        private List<IViewModelProperty<From>> _references;
+        private Func<To> _getter;
 
-        public ModiftedProperty(IViewModelProperty<From> origin, Func<From, To> modifier)
+        public MultiReferenceModifiedProperty(List<IViewModelProperty<From>> references, Func<To> getter)
         {
-            _origin = origin ?? throw new ArgumentNullException(nameof(origin));
-            _modifier = modifier ?? throw new ArgumentNullException(nameof(modifier));
+            _references = references ?? throw new ArgumentNullException(nameof(references));
+            _getter = getter ?? throw new ArgumentNullException(nameof(getter));
         }
 
         public IDisposable SubscribeProperty(Action<To> action)
         {
-            var modifier = _modifier;
-            return _origin.SubscribeProperty(value => action(modifier(value)));
+            var getter = _getter;
+            var disposable = new CompositeDisposable();
+            foreach(var reference in _references){
+                reference.SubscribeProperty(value => action(getter())).AddTo(disposable);
+            }
+            return disposable;
         }
 
         public To GetPropertyValue()
         {
-            return _modifier(_origin.GetPropertyValue());
+            return _getter();
         }
 
         public void SetPropertyValue(To value)

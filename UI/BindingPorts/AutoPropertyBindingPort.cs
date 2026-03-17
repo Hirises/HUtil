@@ -28,16 +28,8 @@ namespace HUtil.UI
             return _property.GetPropertyValue();
         }
 
-        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter){
-            Bind(bindMap, disposable, setter, null);
-        }
-
-        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange){
-            Bind(bindMap, disposable, null, onChange);
-        }
-
-        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange){
-            this._property = _propertyBindingPort.Bind(bindMap, disposable, setter, onChange);
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable){
+            this._property = _propertyBindingPort.Bind(bindMap, disposable, (T value) => {}, null);
             disposable.Add(new ScriptableDisposable(() => _property = null));
         }
     }

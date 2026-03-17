@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using HUtil.Runtime.Observable;
+
 using Sirenix.OdinInspector;
 
 using UnityEngine;
@@ -31,9 +33,32 @@ namespace HUtil.UI.Converter
             );
         }
 
+        protected override void BindInternal(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable)
+        {
+            base.BindInternal(bindMap, disposable);
+            foreach(var parameter in _formatParameters){
+                parameter.Bind(bindMap, disposable);
+            }
+            _format.Bind(bindMap, disposable);
+        }
+
         protected override void OnConvertProperties(Dictionary<string, IViewModelProperty> bindMap)
         {
-            ConvertProperty<string, string>(bindMap, _format.Path, _outputPath, (string value) => string.Format(value, _formatParameters.Select(parameter => parameter.GetValue()).ToArray()), ref previousProperty);
+            var paths = _formatParameters.Where(parameter => !parameter.UseConstant).Select(parameter => parameter.Path).ToList();
+            if(!_format.UseConstant){
+                paths.Add(_format.Path);
+            }
+            ConvertMultiProperty<string, string>(bindMap, paths, _outputPath, () => {
+                var parameters = _formatParameters.Select(parameter => parameter.GetValue()).ToArray();
+                var formattedString = _format.GetValue();
+                try{
+                    formattedString = string.Format(formattedString, parameters);
+                }
+                catch(Exception e){
+                    BindingContext.LogWarning($"Error formatting string: {e.Message}", gameObject);
+                }
+                return formattedString;
+            }, ref previousProperty);
         }
 
         protected override void OnRestoreProperties(Dictionary<string, IViewModelProperty> bindMap)

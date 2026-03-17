@@ -19,6 +19,7 @@ namespace HUtil.UI
 
         public string Path => _autoPropertyBindingPort.Path;
         public BindingMode Direction => _autoPropertyBindingPort.Direction;
+        public bool UseConstant => _useConstant;
 
         public ConstantOrPropertyPort(PropertyBindingPort<T> propertyBindingPort, Action<T> onValueChanged = null){
             _autoPropertyBindingPort = new AutoPropertyBindingPort<T>(propertyBindingPort);
@@ -30,16 +31,8 @@ namespace HUtil.UI
             return _useConstant ? _constant : _autoPropertyBindingPort.GetValue();
         }
 
-        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter){
-            _autoPropertyBindingPort.Bind(bindMap, disposable, setter);
-        }
-
-        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, UnityEvent<T> onChange){
-            _autoPropertyBindingPort.Bind(bindMap, disposable, onChange);
-        }
-
-        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable, Action<T> setter, UnityEvent<T> onChange){
-            _autoPropertyBindingPort.Bind(bindMap, disposable, setter, onChange);
+        public void Bind(Dictionary<string, IViewModelProperty> bindMap, CompositeDisposable disposable){
+            if(!_useConstant) _autoPropertyBindingPort.Bind(bindMap, disposable);
         }
     }
 }
