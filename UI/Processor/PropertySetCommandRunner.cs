@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace HUtil.UI.Processor
 {
-    public class CommandRunner : MonoConverter
+    public class PropertySetCommandRunner : MonoConverter
     {
         [SerializeField, OnValueChanged(nameof(AssignInputPort)), InlineProperty] private BindingType _inputType;
         [SerializeReference, HideReferenceObjectPicker, EnableIf(nameof(_inputPortAssigned))] private IAutoPropertyBindingPort _inputPort;
