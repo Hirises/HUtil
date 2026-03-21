@@ -36,6 +36,7 @@ namespace HUtil.UI.Binder
             }
         }
 
+        [Serializable]
         private class ActivationState{
             [SerializeField] public int _index;
             [SerializeField] public GameObject[] _onObjects;
