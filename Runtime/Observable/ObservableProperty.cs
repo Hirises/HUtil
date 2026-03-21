@@ -1,18 +1,24 @@
 using System;
 using System.Collections.Generic;
 
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 
 namespace HUtil.Runtime.Observable
 {
+    public interface IObservableProperty{
+        
+    }
+
     /// <summary>
     /// 관측 가능한 프로퍼티 래퍼
     /// </summary>
     /// <typeparam name="T">대상 타입</typeparam>
     [Serializable]
-    public class ObservableProperty<T> : IReadOnlyObservableProperty<T>
+    public class ObservableProperty<T> : IReadOnlyObservableProperty<T>, IObservableProperty
     {
-        [SerializeField]
+        [SerializeField, OnValueChanged(nameof(Notify)), HideLabel]
         private T _value;
         private event Action<T> _onValueChanged;
         public T Value
