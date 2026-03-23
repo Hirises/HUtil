@@ -31,6 +31,7 @@ namespace HUtil.UI.Binder
             {
                 foreach (var obj in state._onObjects)
                 {
+                    Debug.Log($"SetActive {obj.name} {state._index == index}");
                     obj.SetActive(state._index == index);
                 }
             }
