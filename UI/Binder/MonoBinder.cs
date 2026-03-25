@@ -177,10 +177,12 @@ namespace HUtil.UI.Binder
                 return;
             }
     
-            BindingContext.LogDebug($"Bind", gameObject);
+            BindingContext.LogDebug($"Start Bind {this.GetType().Name}", gameObject);
     
             Unbind();
             BindInternal(bindMap, _disposable);
+    
+            BindingContext.LogDebug($"End Bind {this.GetType().Name}", gameObject);
             if(IsRootBinder && PropagateBinding){   //하위로 전파하는 객체면 하위 바인더들에게 전파
                 BeforePropagate(bindMap, _disposable);
                 foreach(var childBinder in _childBinders){
