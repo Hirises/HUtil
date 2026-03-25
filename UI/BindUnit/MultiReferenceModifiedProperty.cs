@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using HUtil.Runtime.Extension;
 using HUtil.Runtime.Observable;
@@ -55,6 +56,11 @@ namespace HUtil.UI
         {
             Debug.LogWarning($"[UIBinder] You cannot apply a list change on a modified property! {typeof(From).Name} -> {typeof(To).Name}");
             return;
+        }
+
+        public string ToStringChain()
+        {
+            return $"MultiReferenceModifiedProperty<{typeof(From).Name}, {typeof(To).Name}> -> {string.Join(", ", _references.Select(reference => reference.ToStringChain()))}";
         }
     }
 }

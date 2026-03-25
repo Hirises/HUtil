@@ -17,5 +17,7 @@ namespace HUtil.UI
         void SetPropertyValue(T value);
         IDisposable SubscribeList(Action<ListChangeEvent<T>> action);
         void ApplyListChange(ListChangeEvent<T> @event);
+
+        string ToStringChain();
     }
 }

@@ -71,5 +71,10 @@ namespace HUtil.UI
         public void ApplyListChange(ListChangeEvent<T> @event){
             AsObservableList().ApplyChange(@event);
         }
+
+        public string ToStringChain()
+        {
+            return $"StaticProperty<{typeof(T).Name}>({_value.GetType().Name})";
+        }
     }
 }

@@ -124,9 +124,9 @@ namespace HUtil.UI
                 Debug.LogWarning($"[UIBinder] Cannot find property {Path} in viewmodel");
                 return null;
             }
-            Debug.Log($"Try Bind Port {Path} {Direction} {ReceivingType}");
 
             var property = rawProperty as IViewModelProperty<T>;
+            Debug.Log($"Try Bind Port {Path} -> {property.ToStringChain()}");
 
             switch (Direction)
             {
