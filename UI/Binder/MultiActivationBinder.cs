@@ -35,7 +35,7 @@ namespace HUtil.UI.Binder
         {
             foreach (var state in _activationStates)
             {
-                bool isMatch = state._comparisonOperator.Compare(state._index, index);
+                bool isMatch = state._comparisonOperator.Compare(index, state._index);
                 if(!evaluateMultipleStates && !isMatch){
                     continue;
                 }
